@@ -30,10 +30,10 @@ List of Functions for Holdings
 
 class User(db.Model):
     """
-    This class is used to store the registered users in the database.
-    *Functions
-    - __init__(self, username, password, name, age, email, institution, credit)
-    - json(self)
+        This class is used to store the registered users in the database.
+        * Functions
+            - __init__(self, username, password, name, age, email, institution, credit)
+            - json(self)
     """
     __tablename__ = 'userinfo'
 
@@ -60,7 +60,7 @@ class User(db.Model):
 
 class Holdings(db.Model):
     """
-    This class is used to store the stock holdings that the user has.
+        This class is used to store the stock holdings that the user has.
     """
 
     __tablename__ = 'holdings'

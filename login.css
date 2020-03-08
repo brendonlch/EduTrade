@@ -1,12 +1,14 @@
 @import url('https://fonts.googleapis.com/css?family=Numans');
 
 html,body{
-background-image: url('https://raw.githubusercontent.com/brendonlch/EduTrade/master/should_you_trade_forex_without_indicators.jpg');
+background-image: url('images/background.jpg');
 background-size: cover;
 background-repeat: no-repeat;
-height: 100%;
+height: 100vh;
+width: 100vw;
 font-family: 'Numans', sans-serif;
 }
+
 
 .container{
 height: 100%;
