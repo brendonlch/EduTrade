@@ -65,7 +65,9 @@ def reply_callback(channel, method, properties, body): # required signature for 
         print("--Wrong reply correlation ID: No match of reply correlation ID: No match of " + properties.correlation_id)
         print()
     # acknowledge to the broker that the processing of the message is completed
+    print("test")
     channel.basic_ack(delivery_tag=method.delivery_tag)
+    print("test2")
 
 
 # Execute this program if it is run as a main script (not by 'import')

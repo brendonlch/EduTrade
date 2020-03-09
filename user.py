@@ -220,5 +220,10 @@ def send_stock_request(symbol):
     # close the connection to the broker
     connection.close()
 
+def minus_credit(order):
+    user = User.query.filter_by(username=order['order']['username']).first()
+    user.credit = user.credit - [order['order']['qty']*order['order']['price']]
+    db.session.commit()
+
 if __name__ == '__main__': 
     app.run(port=5000, debug=True)

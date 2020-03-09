@@ -78,7 +78,6 @@ class Correlation(db.Model):
 def purchase():
     data = request.get_json()
     order = Transaction(**data)
-    order_dict = order.__dict__
     #Communicate with user management
     send_order(data)
     try:
