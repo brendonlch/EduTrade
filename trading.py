@@ -1,8 +1,11 @@
+import pika
+import uuid
+import json
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/user'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/transaction'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -57,15 +60,15 @@ class Correlation(db.Model):
             - json(self)
     """
     __tablename__ = 'correlation'
-    corrid = db.Column(db.String(64), primary_key=True)
+    correlation_id = db.Column(db.String(64), primary_key=True)
     status = db.Column(db.String(64), nullable=False)
 
-    def __init__(self, corrid, status): #Initialise the objects
-        self.corrid = corrid
+    def __init__(self, correlation_id, status): #Initialise the objects
+        self.correlation_id = correlation_id
         self.status = status
 
     def json(self): 
-        return {"corrid": self.corrid, "status": self.status}
+        return {"correlation_id": self.correlation_id, "status": self.status}
 
 
 ###########################################################################
@@ -74,7 +77,7 @@ class Correlation(db.Model):
 @app.route("/purchase", methods=['POST'])
 def purchase():
     data = request.get_json()
-    order = Transaction(symbol, **data)
+    order = Transaction(**data)
     order_dict = order.__dict__
     #Communicate with user management
     send_order(data)
@@ -127,7 +130,7 @@ def send_order(data):
     # Prepare the correlation id and reply_to queue and do some record keeping
     corrid = str(uuid.uuid4())
     row = {"correlation_id": corrid, "status":""}
-    correlation = Correlation(row)
+    correlation = Correlation(**row)
     # add correlation row into database
     try:
         db.session.add(correlation) 
@@ -144,11 +147,11 @@ def send_order(data):
             correlation_id=corrid # set the correlation id for easier matching of replies
         )
     )
-    print(f"{symbol} request sent to user management microservice.")
+    print(f"{data['symbol']} request sent to user management microservice.")
     # close the connection to the broker
     connection.close()
 
 
 
 if __name__ == '__main__': #So that it can run with this file instead of another file importing this file
-    app.run(port=5000, debug=True)
+    app.run(port=5001, debug=True)

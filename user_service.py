@@ -5,13 +5,18 @@
 import sys
 import os
 import csv
-from user import *
+from user import Correlation, User, Holdings
 # Communication patterns:
 # Use a message-broker with 'direct' exchange to enable interaction
 # Use a reply-to queue and correlation_id to get a corresponding reply
 import pika
 # If see errors like "ModuleNotFoundError: No module named 'pika'", need to
 # make sure the 'pip' version used to install 'pika' matches the python version used.
+
+
+###########################
+# Waiting for stock reply #
+###########################
 
 def receive_stock_request():
     hostname = "localhost" # default broker hostname. Web management interface default at http://localhost:15672
@@ -60,6 +65,49 @@ def reply_callback(channel, method, properties, body): # required signature for 
         print()
     # acknowledge to the broker that the processing of the message is completed
     channel.basic_ack(delivery_tag=method.delivery_tag)
+
+##########################################################################
+# Once receive trading order, process and send reply callback to trading #
+##########################################################################
+
+
+def callback(channel, method, properties, body): # required signature for the callback; no return
+    print("Received an order by " + __file__)
+    result = processOrder(json.loads(body))
+    # print processing result; not really needed
+    json.dump(result, sys.stdout, default=str) # convert the JSON object to a string and print out on screen
+    print() # print a new line feed to the previous json dump
+    print() # print another new line as a separator
+
+    # prepare the reply message and send it out
+    replymessage = json.dumps(result, default=str) # convert the JSON object to a string
+    replyqueuename="trading.reply"
+    # A general note about AMQP queues: If a queue or an exchange doesn't exist before a message is sent,
+    # - the broker by default silently drops the message;
+    # - So, if really need a 'durable' message that can survive broker restarts, need to
+    #  + declare the exchange before sending a message, and
+    #  + declare the 'durable' queue and bind it to the exchange before sending a message, and
+    #  + send the message with a persistent mode (delivery_mode=2).
+    channel.queue_declare(queue=replyqueuename, durable=True) # make sure the queue used for "reply_to" is durable for reply messages
+    channel.queue_bind(exchange=exchangename, queue=replyqueuename, routing_key=replyqueuename) # make sure the reply_to queue is bound to the exchange
+    channel.basic_publish(exchange=exchangename,
+            routing_key=properties.reply_to, # use the reply queue set in the request message as the routing key for reply messages
+            body=replymessage, 
+            properties=pika.BasicProperties(delivery_mode = 2, # make message persistent (stored to disk, not just memory) within the matching queues; default is 1 (only store in memory)
+                correlation_id = properties.correlation_id, # use the correlation id set in the request message
+            )
+    )
+    channel.basic_ack(delivery_tag=method.delivery_tag) # acknowledge to the broker that the processing of the request message is completed
+
+def processOrder(order):
+    print("Processing an order:")
+    print(order)
+    # Can do anything here. E.g., publish a message to the error handler when processing fails.
+    resultstatus = "success" # simulate success/failure with a random True or False
+    result = {'status': resultstatus, 'order': order}
+    print("OK trade.")
+    return result
+
 
 
 # Execute this program if it is run as a main script (not by 'import')

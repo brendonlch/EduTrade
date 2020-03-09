@@ -45,9 +45,9 @@ CREATE TABLE IF NOT EXISTS `trading` (
 
 DROP TABLE IF EXISTS `correlation`;
 CREATE TABLE IF NOT EXISTS `correlation` (
-  `corrid` varchar(64) NOT NULL,
+  `correlation_id` varchar(64) NOT NULL,
   `status` varchar(64) NOT NULL,	
-  PRIMARY KEY (`corrid`)
+  PRIMARY KEY (`correlation_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 --
 

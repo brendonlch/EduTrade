@@ -7,6 +7,7 @@ import sys
 import os
 import random
 import datetime
+from trading import Transaction, Correlation
 
 # Communication patterns:
 # Use a message-broker with 'direct' exchange to enable interaction
@@ -29,7 +30,7 @@ def receive_trade():
     exchangename="edutrade"
     channel.exchange_declare(exchange=exchangename, exchange_type='direct')
 
-    replyqueuename="trading.info"
+    replyqueuename="trading.reply"
     channel.queue_declare(queue=replyqueuename, durable=True) # make sure the queue used for "reply_to" is durable for reply messages
     channel.queue_bind(exchange=exchangename, queue=replyqueuename, routing_key=replyqueuename) # make sure the reply_to queue is bound to the exchange
     # set up a consumer and start to wait for coming messages
