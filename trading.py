@@ -1,6 +1,7 @@
 import pika
 import uuid
 import json
+import datetime
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -77,6 +78,12 @@ class TransactionCorrelation(db.Model):
 @app.route("/purchase", methods=['POST'])
 def purchase():
     data = request.get_json()
+
+    # Automating Transaction ID and Transaction Time
+    transactions = [transaction.json() for transaction in Transaction.query.all()]
+    data['transactionid'] = 1 if len(transactions) == 0 else max(transactions, key = lambda x:x['transactionid'])['transactionid'] + 1
+    data['transactiontime'] = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+
     order = Transaction(**data)
     #Communicate with user management
     send_order(data)
