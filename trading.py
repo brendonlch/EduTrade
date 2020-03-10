@@ -52,7 +52,7 @@ class Transaction(db.Model):
         return {"transactionid": self.transactionid, "username": self.username, "symbol": self.symbol, "price": self.price, "qty": self.qty
             , "transactiontype": self.transactiontype, "transactiontime": self.transactiontime}
 
-class Correlation(db.Model):
+class TransactionCorrelation(db.Model):
     """
         This class is used to store the correlation id used for retrieving data from the stock microservice.
         * Functions
@@ -129,7 +129,7 @@ def send_order(data):
     # Prepare the correlation id and reply_to queue and do some record keeping
     corrid = str(uuid.uuid4())
     row = {"correlation_id": corrid, "status":""}
-    correlation = Correlation(**row)
+    correlation = TransactionCorrelation(**row)
     # add correlation row into database
     try:
         db.session.add(correlation) 

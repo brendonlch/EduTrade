@@ -7,7 +7,7 @@ import sys
 import os
 import random
 import datetime
-from trading import Transaction, Correlation
+from trading import Transaction, TransactionCorrelation
 
 # Communication patterns:
 # Use a message-broker with 'direct' exchange to enable interaction
@@ -45,15 +45,21 @@ def reply_callback(channel, method, properties, body): # required signature for 
     """processing function called by the broker when a message is received"""
     # Load correlations for existing created orders from a file.
     # - In practice, using DB (as part of the order DB) is a better choice than using a file.
-    rows = [correlation.json() for correlation in Correlation.query.all()]
+    tc = TransactionCorrelation
+    rows = [correlation.json() for correlation in tc.query.all()]
     # Check if the reply message contains a valid correlation id recorded in the file.
     # - Assume each line in the file is in this CSV format: <order_id>, <correlation_id>, <status>, ...
     matched = False
+    print(properties)
+    print("#######################")
+    print(rows)
+    print("#######################")
     for row in rows:
         if not 'correlation_id' in row:
             print('Warning for Correlation Database: no "correlation_id" for a request:', row)
             continue
         corrid = row['correlation_id']
+        print(corrid)
         if corrid == properties.correlation_id: # check if the reply message matches one request message based on the correlation id
             print("--Matched reply message with a correlation ID: " + corrid)
             # Can do anything needed for the scenario here, e.g., may update the 'status', or inform UI or other applications/services.
@@ -65,9 +71,8 @@ def reply_callback(channel, method, properties, body): # required signature for 
         print("--Wrong reply correlation ID: No match of reply correlation ID: No match of " + properties.correlation_id)
         print()
     # acknowledge to the broker that the processing of the message is completed
-    print("test")
     channel.basic_ack(delivery_tag=method.delivery_tag)
-    print("test2")
+    print("test if message acknowledged")
 
 
 # Execute this program if it is run as a main script (not by 'import')

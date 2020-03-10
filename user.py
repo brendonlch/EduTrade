@@ -94,7 +94,7 @@ class Holdings(db.Model):
         return {"username": self.username, "symbol": self.symbol, "qty": self.qty, "buyprice": self.buyprice
             , "limit": self.limit, "datepurchased": self.datepurchased}
 
-class Correlation(db.Model):
+class UserCorrelation(db.Model):
     """
         This class is used to store the correlation id used for retrieving data from the stock microservice.
         * Functions
@@ -144,41 +144,6 @@ def add_user(username):
 def get_all_holdings(username):
     return jsonify({"holdings": [user.json() for user in Holdings.query.filter_by(username=username)]}) 
 
-@app.route("/holdings/<string:username>", methods=['POST'])
-def add_stock_to_user(username):
-    user = User.query.filter_by(username=username).first()
-    data = request.get_json()
-    holding = Holdings(username, **data)
-    try:
-        db.session.add(holding)  
-        db.session.commit() 
-    except:
-        return jsonify({"message": "An error occurred adding the stock."}), 500
-    user.credit = user.credit - data['buyprice']
-    return jsonify(holding.json()), 201
-
-@app.route("/holdings/remove",  methods=['POST'])
-def remove_stock_from_user():
-    data = request.get_json()
-    holding = Holdings.query.filter_by(username=data['username'],symbol=data['symbol']).first()
-    user = User.query.filter_by(username=data['username']).first()
-    holding.qty = float(holding.qty)
-    data['qty'] = float(data['qty'])
-    if data['qty'] < holding.qty:
-        try:
-            holding.qty = holding.qty - data['qty']
-            db.session.commit() 
-        except:
-            return jsonify({"message": "An error occurred updating the stock."}), 500
-    else:
-        try:
-            db.session.delete(holding) 
-            db.session.commit() 
-        except:
-            return jsonify({"message": "An error occurred removing the stock."}), 500
-    # user.credit = user.credit + data['stock_price']
-    # db.session.commit() 
-    return jsonify(holding.json()), 202
 
 def send_stock_request(symbol):
     hostname = "localhost" # default broker hostname. Web management interface default at http://localhost:15672
@@ -199,7 +164,7 @@ def send_stock_request(symbol):
     # Prepare the correlation id and reply_to queue and do some record keeping
     corrid = str(uuid.uuid4())
     row = {"correlation_id": corrid, "status":""}
-    correlation = Correlation(row)
+    correlation = UserCorrelation(row)
     # add correlation row into database
     try:
         db.session.add(correlation) 
@@ -221,9 +186,23 @@ def send_stock_request(symbol):
     connection.close()
 
 def minus_credit(order):
-    user = User.query.filter_by(username=order['order']['username']).first()
-    user.credit = user.credit - [order['order']['qty']*order['order']['price']]
-    db.session.commit()
+    user = User.query.filter_by(username=order['username']).first()
+    user.credit = user.credit - (order['qty']*order['price'])
+    try:
+        db.session.commit()
+    except:
+        return False
+    return True
+    
+def add_holding(order):
+    user = User.query.filter_by(username=order['username']).first()
+    holding = Holdings(order['username'],order['symbol'],order['qty'],order['price'],0,order['transactiontime'])
+    try:
+        db.session.add(holding)
+        db.session.commit()
+    except:
+        return False
+    return True
 
 if __name__ == '__main__': 
     app.run(port=5000, debug=True)

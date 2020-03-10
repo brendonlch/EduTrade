@@ -43,7 +43,7 @@ def reply_callback(channel, method, properties, body): # required signature for 
     """processing function called by the broker when a message is received"""
     # Load correlations for existing created orders from a file.
     # - In practice, using DB (as part of the order DB) is a better choice than using a file.
-    rows = [correlation.json() for correlation in Correlation.query.all()]
+    rows = [correlation.json() for correlation in UserCorrelation.query.all()]
     # Check if the reply message contains a valid correlation id recorded in the file.
     # - Assume each line in the file is in this CSV format: <order_id>, <correlation_id>, <status>, ...
     matched = False

@@ -5,7 +5,7 @@ import json
 import sys
 import os
 import csv
-from user import Correlation, User, Holdings, minus_credit
+from user import UserCorrelation, User, Holdings, minus_credit, add_holding
 # Communication patterns:
 # Use a message-broker with 'direct' exchange to enable interaction
 # Use a reply-to queue and correlation_id to get a corresponding reply
@@ -30,9 +30,9 @@ def receive_trade_request():
     exchangename="edutrade"
     channel.exchange_declare(exchange=exchangename, exchange_type='direct')
 
-    replyqueuename="trading.info"
+    replyqueuename="trading"
     channel.queue_declare(queue=replyqueuename, durable=True) # make sure the queue used for "reply_to" is durable for reply messages
-    channel.queue_bind(exchange=exchangename, queue=replyqueuename, routing_key=replyqueuename) # make sure the reply_to queue is bound to the exchange
+    channel.queue_bind(exchange=exchangename, queue=replyqueuename, routing_key="trading.info") # make sure the reply_to queue is bound to the exchange
     # set up a consumer and start to wait for coming messages
     channel.basic_qos(prefetch_count=1) # The "Quality of Service" setting makes the broker distribute only one message to a consumer if the consumer is available (i.e., having finished processing and acknowledged all previous messages that it receives)
     channel.basic_consume(queue=replyqueuename, on_message_callback=callback, # set up the function called by the broker to process a received message
@@ -54,7 +54,7 @@ def callback(channel, method, properties, body): # required signature for the ca
     # - the broker by default silently drops the message;
     # - So, if really need a 'durable' message that can survive broker restarts, need to
     #  + declare the exchange before sending a message, and
-    #  + declare the 'durable' queue and bind it to the exchange before sending a message, and
+    #  + declare the 'durable' queue and bind it to .infothe exchange before sending a message, and
     #  + send the message with a persistent mode (delivery_mode=2).
     channel.queue_declare(queue=replyqueuename, durable=True) # make sure the queue used for "reply_to" is durable for reply messages
     channel.queue_bind(exchange=exchangename, queue=replyqueuename, routing_key=replyqueuename) # make sure the reply_to queue is bound to the exchange
@@ -70,12 +70,18 @@ def callback(channel, method, properties, body): # required signature for the ca
 def processOrder(order):
     print("Processing an order:")
     print(order)
-    
-    minus_credit(order)
+    resultstatus = "failure" # simulate success/failure with a random True or False
+    print("Minusing credits...") #Do try except
+    if(minus_credit(order)):
+        print("Successfully minus credits...")
+        resultstatus = "success"
+    print("Adding into personal holdings...")
+    if(add_holding(order)):
+        print("Successfully placed into holdings...")
+        resultstatus = "success"
     # Can do anything here. E.g., publish a message to the error handler when processing fails.
-    resultstatus = "success" # simulate success/failure with a random True or False
     result = {'status': resultstatus, 'order': order}
-    print("OK trade.")
+    print("Successful purchase.")
     return result
 
 
