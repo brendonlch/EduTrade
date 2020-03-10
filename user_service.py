@@ -89,12 +89,14 @@ def processOrder(order):
     elif(order['transactiontype']=="Sell"):
         print("Creating Selling Order...")
         try:
-            print("Adding credits...") #Do try except
+            print("Adding credits...")
             if(add_credit(order)):
                 print("Successfully add credits...")
+
             print("Removing from personal holdings...")
             if(remove_holding(order)):
                 print("Successfully removed from holdings...")
+
             resultstatus = "success"
         except:
             return {'status': "fail", 'order': order}

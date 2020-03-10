@@ -50,7 +50,7 @@ DROP TABLE IF EXISTS `holdings`;
 CREATE TABLE IF NOT EXISTS `holdings` (
   `username` varchar(64) NOT NULL,
   `symbol` varchar(64) NOT NULL,	
-  `qty` varchar(64) NOT NULL,  
+  `qty` int(10) NOT NULL,  
   `buyprice` decimal(10,2) NOT NULL,
   `limit` decimal(10,2),
   `datepurchased` datetime NOT NULL,

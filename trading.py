@@ -1,7 +1,8 @@
 import pika
 import uuid
 import json
-import datetime
+import datetime, time
+import sys
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -23,6 +24,9 @@ List of Functions for User
 
 Other Functions
 """
+#FOR DEBUGGING - eprint()
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 
 """
 
@@ -86,7 +90,20 @@ def purchase():
 
     order = Transaction(**data)
     #Communicate with user management
-    send_order(data)
+    corrid = send_order(data)
+
+    correlation = TransactionCorrelation.query.filter_by(correlation_id=corrid).first()
+    status = correlation.status
+
+    i = 0
+    while(status == ''):
+        db.session.commit()
+        correlation = TransactionCorrelation.query.filter_by(correlation_id=corrid).first()
+        status = correlation.status
+        time.sleep(5)
+        print(i)
+        i += 5
+
     try:
         db.session.add(order)
         db.session.commit()
@@ -98,8 +115,12 @@ def purchase():
 def sell():
     data = request.get_json()
 
-    #########################################
-    # Cheat code
+    # Automating Transaction ID and Transaction Time
+    transactions = [transaction.json() for transaction in Transaction.query.all()]
+    data['transactionid'] = 1 if len(transactions) == 0 else max(transactions, key = lambda x:x['transactionid'])['transactionid'] + 1
+    data['transactiontime'] = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+    
+    #####################################
     purchasedtime = data['purchasedtime']
     data.pop('purchasedtime')
     #####################################
@@ -112,12 +133,26 @@ def sell():
     ########################################
     
     
-    send_order(data)
-    try:
-        db.session.add(order)
+    corrid = send_order(data)
+
+    correlation = TransactionCorrelation.query.filter_by(correlation_id=corrid).first()
+    status = correlation.status
+
+    i = 0
+    while(status == ''):
         db.session.commit()
-    except:
-        return jsonify({"message":"An error occured creating sell order"}), 500
+        correlation = TransactionCorrelation.query.filter_by(correlation_id=corrid).first()
+        status = correlation.status
+        time.sleep(5)
+        print(i)
+        i += 5
+
+    if (status == "success"):
+        try:
+            db.session.add(order)
+            db.session.commit()
+        except:
+            return jsonify({"message":"An error occured creating sell order"}), 500
     return jsonify(order.json()), 201 
 
 @app.route("/transactionhistory", methods=['GET'])
@@ -169,10 +204,16 @@ def send_order(data):
     print(f"{data['symbol']} request sent to user management microservice.")
     # close the connection to the broker
     connection.close()
+    return corrid
 
 def get_all_correlation():
     db.session.commit()
     return [correlation.json() for correlation in TransactionCorrelation.query.all()]
+
+def update_correlation_status(corrid,status):
+    correlation = TransactionCorrelation.query.filter_by(correlation_id=corrid).first()
+    correlation.status = status
+    db.session.commit()
 
 
 

@@ -1,6 +1,7 @@
 import pika
 import uuid
 import json
+import sys
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -39,6 +40,11 @@ Other Functions
     Databases 
 
 """
+#FOR DEBUGGING - eprint()
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
+
 class User(db.Model):
     """
         This class is used to store the registered users in the database.
@@ -215,7 +221,7 @@ def add_holding(order):
 
 def remove_holding(order):
     holding = Holdings.query.filter_by(username=order['username'], symbol=order['symbol'], datepurchased=order['purchasedtime']).first()
-    if(order['qty']==holding.qty):
+    if(order['qty'] == holding.qty):
         try:
             db.session.delete(holding)
             db.session.commit()

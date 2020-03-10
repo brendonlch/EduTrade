@@ -7,7 +7,7 @@ import sys
 import os
 import random
 import datetime
-from trading import Transaction, TransactionCorrelation, get_all_correlation
+from trading import Transaction, TransactionCorrelation, get_all_correlation, update_correlation_status
 
 # Communication patterns:
 # Use a message-broker with 'direct' exchange to enable interaction
@@ -56,6 +56,8 @@ def reply_callback(channel, method, properties, body): # required signature for 
         corrid = row['correlation_id']
         if corrid == properties.correlation_id: # check if the reply message matches one request message based on the correlation id
             print("--Matched reply message with a correlation ID: " + corrid)
+            bodyJson = json.loads(body)
+            update_correlation_status(corrid,bodyJson['status'])
             # Can do anything needed for the scenario here, e.g., may update the 'status', or inform UI or other applications/services.
             print(body) # Here, simply print the reply message directly
             print()
