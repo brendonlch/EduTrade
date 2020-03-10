@@ -77,10 +77,8 @@ class TransactionCorrelation(db.Model):
 @app.route("/purchase", methods=['POST'])
 def purchase():
     data = request.get_json()
-    transactions = [transaction.json() for transaction in Transaction.query.all()]
-    transactionid = 1 if len(transactions) == 0 else max(transactions, key = lambda x:x['transactionid'])['transactionid'] + 1 
-    order = Transaction(transactionid, **data)
-    # Communicate with user management
+    order = Transaction(**data)
+    #Communicate with user management
     send_order(data)
     try:
         db.session.add(order)
@@ -92,7 +90,7 @@ def purchase():
 @app.route("/sell", methods=['POST'])
 def sell():
     data = request.get_json()
-    order = Transaction(**data)
+    order = Transaction(symbol, **data)
     order_dict = order.__dict__
     #Communicate with user management - Call function below
     try:
