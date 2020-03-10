@@ -54,7 +54,7 @@ def callback(channel, method, properties, body): # required signature for the ca
     # - the broker by default silently drops the message;
     # - So, if really need a 'durable' message that can survive broker restarts, need to
     #  + declare the exchange before sending a message, and
-    #  + declare the 'durable' queue and bind it to .infothe exchange before sending a message, and
+    #  + declare the 'durable' queue and bind it to the exchange before sending a message, and
     #  + send the message with a persistent mode (delivery_mode=2).
     channel.queue_declare(queue=replyqueuename, durable=True) # make sure the queue used for "reply_to" is durable for reply messages
     channel.queue_bind(exchange=exchangename, queue=replyqueuename, routing_key=replyqueuename) # make sure the reply_to queue is bound to the exchange
@@ -71,14 +71,17 @@ def processOrder(order):
     print("Processing an order:")
     print(order)
     resultstatus = "failure" # simulate success/failure with a random True or False
-    print("Minusing credits...") #Do try except
-    if(minus_credit(order)):
-        print("Successfully minus credits...")
+
+    try:
+        print("Minusing credits...") #Do try except
+        if(minus_credit(order)):
+            print("Successfully minus credits...")
+        print("Adding into personal holdings...")
+        if(add_holding(order)):
+            print("Successfully placed into holdings...")
         resultstatus = "success"
-    print("Adding into personal holdings...")
-    if(add_holding(order)):
-        print("Successfully placed into holdings...")
-        resultstatus = "success"
+    except:
+        return {'status': "fail", 'order': order}
     # Can do anything here. E.g., publish a message to the error handler when processing fails.
     result = {'status': resultstatus, 'order': order}
     print("Successful purchase.")

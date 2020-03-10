@@ -150,6 +150,10 @@ def send_order(data):
     # close the connection to the broker
     connection.close()
 
+def get_all_correlation():
+    db.session.commit()
+    return [correlation.json() for correlation in TransactionCorrelation.query.all()]
+
 
 
 if __name__ == '__main__': #So that it can run with this file instead of another file importing this file
