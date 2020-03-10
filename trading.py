@@ -90,9 +90,22 @@ def purchase():
 @app.route("/sell", methods=['POST'])
 def sell():
     data = request.get_json()
-    order = Transaction(symbol, **data)
-    order_dict = order.__dict__
+
+    #########################################
+    # Cheat code
+    purchasedtime = data['purchasedtime']
+    data.pop('purchasedtime')
+    #####################################
+    
+    order = Transaction(**data)
     #Communicate with user management - Call function below
+    
+    ########################################
+    data['purchasedtime'] = purchasedtime
+    ########################################
+    
+    
+    send_order(data)
     try:
         db.session.add(order)
         db.session.commit()

@@ -193,6 +193,15 @@ def minus_credit(order):
     except:
         return False
     return True
+
+def add_credit(order):
+    user = User.query.filter_by(username=order['username']).first()
+    user.credit = user.credit + (order['qty']*order['price'])
+    try:
+        db.session.commit()
+    except:
+        return False
+    return True
     
 def add_holding(order):
     user = User.query.filter_by(username=order['username']).first()
@@ -203,6 +212,23 @@ def add_holding(order):
     except:
         return False
     return True
+
+def remove_holding(order):
+    holding = Holdings.query.filter_by(username=order['username'], symbol=order['symbol'], datepurchased=order['purchasedtime']).first()
+    if(order['qty']==holding.qty):
+        try:
+            db.session.delete(holding)
+            db.session.commit()
+        except:
+            return False
+        return True
+    else:
+        holding.qty = holding.qty - order['qty']
+        try:
+            db.session.commit()
+        except:
+            return False
+        return True
 
 if __name__ == '__main__': 
     app.run(port=5000, debug=True)
