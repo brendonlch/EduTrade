@@ -190,6 +190,7 @@ def send_stock_request(symbol):
     print(f"{symbol} request sent to Stock microservice.")
     # close the connection to the broker
     connection.close()
+    return corrid
 
 def minus_credit(order):
     user = User.query.filter_by(username=order['username']).first()
@@ -235,6 +236,16 @@ def remove_holding(order):
         except:
             return False
         return True
+
+def get_all_correlation():
+    db.session.commit()
+    return [correlation.json() for correlation in TransactionCorrelation.query.all()]
+
+def update_correlation_status(corrid,status):
+    correlation = TransactionCorrelation.query.filter_by(correlation_id=corrid).first()
+    correlation.status = status
+    db.session.commit()
+
 
 if __name__ == '__main__': 
     app.run(port=5000, debug=True)
