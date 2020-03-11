@@ -1,7 +1,4 @@
 
-
-
-
 /*//////////////////////////////////////////////////////////////////
 [ FONT ]*/
 
@@ -52,6 +49,27 @@ a:focus {
 a:hover {
 	text-decoration: none;
   color: #2196F3;
+}
+
+a.login {
+	font-family: Ubuntu-Bold;
+	font-size: 18px;
+	line-height: 1.7;
+	color: #fff;
+	margin: 0px;
+	transition: all 0.4s;
+	-webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+}
+
+a.login:focus {
+	outline: none !important;
+}
+
+a.login:hover {
+	text-decoration: none;
+  color: #fff;
 }
 
 /*---------------------------------------------*/
