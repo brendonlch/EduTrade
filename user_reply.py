@@ -5,7 +5,7 @@
 import sys
 import os
 import csv
-from user import Correlation, User, Holdings
+from user import Correlation, User, Holdings, get_all_correlation, update_correlation_status
 # Communication patterns:
 # Use a message-broker with 'direct' exchange to enable interaction
 # Use a reply-to queue and correlation_id to get a corresponding reply
@@ -29,7 +29,7 @@ def receive_stock_request():
     exchangename="edutrade"
     channel.exchange_declare(exchange=exchangename, exchange_type='direct')
 
-    replyqueuename="stock.info"
+    replyqueuename="stock.reply"
     channel.queue_declare(queue=replyqueuename, durable=True) # make sure the queue used for "reply_to" is durable for reply messages
     channel.queue_bind(exchange=exchangename, queue=replyqueuename, routing_key=replyqueuename) # make sure the reply_to queue is bound to the exchange
     # set up a consumer and start to wait for coming messages
@@ -43,7 +43,7 @@ def reply_callback(channel, method, properties, body): # required signature for 
     """processing function called by the broker when a message is received"""
     # Load correlations for existing created orders from a file.
     # - In practice, using DB (as part of the order DB) is a better choice than using a file.
-    rows = [correlation.json() for correlation in UserCorrelation.query.all()]
+    rows = get_all_correlation()
     # Check if the reply message contains a valid correlation id recorded in the file.
     # - Assume each line in the file is in this CSV format: <order_id>, <correlation_id>, <status>, ...
     matched = False
@@ -54,6 +54,8 @@ def reply_callback(channel, method, properties, body): # required signature for 
         corrid = row['correlation_id']
         if corrid == properties.correlation_id: # check if the reply message matches one request message based on the correlation id
             print("--Matched reply message with a correlation ID: " + corrid)
+            bodyJson = json.loads(body)
+            update_correlation_status(corrid,bodyJson['status'])
             # Can do anything needed for the scenario here, e.g., may update the 'status', or inform UI or other applications/services.
             print(body) # Here, simply print the reply message directly
             print()
@@ -64,6 +66,8 @@ def reply_callback(channel, method, properties, body): # required signature for 
         print()
     # acknowledge to the broker that the processing of the message is completed
     channel.basic_ack(delivery_tag=method.delivery_tag)
+    print("Message acknowledged")
+
 
 
 # Execute this program if it is run as a main script (not by 'import')
