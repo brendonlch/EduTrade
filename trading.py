@@ -16,17 +16,29 @@ CORS(app)
 """ 
 List of Functions for User
     @app.route("/purchase", methods=['POST'])
-    - purchase()           -> communicate with user management to purchase stock 
+    - purchase()            -> communicate with user management to purchase stock 
     @app.route("/sell", methods=['POST'])
-    - sell()               -> communicate with user management to sell stock
+    - sell()                -> communicate with user management to sell stock
     @app.route("/transactionhistory, methods=['GET'])
     - view(username)        -> Get user transaction history based on username
 
 Other Functions
+    send_order(data):                         
+        --> setup the AMQP service 
+        --> create uuid and add correlation row into database
+        --> sends a message to user_service
+
+    get_all_correlation()                     
+        --> return all the rows from TransactionCorrelation table (used in trading_reply)
+
+    update_correlation_status(corrid,status)  
+        --> update the status in TransactionCorrelation table (used in trading_reply)
+    
 """
 #FOR DEBUGGING - eprint()
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
+
 
 """
 
@@ -139,14 +151,14 @@ def sell():
     status = correlation.status
 
     i = 0
+    print("Loading", end = "")
     while(status == ''):
         db.session.commit()
         correlation = TransactionCorrelation.query.filter_by(correlation_id=corrid).first()
         status = correlation.status
-        time.sleep(5)
-        print(i)
-        i += 5
-
+        time.sleep(2)
+        print(".", end = "")
+    print()
     if (status == "success"):
         try:
             db.session.add(order)
