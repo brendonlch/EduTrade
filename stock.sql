@@ -19,65 +19,49 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `user`
+-- Database: `stock`
 --
-CREATE DATABASE IF NOT EXISTS `user` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-USE `user`;
+CREATE DATABASE IF NOT EXISTS `stock` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `stock`;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `userinfo`
+-- Table structure for table `stock`
 --
 
-DROP TABLE IF EXISTS `userinfo`;
-CREATE TABLE IF NOT EXISTS `userinfo` (
-  `username` varchar(64) NOT NULL,
-  `password` varchar(64) NOT NULL,	
-  `name` varchar(64) NOT NULL,  
-  `age` int(3) NOT NULL,
-  `email` varchar(64) NOT NULL,
-  `institution` varchar(64) NOT NULL,
-  `credit` decimal(10,2) NOT NULL,
-  PRIMARY KEY (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Table structure for table `holdings`
---
-
-DROP TABLE IF EXISTS `holdings`;
-CREATE TABLE IF NOT EXISTS `holdings` (
-  `username` varchar(64) NOT NULL,
-  `symbol` varchar(64) NOT NULL,	
-  `qty` varchar(64) NOT NULL,  
-  `buyprice` decimal(10,2) NOT NULL,
-  `limit` decimal(10,2),
-  `datepurchased` datetime NOT NULL,
-  PRIMARY KEY (`username`, `datepurchased`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Table structure for table `correlation`
---
-
-DROP TABLE IF EXISTS `correlation`;
-CREATE TABLE IF NOT EXISTS `correlation` (
-  `correlation_id` varchar(64) NOT NULL,
-  `status` varchar(64),
-  PRIMARY KEY (`correlation_id`)
+DROP TABLE IF EXISTS `stock`;
+CREATE TABLE IF NOT EXISTS `stock` (
+  `symbol` varchar(64) NOT NULL,
+  `stockname` varchar(64) NOT NULL,	
+  `apikey` varchar(64) NOT NULL, 
+  `apicount` int(10) NOT NULL, 
+  PRIMARY KEY (`symbol`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+DROP TABLE IF EXISTS `stockdata`;
+CREATE TABLE IF NOT EXISTS `stockdata` (
+  `symbol` varchar(64) NOT NULL,
+  `stockname` varchar(64) NOT NULL,	
+  `price` decimal(10,4) NOT NULL,  
+  `volume` int(20) NOT NULL,
+  `time` datetime NOT NULL,
+  PRIMARY KEY (`symbol`,`time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 --
--- Dumping data for table `userinfo`
+-- Dumping data for table `stock`
 --
 
--- INSERT INTO `userinfo` (`userid`, `password`, `name`, `age`, `email`, `institution`, `credit`) VALUES
--- ('01', 'hiimnew', 'amy', 14, 'amy@gmail.com', 'SMU', '100.00'),
--- ('02', 'hiimnew', 'benny', 16, 'benny@gmail.com', 'SMU', '100.00');
--- COMMIT;
+INSERT INTO `stock` (`symbol`, `stockname`, `apikey` ,`apicount`) VALUES
+('MSFT', 'Microsoft', 'PJDSK0VOZUWF971S', 0),
+('FB', 'Facebook', '7KALYIYBFKXYJXTE', 0),
+('GOOG', 'Google', 'YA414KN48BBZB5NL', 0),
+('TWTR', 'Twitter', 'MOS0P9ZM8WIFP5BP', 0),
+('TSLA', 'Tesla', 'QRU4WHI39YLPPO7F',0);
+COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
