@@ -88,34 +88,35 @@ def get_all_stock():
             #Get data from API
             eprint(f"Getting data for {key} from API...")
             added = False
-            try:
-                api_key = list_of_stock[key][1]
-                url = (f"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={key}&interval=5min&apikey={api_key}")
-                data = requests.get(url).json()
-                all_stocks = data.get("Time Series (5min)")
+            while not added:
+                try:
+                    api_key = list_of_stock[key][1]
+                    url = (f"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={key}&interval=5min&apikey={api_key}")
+                    data = requests.get(url).json()
+                    all_stocks = data.get("Time Series (5min)")
 
-                #Counting each apicount to keep track
-                current_stock = Stock.query.filter_by(symbol=key).first()
-                current_stock.apicount = current_stock.apicount +1
-                db.session.commit()
-                
-                #Scrap data from API
-                if (all_stocks != None):
-                    eprint("Scraping data from API...")
-                    all_time = sorted(list(all_stocks.keys()))
-                    stock_name = list_of_stock[key][0]
-                    latest_time = all_time[-1]
-                    stock_price = float(all_stocks[latest_time]["4. close"])
-                    volume = int(all_stocks[latest_time]["5. volume"])
-                    the_stock = Stockdata(key,stock_name,stock_price,volume,latest_time)
-                    # return jsonify(the_stock.json())
-                    # Adding into database
-                    eprint("Adding into database...")
-                    db.session.add(the_stock)
+                    #Counting each apicount to keep track
+                    current_stock = Stock.query.filter_by(symbol=key).first()
+                    current_stock.apicount = current_stock.apicount +1
                     db.session.commit()
-                    added = True
-            except:
-                time.sleep(20)
+                    
+                    #Scrap data from API
+                    if (all_stocks != None):
+                        eprint("Scraping data from API...")
+                        all_time = sorted(list(all_stocks.keys()))
+                        stock_name = list_of_stock[key][0]
+                        latest_time = all_time[-1]
+                        stock_price = float(all_stocks[latest_time]["4. close"])
+                        volume = int(all_stocks[latest_time]["5. volume"])
+                        the_stock = Stockdata(key,stock_name,stock_price,volume,latest_time)
+                        # return jsonify(the_stock.json())
+                        # Adding into database
+                        eprint("Adding into database...")
+                        db.session.add(the_stock)
+                        db.session.commit()
+                        added = True
+                except:
+                    time.sleep(20)
         eprint("Standby...")
         time.sleep(300)
     return "System stopped"
