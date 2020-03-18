@@ -6,6 +6,7 @@ import time
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/stock'
@@ -84,6 +85,15 @@ def get_all_stock():
     key_list = list(list_of_stock.keys())
 
     while 1:
+        #! To add a US market status checker !
+
+        us_time = datetime.now() - timedelta(hours = 12)
+        eprint(f'Current US Timezone (GMT-4): {us_time}')
+
+        # To get the timing to retrieve the next set of data
+        rounded_time = us_time + (datetime.min - us_time) % timedelta(minutes = 5)  # round up to nearest 5 minutes
+        countdown = int(rounded_time.timestamp() - us_time.timestamp()) + 2         # how long before the next API call (in seconds) (added 2 sec just to be safe)
+
         for key in key_list:
             #Get data from API
             eprint(f"Getting data for {key} from API...")
@@ -107,7 +117,7 @@ def get_all_stock():
                         stock_name = list_of_stock[key][0]
                         latest_time = all_time[-1]
                         stock_price = float(all_stocks[latest_time]["4. close"])
-                        volume = int(all_stocks[latest_time]["5. volume"])
+                        volume = int(all_stocks[   latest_time]["5. volume"])
                         the_stock = Stockdata(key,stock_name,stock_price,volume,latest_time)
                         # return jsonify(the_stock.json())
                         # Adding into database
@@ -116,13 +126,14 @@ def get_all_stock():
                         db.session.commit()
                         added = True
                 except:
-                    time.sleep(20)
-        eprint("Standby...")
-        time.sleep(300)
+                    break
+        for i in range(countdown):
+            eprint(f"Standby...  {countdown - i} seconds remaining till next retrival [{rounded_time}]", end = '\r')
+            time.sleep(1)
+        eprint()
     return "System stopped"
 
-
-@app.route("/stock/<string:stockname>") #
+@app.route("/stock/<string:stockname>") 
 def get_stock_price(stockname):
     stock = Stock.query.filter_by(stockname=stockname).first()
     symbol = stock.symbol
@@ -130,7 +141,7 @@ def get_stock_price(stockname):
     stock_price = latest_stock.price
     return jsonify({"price":stock_price})
 
-@app.route("/stock/all") #
+@app.route("/stock/all") 
 def get_all_stock_price():
     key_list = get_all_symbol()
     list_of_prices = {}
