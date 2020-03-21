@@ -4,6 +4,9 @@
 <head>
 	<title>EduTrade</title>
 	<meta charset="UTF-8">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!--===============================================================================================-->
 	<link rel="icon" type="image/png" href="../images/icons/favicon.ico" />
@@ -38,7 +41,7 @@
 					<img src="../images/icons/logo.png" alt="EduTrade" height="42" width="300" />
 				</span>
 
-				<form class="login100-form validate-form p-b-33 p-t-5">
+				<form id = 'userLoginForm' class="login100-form validate-form p-b-33 p-t-5">
 					<span class="login100-form-title p-t-20 p-b-20">
 						Account Login
 					</span>
@@ -65,9 +68,31 @@
 			</div>
 		</div>
 	</div>
+	<script>
+		$("#userLoginForm").submit(async (event) => {
+			var username = $('#username').val();
+			var serviceURL = "http://127.0.0.1:5000/user/" + username;
+			try {
+				const response =
+				await fetch(
+					serviceURL, { method: 'GET' }
+				);
+				const data = await response.json();
+				console.log(data)
+			}
+			catch (error) {
+				// Errors when calling the service; such as network error, 
+				// service offline, etc
+				Swal.fire({
+					text: error,
+					icon: 'warning',
+					confirmButtonColor: '#3085d6',
+					confirmButtonText: 'Okay'
+				})
+			}
+		})
+	</script>
 
-
-	<div id="dropDownSelect1"></div>
 
 	<!--===============================================================================================-->
 	<script src="../vendor/jquery/jquery-3.2.1.min.js"></script>

@@ -5,6 +5,9 @@
 	<title>EduTrade Account Creation</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
 	<!--===============================================================================================-->
 	<link rel="icon" type="image/png" href="../images/icons/favicon.ico" />
 	<!--===============================================================================================-->
@@ -33,48 +36,68 @@
 
 	<div class="limiter">
 		<div class="container-login100" style="background-image: url('../images/bg2.jpg');">
-			<div class="wrap-login100 p-t-30 p-b-50">
+			<div class="wrap-login100 p-t-30 p-b-50" style="width: 90vw">
 				<span class="login100-form-logo">
 					<img src="../images/icons/logo.png" alt="EduTrade" height="42" width="300" />
 				</span>
 
-				<form class="login100-form validate-form p-b-33 p-t-5">
+				<form id="userSignUpForm" class="login100-form validate-form p-b-33 p-t-5" method="POST">
 					<span class="login100-form-title p-t-20 p-b-20">
 						Create account
-					</span>
-					<div class="wrap-input100 validate-input" data-validate="Enter fullname">
-						<input class="input100" type="text" name="name" placeholder="Full name">
-						<span class="focus-input100" data-placeholder="&#xe82a;"></span>
-					</div>
-					
-					<div class="wrap-input100 validate-input" data-validate="Enter email">
-						<input class="input100" type="text" name="email" placeholder="Email address">
-						<span class="focus-input100" data-placeholder="&#xe818;"></span>
-					</div>
-
-					<div class="wrap-input100 validate-input" data-validate="Enter Institution">
-						<input class="input100" type="text" name="institution" placeholder="Institution">
-						<span class="focus-input100" data-placeholder="&#xe801;"></span>
-					</div>
-
-					<div class="wrap-input100 validate-input" data-validate="Enter username">
-						<input class="input100" type="text" name="username" placeholder="Create Username">
-						<span class="focus-input100" data-placeholder="&#xe82f;"></span>
-					</div>
-
-
-					<div class="wrap-input100 validate-input" data-validate="Enter password">
-						<input class="input100" type="password" name="pass" placeholder="Create password">
-						<span class="focus-input100" data-placeholder="&#xe80f;"></span>
-					</div>
-
-					<div class="wrap-input100 validate-input" data-validate="Confirm password">
-						<input class="input100" type="password" name="pass" placeholder="Confirm password">
-						<span class="focus-input100" data-placeholder="&#xe80f;"></span>
-					</div>
-
+					</span>	
+					<table>
+						<tr >
+							<td style="width: 50vw" >
+								<div class="wrap-input100 validate-input" data-validate="Enter fullname">
+									<input id="name" class="input100" type="text" name="name" placeholder="Full name">
+									<span class="focus-input100" data-placeholder="&#xe82a;"></span>
+								</div>
+							</td>
+							<td style="width: 50vw">
+								<div class="wrap-input100 validate-input" data-validate="Enter email">
+									<input id="email" class="input100" type="text" name="email" placeholder="Email Address">
+									<span class="focus-input100" data-placeholder="&#xe818;"></span>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td style="width: 50vw">
+								<div class="wrap-input100 validate-input" data-validate="Enter username">
+									<input id="username" class="input100" type="text" name="username" placeholder="Username">
+									<span class="focus-input100" data-placeholder="&#xe82f;"></span>
+								</div>
+							</td>
+							<td style="width: 50vw">
+								<div class="wrap-input100 validate-input" data-validate="Institution">
+									<input id="institution" class="input100" type="text" name="institution" placeholder="Institution">
+									<span class="focus-input100" data-placeholder="&#xe801;"></span>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td style="width: 50vw">
+								<div class="wrap-input100 validate-input" data-validate="Password">
+									<input id="password" class="input100" type="password" name="pass" placeholder="Password">
+									<span class="focus-input100" data-placeholder="&#xe80f;"></span>
+								</div>
+							<td style="width: 50vw">
+								<div class="wrap-input100 validate-input" data-validate="Confirm Password">
+									<input id="confirmPassword" class="input100" type="password" name="pass" placeholder="Confirm Password">
+									<span class="focus-input100" data-placeholder="&#xe80f;"></span>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td style="width: 50vw">
+								<div class="wrap-input100 validate-input" data-validate="Age">
+									<input id="age" class="input100" type="text" name="age" placeholder="Age">
+									<span class="focus-input100" data-placeholder="&#xe801;"></span>
+								</div>
+							</td>
+						</tr>
+					</table>
 					<div class="container-login100-form-btn m-t-32">
-						<button class="signup100-form-btn">
+						<button type="submit" class="signup100-form-btn">
 							Sign up
 						</button>
 					</div>
@@ -86,9 +109,65 @@
 			</div>
 		</div>
 	</div>
-
-
-	<div id="dropDownSelect1"></div>
+	<script>
+		$('#password, #confirmPassword').on('keyup', function () {
+			if ($('#password').val() == $('#confirmPassword').val()) {
+				$('#message').html('Matching').css('color', 'green');
+			} else 
+				$('#message').html('Not Matching').css('color', 'red');
+		});
+		 $("#userSignUpForm").submit(async (event) => {
+			event.preventDefault();
+			var name = $('#name').val();
+			var email = $('#email').val();
+			var institution = $('#institution').val();
+			var username = $('#username').val();
+			var password = $('#password').val();
+			var age = $('#age').val();
+			var confirmPassword = $('#confirmPassword').val();
+			if (password != confirmPassword){
+				Swal.fire({
+					title: 'Password Mismatch',
+					text: "Please enter your confirm password again",
+					icon: 'warning',
+					confirmButtonColor: '#3085d6',
+					confirmButtonText: 'Okay'
+					})
+				return false;
+			}
+			var serviceURL = "http://localhost:5000/user" + "/" + username;
+			try {
+					const response = await fetch(serviceURL, {  
+										method: 'POST',
+										headers: { "Content-Type": "application/json" },
+										body: JSON.stringify  ({name: name, 
+																email: email, 
+																institution: institution,
+																password: password,
+																age: age })}
+					);
+					const data = await response.json();
+					if (username = data.username){
+						Swal.fire({
+							title: 'Success!',
+							text: "You have successfully registered for an account!",
+							icon: 'success',
+							confirmButtonColor: '#3085d6',
+							confirmButtonText: 'Okay'
+						})
+					}
+				} catch (error) {
+					// Errors when calling the service; such as network error, 
+					// service offline, etc
+					Swal.fire({
+						text: error,
+						icon: 'warning',
+						confirmButtonColor: '#3085d6',
+						confirmButtonText: 'Okay'
+					})
+				}
+		})
+	</script>
 
 	<!--===============================================================================================-->
 	<script src="../vendor/jquery/jquery-3.2.1.min.js"></script>

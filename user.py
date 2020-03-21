@@ -61,7 +61,7 @@ class User(db.Model):
     institution = db.Column(db.String(64), nullable=False)
     credit = db.Column(db.Float(precision=2), nullable=False)
 
-    def __init__(self, username, password, name, age, email, institution, credit): #Initialise the objects
+    def __init__(self, username, password, name, age, email, institution, credit = 100): #Initialise the objects
         self.username = username
         self.password = password
         self.name = name
@@ -138,6 +138,7 @@ def add_user(username):
     if (User.query.filter_by(username=username).first()):
         return jsonify({"message": "A user with username '{}' already exists.".format(email)}), 400
     data = request.get_json()
+    eprint(data)
     user = User(username, **data) # **data represents the rest of the data
     try:
         db.session.add(user) 
@@ -239,10 +240,10 @@ def remove_holding(order):
 
 def get_all_correlation():
     db.session.commit()
-    return [correlation.json() for correlation in TransactionCorrelation.query.all()]
+    return [correlation.json() for correlation in UserCorrelation.query.all()]
 
 def update_correlation_status(corrid,status):
-    correlation = TransactionCorrelation.query.filter_by(correlation_id=corrid).first()
+    correlation = UserCorrelation.query.filter_by(correlation_id=corrid).first()
     correlation.status = status
     db.session.commit()
 
