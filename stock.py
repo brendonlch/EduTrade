@@ -133,15 +133,15 @@ def get_all_stock():
         eprint()
     return "System stopped"
 
-@app.route("/stock/<string:stockname>") 
-def get_stock_price(stockname):
+@app.route("/stock/<string:stockname>") # StockData
+def get_stock_data(stockname):
     stock = Stock.query.filter_by(stockname=stockname).first()
     symbol = stock.symbol
     latest_stock = Stockdata.query.filter_by(symbol=symbol).first()
-    stock_price = latest_stock.price
-    return jsonify({"price":stock_price})
+    #stock_price = latest_stock.price
+    return jsonify(latest_stock.json())
 
-@app.route("/stock/all") 
+@app.route("/stock/all")  # Symbol : Price
 def get_all_stock_price():
     key_list = get_all_symbol()
     list_of_prices = {}
@@ -163,9 +163,10 @@ def get_all_symbol():
     key_list = list(list_of_stock.keys())
     return key_list
 
-# @app.route("/")
-# def get_stock():
-#     return all_stocks
+
+def get_stock(symbol):
+    stock = Stockdata.query.filter_by(symbol=symbol).first()
+    return stock
 
 app.run(port=6004, debug=True)
 
