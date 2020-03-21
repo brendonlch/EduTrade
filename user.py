@@ -146,6 +146,28 @@ def add_user(username):
         return jsonify({"message": "An error occurred creating the user."}), 500
     return jsonify(user.json()), 201
 
+@app.route("/user/delete/<string:username>", methods=['POST'])
+def delete_user(username):
+    current_user = User.query.filter_by(username=username).first()
+    if (current_user):
+        try:
+            db.session.delete(current_user) 
+            db.session.commit()  
+        except:
+            return jsonify({"message": "An error occurred deleting the user."}), 500
+    return 201
+
+@app.route("/user/update/<string:username>", methods=['POST'])
+def update_user(username):
+    if (User.query.filter_by(username=username).first()):
+        data = request.get_json()
+        user = User(username, **data) # **data represents the rest of the data
+    try: 
+        db.session.commit()  
+    except:
+        return jsonify({"message": "An error occurred updating the user."}), 500
+    return jsonify(user.json()), 201
+
 @app.route("/holdings/<string:username>") #To find bought stock
 def get_all_holdings(username):
     return jsonify({"holdings": [user.json() for user in Holdings.query.filter_by(username=username)]}) 
