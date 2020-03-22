@@ -125,6 +125,9 @@ def get_all_stock():
                         db.session.add(the_stock)
                         db.session.commit()
                         added = True
+
+                        # Sends message to alerting 
+                        send_message(the_stock)
                 except:
                     break
         for i in range(countdown):
@@ -150,6 +153,18 @@ def get_all_stock_price():
         list_of_prices[key] = stockdata.price
     return jsonify(list_of_prices)
 
+@app.route("/stock/symbol")
+def get_all_symbol():
+    stock = Stock.query.all()
+    list_of_stock = {}
+    # Getting all stock symbol and stock name in list_of_stock
+    for stocks in stock:
+        stock_symbol = stocks.symbol
+        stock_name = stocks.stockname
+        api_key = stocks.apikey
+        list_of_stock[stock_symbol] = [stock_name, api_key]
+    key_list = list(list_of_stock.keys())
+    return jsonify(key_list)
 
 def get_all_symbol():
     stock = Stock.query.all()
@@ -167,6 +182,26 @@ def get_all_symbol():
 def get_stock(symbol):
     stock = Stockdata.query.filter_by(symbol=symbol).first()
     return stock
+
+def send_message(update_stock):
+    hostname = "localhost" # default broker hostname. Web management interface default at http://localhost:15672
+    port = 5672 # default messaging port.
+    # connect to the broker and set up a communication channel in the connection
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host=hostname, port=port))
+        # Note: various network firewalls, filters, gateways (e.g., SMU VPN on wifi), may hinder the connections;
+        # If "pika.exceptions.AMQPConnectionError" happens, may try again after disconnecting the wifi and/or disabling firewalls
+    channel = connection.channel()
+
+    # set up the exchange if the exchange doesn't exist
+    exchangename="edutrade"
+    channel.exchange_declare(exchange=exchangename, exchange_type='direct')
+
+    # prepare the message body content
+    message = json.dumps(update_stock, default=str) # convert a JSON object to a string
+
+    # send the message
+    # always inform Monitoring for logging no matter if successful or not
+    channel.basic_publish(exchange=exchangename, routing_key="stock.info", body=message)
 
 app.run(port=6004, debug=True)
 
