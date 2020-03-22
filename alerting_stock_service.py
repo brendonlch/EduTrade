@@ -5,7 +5,7 @@ import json
 import sys
 import os
 import csv
-from alerting import get_all_alerts
+from alerting import get_all_alerts, getEmailRequest
 # Communication patterns:
 # Use a message-broker with 'direct' exchange to enable interaction
 # Use a reply-to queue and correlation_id to get a corresponding reply
@@ -42,7 +42,7 @@ def receive_alert():
 def callback(channel, method, properties, body): # required signature for the callback; no return
     print("Received an order by " + __file__)
     print(body)
-    # processStock(json.loads(body))
+    processStock(json.loads(body))
     # print processing result; not really needed
     # json.dump(result, sys.stdout, default=str) # convert the JSON object to a string and print out on screen
     print() # print a new line feed to the previous json dump
@@ -52,19 +52,19 @@ def callback(channel, method, properties, body): # required signature for the ca
 def processStock(stock):
     all_alerts = get_all_alerts(stock['symbol'])
     for alert in all_alerts:
-        if alert['alerttype'] = '>' and stock['price'] > alert['price']:
+        alert['stockPrice'] = stock['price']
+        if alert['alerttype'] == '>' and stock['price'] > alert['price']:
+            getEmailRequest(alert)
             #send email function(username, symbol, alerttype, alert price, stock price) -> to retrieve and send email
-        elif alert['alerttype'] = '<' and stock['price'] < alert['price']:
+        elif alert['alerttype'] == '<' and stock['price'] < alert['price']:
             #send email function(username, symbol, alerttype, alert price, stock price) -> to retrieve and send email
-    # Get all alert data based 
-    # if stock hits alert
-    # Get email from user management http
-    # sends email
+            getEmailRequest(alert)
+
 
 
 
 
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":
-    print("This is " + os.path.basename(__file__) + ": listening for a stock info from stock...")
+    print("This is " + os.path.basename(__file__) + ": listening for a stock update from stock...")
     receive_alert()

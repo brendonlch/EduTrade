@@ -1,14 +1,15 @@
 import pika
 import uuid
 import json
-import datetime, time
+import time
+from datetime import datetime
 import sys
 from flask import Flask, request, jsonify
 from flask_mail import Message, Mail
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/alert'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/alert'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config.update(
 	DEBUG=True,
@@ -41,21 +42,36 @@ class Alert(db.Model):
     username = db.Column(db.String(64), nullable=False)
     symbol = db.Column(db.String(64), nullable=False)
     price = db.Column(db.Float(precision=2), nullable=False)
-    percentage = db.Column(db.Float(precision=2), nullable=False)
     alerttype = db.Column(db.String(64), nullable=False)
 
-    def __init__(self, alertid, username, symbol, price, percentage, alerttype): #Initialise the objects
+    def __init__(self, alertid, username, symbol, price, alerttype): #Initialise the objects
         self.alertid = alertid
         self.username = username
         self.symbol = symbol
         self.price = price
-        self.percentage = percentage
         self.alerttype = alerttype
 
     def json(self): 
-        return {"alertid": self.alertid, "username": self.username, "symbol": self.symbol, "price": self.price, "percentage": self.percentage
-            , "alerttype": self.alerttype}
+        return {"alertid": self.alertid, "username": self.username, "symbol": self.symbol, "price": self.price, "alerttype": self.alerttype}
 
+
+class AlertCorrelation(db.Model):
+    """
+        This class is used to store the correlation id used for retrieving data from the stock microservice.
+        * Functions
+            - __init__(self, corrid, status)
+            - json(self)
+    """
+    __tablename__ = 'correlation'
+    correlation_id = db.Column(db.String(64), primary_key=True)
+    status = db.Column(db.String(64), nullable=False)
+
+    def __init__(self, correlation_id, status): #Initialise the objects
+        self.correlation_id = correlation_id
+        self.status = status
+
+    def json(self): 
+        return {"correlation_id": self.correlation_id, "status": self.status}
 ###########################################################################
 
 # function to create/add an alert
@@ -104,31 +120,97 @@ def delete_alert():
 
     return "Alert successfully deleted", 201 # deletes the alert from alert database
 
+def get_all_correlation():
+    db.session.commit()
+    return [correlation.json() for correlation in AlertCorrelation.query.all()]
+
+def update_correlation_status(corrid,status):
+    correlation = AlertCorrelation.query.filter_by(correlation_id=corrid).first()
+    correlation.status = status
+    db.session.commit()
+
+
 def get_all_alerts(symbol):
     db.session.commit()
-    return [alert.json() for alert in Alert.query.filter_by(symbol=symbol).first()]
+    return [alert.json() for alert in Alert.query.filter_by(symbol=symbol)]
 
-def sendEmail(username, symbol, alertType, alertPrice, stockPrice):
-    email = retrieveEmail(username)
+def delete_alert(data):
+    alert = Alert.query.filter_by(username=data["username"], symbol=data["symbol"], alerttype=data["alerttype"]).first() # gets data by username, symbol and alerttype
+    if (alert):
+        try:
+            db.session.delete(alert)
+            db.session.commit()
+        except:
+            return jsonify({"message": "An error occurred deleting the alert."}), 500
+
+    return "Alert successfully deleted", 201 # deletes the alert from alert database
+
+def sendEmail(data):
+    email = data['email']
+    symbol = data['symbol']
+    alertType = data['alerttype']
+    alertPrice = data['price']
+    stockPrice = data['stockPrice']
     msg = Message("Hello",
                   sender="esmg5t1@gmail.com", 
-                  recipient=[email])
+                  recipients=[email])
     text = ""
+    timenow = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
     if alertType == "<":
-        text = f"Your selected stock {symbol} has fallen below your alert price: {alertPrice}\nCurrent Stock Price (as of {datetime.now()}: {stockPrice})"
+        text = f"Your selected stock {symbol} has fallen below your alert price: {alertPrice}\nCurrent Stock Price (as of {timenow}): {stockPrice})"
     elif alertType == ">":
-        text = f"Your selected stock {symbol} has reached above your alert price: {alertPrice}\nCurrent Stock Price (as of {datetime.now()}: {stockPrice})"
+        text = f"Your selected stock {symbol} has reached above your alert price: {alertPrice}\nCurrent Stock Price (as of {timenow}): {stockPrice})"
     msg.body = text
-    mail.send(msg)
+    with app.app_context():
+        mail.send(msg)
+    eprint('email sent!!')
     return 'Success'
 
-def retrieveEmail(username):
-    # get email from usermanagement 
-    # send request-reply T.T
-    placeholder = username
+def getEmailRequest(data):
+    hostname = "localhost" # default broker hostname. Web management interface default at http://localhost:15672
+    port = 5672 # default messaging port.
+    # connect to the broker and set up a communication channel in the connection
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host=hostname, port=port))
+        # Note: various network firewalls, filters, gateways (e.g., SMU VPN on wifi), may hinder the connections;
+        # If "pika.exceptions.AMQPConnectionError" happens, may try again after disconnecting the wifi and/or disabling firewalls
+    channel = connection.channel()
+
+    # set up the exchange if the exchange doesn't exist
+    exchangename="edutrade"
+    channel.exchange_declare(exchange=exchangename, exchange_type='direct')
+
+    # extract the data out for the message
+    
+    # prepare the message body content
+    message = json.dumps(data, default=str) # convert a JSON object to a string
+
+    # Prepare the correlation id and reply_to queue and do some record keeping
+    corrid = str(uuid.uuid4())
+    row = {"correlation_id": corrid, "status":""}
+    correlation = AlertCorrelation(**row)
+    # add correlation row into database
+    try:
+        db.session.add(correlation) 
+        db.session.commit()  
+    except:
+        return jsonify({"message": "An error occurred creating a request."}), 500
+    replyqueuename = "alerting.reply"
+    # prepare the channel and send a message to Stock
+    channel.queue_declare(queue='alerting', durable=True) # make sure the queue used by Shipping exist and durable
+    channel.queue_bind(exchange=exchangename, queue='alerting', routing_key='alerting.info') # make sure the queue is bound to the exchange
+    channel.basic_publish(exchange=exchangename, routing_key="alerting.info", body=message,
+        properties=pika.BasicProperties(delivery_mode = 2, # make message persistent within the matching queues until it is received by some receiver (the matching queues have to exist and be durable and bound to the exchange, which are ensured by the previous two api calls)
+            reply_to=replyqueuename, # set the reply queue which will be used as the routing key for reply messages
+            correlation_id=corrid # set the correlation id for easier matching of replies
+        )
+    )
+    print(f"{data['username']} request sent to user management microservice.")
+    # close the connection to the broker
+    connection.close()
+    return corrid
 
 
     
-
-app.run(port=7001, debug=True)
+if __name__ == "__main__":
+    app.run(port=7001, debug=True)
 
