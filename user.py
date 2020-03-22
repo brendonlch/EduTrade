@@ -132,6 +132,18 @@ def get_user_by_id(username):
     if user:
         return jsonify(user.json()), 200
     return jsonify({"message": "User not found"}), 404
+    
+@app.route("/userauthenticate", methods=['POST'])
+def user_authenticate():
+    data = request.get_json()
+    username = data['username']
+    user = User.query.filter_by(username=username).first()
+    if user:
+        if user.password == data["password"]:
+            return jsonify({"status": "success"}), 200
+        else:
+            return jsonify({"status": "fail", "message": "Incorrect Password!"}), 401
+    return jsonify({"status": "fail", "message": "User not found"}), 404
 
 @app.route("/user/<string:username>", methods=['POST'])
 def add_user(username):
