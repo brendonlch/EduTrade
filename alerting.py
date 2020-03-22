@@ -4,13 +4,23 @@ import json
 import datetime, time
 import sys
 from flask import Flask, request, jsonify
+from flask_mail import Message, Mail
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/alert'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
+app.config.update(
+	DEBUG=True,
+	#EMAIL SETTINGS
+	MAIL_SERVER='smtp.gmail.com',
+	MAIL_PORT=465,
+	MAIL_USE_SSL=True,
+	MAIL_USERNAME = 'esmg5t1@gmail.com',
+	MAIL_PASSWORD = 'BrydonMeme'
+	)
 db = SQLAlchemy(app)
+mail = Mail(app)
 CORS(app)
 ###  This microservices contains Alterting class 
 
@@ -98,7 +108,27 @@ def get_all_alerts(symbol):
     db.session.commit()
     return [alert.json() for alert in Alert.query.filter_by(symbol=symbol).first()]
 
+def sendEmail(username, symbol, alertType, alertPrice, stockPrice):
+    email = retrieveEmail(username)
+    msg = Message("Hello",
+                  sender="esmg5t1@gmail.com", 
+                  recipient=[email])
+    text = ""
+    if alertType == "<":
+        text = f"Your selected stock {symbol} has fallen below your alert price: {alertPrice}\nCurrent Stock Price (as of {datetime.now()}: {stockPrice})"
+    elif alertType == ">":
+        text = f"Your selected stock {symbol} has reached above your alert price: {alertPrice}\nCurrent Stock Price (as of {datetime.now()}: {stockPrice})"
+    msg.body = text
+    mail.send(msg)
+    return 'Success'
 
+def retrieveEmail(username):
+    # get email from usermanagement 
+    # send request-reply T.T
+    placeholder = username
+
+
+    
 
 app.run(port=7001, debug=True)
 
