@@ -174,46 +174,46 @@ def get_all_holdings(username):
     return jsonify({"holdings": [user.json() for user in Holdings.query.filter_by(username=username)]}) 
 
 
-def send_stock_request(symbol):
-    hostname = "localhost" # default broker hostname. Web management interface default at http://localhost:15672
-    port = 5672 # default messaging port.
-    # connect to the broker and set up a communication channel in the connection
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host=hostname, port=port))
-        # Note: various network firewalls, filters, gateways (e.g., SMU VPN on wifi), may hinder the connections;
-        # If "pika.exceptions.AMQPConnectionError" happens, may try again after disconnecting the wifi and/or disabling firewalls
-    channel = connection.channel()
+# def send_stock_request(symbol):
+#     hostname = "localhost" # default broker hostname. Web management interface default at http://localhost:15672
+#     port = 5672 # default messaging port.
+#     # connect to the broker and set up a communication channel in the connection
+#     connection = pika.BlockingConnection(pika.ConnectionParameters(host=hostname, port=port))
+#         # Note: various network firewalls, filters, gateways (e.g., SMU VPN on wifi), may hinder the connections;
+#         # If "pika.exceptions.AMQPConnectionError" happens, may try again after disconnecting the wifi and/or disabling firewalls
+#     channel = connection.channel()
 
-    # set up the exchange if the exchange doesn't exist
-    exchangename="edutrade"
-    channel.exchange_declare(exchange=exchangename, exchange_type='direct')
+#     # set up the exchange if the exchange doesn't exist
+#     exchangename="edutrade"
+#     channel.exchange_declare(exchange=exchangename, exchange_type='direct')
 
-    # prepare the message body content
-    message = symbol # convert a JSON object to a string
+#     # prepare the message body content
+#     message = symbol # convert a JSON object to a string
 
-    # Prepare the correlation id and reply_to queue and do some record keeping
-    corrid = str(uuid.uuid4())
-    row = {"correlation_id": corrid, "status":""}
-    correlation = UserCorrelation(row)
-    # add correlation row into database
-    try:
-        db.session.add(correlation) 
-        db.session.commit()  
-    except:
-        return jsonify({"message": "An error occurred creating a request."}), 500
-    replyqueuename = "stock.reply"
-    # prepare the channel and send a message to Stock
-    channel.queue_declare(queue='stock', durable=True) # make sure the queue used by Shipping exist and durable
-    channel.queue_bind(exchange=exchangename, queue='stock', routing_key='stock.info') # make sure the queue is bound to the exchange
-    channel.basic_publish(exchange=exchangename, routing_key="stock.info", body=message,
-        properties=pika.BasicProperties(delivery_mode = 2, # make message persistent within the matching queues until it is received by some receiver (the matching queues have to exist and be durable and bound to the exchange, which are ensured by the previous two api calls)
-            reply_to=replyqueuename, # set the reply queue which will be used as the routing key for reply messages
-            correlation_id=corrid # set the correlation id for easier matching of replies
-        )
-    )
-    print(f"{symbol} request sent to Stock microservice.")
-    # close the connection to the broker
-    connection.close()
-    return corrid
+#     # Prepare the correlation id and reply_to queue and do some record keeping
+#     corrid = str(uuid.uuid4())
+#     row = {"correlation_id": corrid, "status":""}
+#     correlation = UserCorrelation(row)
+#     # add correlation row into database
+#     try:
+#         db.session.add(correlation) 
+#         db.session.commit()  
+#     except:
+#         return jsonify({"message": "An error occurred creating a request."}), 500
+#     replyqueuename = "stock.reply"
+#     # prepare the channel and send a message to Stock
+#     channel.queue_declare(queue='stock', durable=True) # make sure the queue used by Shipping exist and durable
+#     channel.queue_bind(exchange=exchangename, queue='stock', routing_key='stock.info') # make sure the queue is bound to the exchange
+#     channel.basic_publish(exchange=exchangename, routing_key="stock.info", body=message,
+#         properties=pika.BasicProperties(delivery_mode = 2, # make message persistent within the matching queues until it is received by some receiver (the matching queues have to exist and be durable and bound to the exchange, which are ensured by the previous two api calls)
+#             reply_to=replyqueuename, # set the reply queue which will be used as the routing key for reply messages
+#             correlation_id=corrid # set the correlation id for easier matching of replies
+#         )
+#     )
+#     print(f"{symbol} request sent to Stock microservice.")
+#     # close the connection to the broker
+#     connection.close()
+#     return corrid
 
 def minus_credit(order):
     user = User.query.filter_by(username=order['username']).first()
