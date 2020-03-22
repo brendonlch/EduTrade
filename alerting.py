@@ -94,7 +94,11 @@ def delete_alert():
 
     return "Alert successfully deleted", 201 # deletes the alert from alert database
 
+def get_all_alerts(symbol):
+    db.session.commit()
+    return [alert.json() for alert in Alert.query.filter_by(symbol=symbol).first()]
 
-if __name__ == '__main__': #So that it can run with this file instead of another file importing this file
-    app.run(port=7001, debug=True)
+
+
+app.run(port=7001, debug=True)
 

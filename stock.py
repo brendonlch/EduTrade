@@ -1,3 +1,4 @@
+import pika
 import requests
 import json
 import operator
@@ -127,7 +128,7 @@ def get_all_stock():
                         added = True
 
                         # Sends message to alerting 
-                        send_message(the_stock)
+                        send_message(the_stock.json())
                 except:
                     break
         for i in range(countdown):
@@ -184,6 +185,7 @@ def get_stock(symbol):
     return stock
 
 def send_message(update_stock):
+    eprint(update_stock)
     hostname = "localhost" # default broker hostname. Web management interface default at http://localhost:15672
     port = 5672 # default messaging port.
     # connect to the broker and set up a communication channel in the connection
@@ -195,10 +197,8 @@ def send_message(update_stock):
     # set up the exchange if the exchange doesn't exist
     exchangename="edutrade"
     channel.exchange_declare(exchange=exchangename, exchange_type='direct')
-
     # prepare the message body content
     message = json.dumps(update_stock, default=str) # convert a JSON object to a string
-
     # send the message
     # always inform Monitoring for logging no matter if successful or not
     channel.basic_publish(exchange=exchangename, routing_key="stock.info", body=message)
