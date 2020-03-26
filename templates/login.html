@@ -41,17 +41,17 @@
 					<img src="../images/icons/logo.png" alt="EduTrade" height="42" width="300" />
 				</span>
 
-				<form id = 'userLoginForm' class="login100-form validate-form p-b-33 p-t-5">
+				<form id = 'userLoginForm' class="login100-form validate-form p-b-33 p-t-5" method='POST'>
 					<span class="login100-form-title p-t-20 p-b-20">
 						Account Login
 					</span>
 					<div class="wrap-input100 validate-input" data-validate="Enter username">
-						<input class="input100" type="text" name="username" placeholder="User name">
+						<input id = 'username' class="input100" type="text" name="username" placeholder="User name">
 						<span class="focus-input100" data-placeholder="&#xe82a;"></span>
 					</div>
 
 					<div class="wrap-input100 validate-input" data-validate="Enter password">
-						<input class="input100" type="password" name="pass" placeholder="Password">
+						<input id = 'password' class="input100" type="password" name="pass" placeholder="Password">
 						<span class="focus-input100" data-placeholder="&#xe80f;"></span>
 					</div>
 
@@ -70,15 +70,31 @@
 	</div>
 	<script>
 		$("#userLoginForm").submit(async (event) => {
+			event.preventDefault();
 			var username = $('#username').val();
-			var serviceURL = "http://127.0.0.1:5000/user/" + username;
+			var password = $('#password').val();
+			var serviceURL = "http://127.0.0.1:5000/userauthenticate";
 			try {
 				const response =
 				await fetch(
-					serviceURL, { method: 'GET' }
+					serviceURL, { method: 'POST',
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify ({
+						username: username,	
+						password: password})}
 				);
 				const data = await response.json();
-				console.log(data)
+				if (data['status'] == 'success'){
+					window.location.replace("http://localhost/EduTrade/templates/index.html");
+				}
+				else if (data['status'] == 'fail') {
+					Swal.fire({
+					text: data['message'],
+					icon: 'warning',
+					confirmButtonColor: '#3085d6',
+					confirmButtonText: 'Okay'
+				})
+				}
 			}
 			catch (error) {
 				// Errors when calling the service; such as network error, 

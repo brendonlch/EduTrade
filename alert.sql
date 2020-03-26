@@ -36,12 +36,19 @@ CREATE TABLE IF NOT EXISTS `alert` (
   `alertid` int(10) NOT NULL,
   `username` varchar(64) NOT NULL,
   `symbol` varchar(64) NOT NULL,
-  `percentage` decimal(10,2) NOT NULL,
   `price` decimal(10,2) NOT NULL,
   `alerttype` varchar(64) NOT NULL,
   PRIMARY KEY (`alertid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+DROP TABLE IF EXISTS `correlation`;
+CREATE TABLE IF NOT EXISTS `correlation` (
+  `correlation_id` varchar(64) NOT NULL,
+  `status` varchar(64) NOT NULL,	
+  PRIMARY KEY (`correlation_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+--
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
