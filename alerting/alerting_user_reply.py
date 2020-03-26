@@ -7,7 +7,8 @@ import sys
 import os
 import random
 import datetime
-from trading import Transaction, TransactionCorrelation, get_all_correlation, update_correlation_status
+from alerting import get_all_correlation, update_correlation_status, sendEmail, delete_alert
+
 
 # Communication patterns:
 # Use a message-broker with 'direct' exchange to enable interaction
@@ -16,12 +17,17 @@ import pika
 # If see errors like "ModuleNotFoundError: No module named 'pika'", need to
 # make sure the 'pip' version used to install 'pika' matches the python version used.
 
-def receive_trade():
+def receive_email():
     # default username / password to the borker are both 'guest'
-    hostname = "localhost" # default broker hostname. Web management interface default at http://localhost:15672
+    # hostname = "localhost" # default broker hostname. Web management interface default at http://localhost:15672
+    # port = 5672 # default messaging port.
+    # # connect to the broker and set up a communication channel in the connection
+    # connection = pika.BlockingConnection(pika.ConnectionParameters(host=hostname, port=port))
+    hostname = "host.docker.internal" # default broker hostname. Web management interface default at http://localhost:15672
     port = 5672 # default messaging port.
-    # connect to the broker and set up a communication channel in the connection
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host=hostname, port=port))
+        # connect to the broker and set up a communication channel in the 
+    credentials = pika.PlainCredentials('guest', 'guest')
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host=hostname, port=port, virtual_host="/", credentials=credentials))
         # Note: various network firewalls, filters, gateways (e.g., SMU VPN on wifi), may hinder the connections;
         # If "pika.exceptions.AMQPConnectionError" happens, may try again after disconnecting the wifi and/or disabling firewalls
     channel = connection.channel()
@@ -30,7 +36,7 @@ def receive_trade():
     exchangename="edutrade"
     channel.exchange_declare(exchange=exchangename, exchange_type='direct')
 
-    replyqueuename="trading.reply"
+    replyqueuename="alerting.reply"
     channel.queue_declare(queue=replyqueuename, durable=True) # make sure the queue used for "reply_to" is durable for reply messages
     channel.queue_bind(exchange=exchangename, queue=replyqueuename, routing_key=replyqueuename) # make sure the reply_to queue is bound to the exchange
     # set up a consumer and start to wait for coming messages
@@ -57,14 +63,16 @@ def reply_callback(channel, method, properties, body): # required signature for 
         if corrid == properties.correlation_id: # check if the reply message matches one request message based on the correlation id
             print("--Matched reply message with a correlation ID: " + corrid)
             bodyJson = json.loads(body)
-            update_correlation_status(corrid,bodyJson['status'])
+            update_correlation_status(corrid, 'success')
             # Can do anything needed for the scenario here, e.g., may update the 'status', or inform UI or other applications/services.
-            print(body) # Here, simply print the reply message directly
+            sendEmail(bodyJson)
+            delete_alert(bodyJson)
             print()
             matched = True
             break
     if not matched:
         print("--Wrong reply correlation ID: No match of reply correlation ID: No match of " + properties.correlation_id)
+        update_correlation_status(corrid, 'fail')
         print()
     # acknowledge to the broker that the processing of the message is completed
     channel.basic_ack(delivery_tag=method.delivery_tag)
@@ -73,6 +81,6 @@ def reply_callback(channel, method, properties, body): # required signature for 
 
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":
-    print("This is " + os.path.basename(__file__) + ": listening for a trade info reply from user management...")
-    receive_trade()
+    print("This is " + os.path.basename(__file__) + ": listening for a email info reply from user management...")
+    receive_email()
 

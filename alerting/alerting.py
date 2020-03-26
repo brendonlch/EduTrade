@@ -2,14 +2,17 @@ import pika
 import uuid
 import json
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 import sys
 from flask import Flask, request, jsonify
 from flask_mail import Message, Mail
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from os import environ
+
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/alert'
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/alert'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config.update(
 	DEBUG=True,
@@ -155,11 +158,11 @@ def sendEmail(data):
                   sender="esmg5t1@gmail.com", 
                   recipients=[email])
     text = ""
-    timenow = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+    timenow = (datetime.now() - timedelta(hours = 4)).strftime("%Y/%m/%d %H:%M:%S")
     if alertType == "<":
-        text = f"Your selected stock {symbol} has fallen below your alert price: {alertPrice}\nCurrent Stock Price (as of {timenow}): {stockPrice})"
+        text = f"Your selected stock {symbol} has fallen below your alert price: {alertPrice}\nCurrent Stock Price in US (as of {timenow}): {stockPrice})"
     elif alertType == ">":
-        text = f"Your selected stock {symbol} has reached above your alert price: {alertPrice}\nCurrent Stock Price (as of {timenow}): {stockPrice})"
+        text = f"Your selected stock {symbol} has reached above your alert price: {alertPrice}\nCurrent Stock Price in US (as of {timenow}): {stockPrice})"
     msg.body = text
     with app.app_context():
         mail.send(msg)
@@ -167,10 +170,15 @@ def sendEmail(data):
     return 'Success'
 
 def getEmailRequest(data):
-    hostname = "localhost" # default broker hostname. Web management interface default at http://localhost:15672
+    # hostname = "localhost" # default broker hostname. Web management interface default at http://localhost:15672
+    # port = 5672 # default messaging port.
+    # # connect to the broker and set up a communication channel in the connection
+    # connection = pika.BlockingConnection(pika.ConnectionParameters(host=hostname, port=port))
+    hostname = "host.docker.internal" # default broker hostname. Web management interface default at http://localhost:15672
     port = 5672 # default messaging port.
-    # connect to the broker and set up a communication channel in the connection
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host=hostname, port=port))
+        # connect to the broker and set up a communication channel in the 
+    credentials = pika.PlainCredentials('guest', 'guest')
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host=hostname, port=port, virtual_host="/", credentials=credentials))
         # Note: various network firewalls, filters, gateways (e.g., SMU VPN on wifi), may hinder the connections;
         # If "pika.exceptions.AMQPConnectionError" happens, may try again after disconnecting the wifi and/or disabling firewalls
     channel = connection.channel()
@@ -212,5 +220,5 @@ def getEmailRequest(data):
 
     
 if __name__ == "__main__":
-    app.run(port=7001, debug=True)
+    app.run(host='0.0.0.0',port=5003, debug=True)
 

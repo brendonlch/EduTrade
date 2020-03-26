@@ -7,11 +7,12 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import datetime, timedelta
-from newsapi import NewsApiClient
+from os import environ
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/news'
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/news'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 CORS(app)
@@ -80,5 +81,5 @@ def get_news_by_tickers(symbol):
 
 
 
-
-app.run(port=6002, debug=True)
+if __name__ == '__main__':
+  app.run(host='0.0.0.0',port=6001, debug=True)

@@ -1,13 +1,16 @@
 import pika
 import uuid
 import json
-import datetime, time
+from datetime import datetime, time, timedelta
 import sys
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from os import environ
+
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/transaction'
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/transaction'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -98,7 +101,7 @@ def purchase():
     # Automating Transaction ID and Transaction Time
     transactions = [transaction.json() for transaction in Transaction.query.all()]
     data['transactionid'] = 1 if len(transactions) == 0 else max(transactions, key = lambda x:x['transactionid'])['transactionid'] + 1
-    data['transactiontime'] = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+    data['transactiontime'] = (datetime.datetime.now()- timedelta(hours = 4)).strftime("%Y/%m/%d %H:%M:%S")
 
     order = Transaction(**data)
     #Communicate with user management
@@ -130,7 +133,7 @@ def sell():
     # Automating Transaction ID and Transaction Time
     transactions = [transaction.json() for transaction in Transaction.query.all()]
     data['transactionid'] = 1 if len(transactions) == 0 else max(transactions, key = lambda x:x['transactionid'])['transactionid'] + 1
-    data['transactiontime'] = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+    data['transactiontime'] = (datetime.datetime.now()- timedelta(hours = 4)).strftime("%Y/%m/%d %H:%M:%S")
     
     #####################################
     purchasedtime = data['purchasedtime']
@@ -176,14 +179,19 @@ def view():
     return jsonify({"message": "No transaction found"}), 404
 
 def send_order(data):
-    hostname = "localhost" # default broker hostname. Web management interface default at http://localhost:15672
-    port = 5672 # default messaging port.
-    # connect to the broker and set up a communication channel in the connection
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host=hostname, port=port))
-        # Note: various network firewalls, filters, gateways (e.g., SMU VPN on wifi), may hinder the connections;
-        # If "pika.exceptions.AMQPConnectionError" happens, may try again after disconnecting the wifi and/or disabling firewalls
-    channel = connection.channel()
+    # hostname = "localhost" # default broker hostname. Web management interface default at http://localhost:15672
+    # port = 5672 # default messaging port.
+    # # connect to the broker and set up a communication channel in the connection
+    # connection = pika.BlockingConnection(pika.ConnectionParameters(host=hostname, port=port))
+    #     # Note: various network firewalls, filters, gateways (e.g., SMU VPN on wifi), may hinder the connections;
+    #     # If "pika.exceptions.AMQPConnectionError" happens, may try again after disconnecting the wifi and/or disabling firewalls
 
+    hostname = "host.docker.internal" # default broker hostname. Web management interface default at http://localhost:15672
+    port = 5672 # default messaging port.
+        # connect to the broker and set up a communication channel in the 
+    credentials = pika.PlainCredentials('guest', 'guest')
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host=hostname, port=port, virtual_host="/", credentials=credentials))
+    channel = connection.channel()
     # set up the exchange if the exchange doesn't exist
     exchangename="edutrade"
     channel.exchange_declare(exchange=exchangename, exchange_type='direct')
@@ -230,4 +238,4 @@ def update_correlation_status(corrid,status):
 
 
 if __name__ == '__main__': #So that it can run with this file instead of another file importing this file
-    app.run(port=5001, debug=True)
+    app.run(host = '0.0.0.0', port=5001, debug=True)

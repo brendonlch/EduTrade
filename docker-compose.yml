@@ -1,0 +1,30 @@
+version: '3.7'
+
+services:
+    rabbitmq:
+        image: rabbitmq:3
+        container_name: host.docker.internal
+        # ports:
+        #     - "5673:5672"
+        #     - "15673:15672"
+        networks:
+            - broker_network
+        environment:
+            - RABBITMQ_DEFAULT_USER=guest
+            - RABBITMQ_DEFAULT_PASS=guest  
+        # volumes:
+        #     -
+        # command:
+        # depends_on: 
+        #     - 
+    user:
+      image: edutrade:user1
+      ports:
+        - "5001:5000"
+    trading:
+      image: edutrade:trading1
+      ports:
+        - "5002:5001"
+networks:
+    broker_network: 
+        driver: "bridge"

@@ -19,10 +19,15 @@ import pika
 ##########################################################################
 
 def receive_alert():
-    hostname = "localhost" # default broker hostname. Web management interface default at http://localhost:15672
+    # hostname = "localhost" # default broker hostname. Web management interface default at http://localhost:15672
+    # port = 5672 # default messaging port.
+    # # connect to the broker and set up a communication channel in the connection
+    # connection = pika.BlockingConnection(pika.ConnectionParameters(host=hostname, port=port))
+    hostname = "host.docker.internal" # default broker hostname. Web management interface default at http://localhost:15672
     port = 5672 # default messaging port.
-    # connect to the broker and set up a communication channel in the connection
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host=hostname, port=port))
+        # connect to the broker and set up a communication channel in the 
+    credentials = pika.PlainCredentials('guest', 'guest')
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host=hostname, port=port, virtual_host="/", credentials=credentials))
         # Note: various network firewalls, filters, gateways (e.g., SMU VPN on wifi), may hinder the connections;
         # If "pika.exceptions.AMQPConnectionError" happens, may try again after disconnecting the wifi and/or disabling firewalls
     channel = connection.channel()
