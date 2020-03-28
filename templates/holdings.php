@@ -21,7 +21,10 @@
 </head>
 
 <body class="is-preload">
-
+    <?php
+    // $username = $_POST['username'];
+    $username = "lol";
+    ?>
     <!-- Header -->
     <div id="header">
 
@@ -39,7 +42,7 @@
                 <ul>
                     <li><a href="#top" id="top-link"><span class="icon solid fa-home">My dashboard</span></a></li>
                     <li><a id="holdings-link"><span class="icon solid fa-book-open">Holdings</span></a></li>
-                    <li><a href="#market" id="about-link"><span class="icon solid fa-search-dollar">Market</span></a>
+                    <li><a href="stocks.html" id="about-link"><span class="icon solid fa-search-dollar">Market</span></a>
                     </li>
                     <li><a href="#settings" id="contact-link"><span class="icon solid fa-user-circle">Account</span></a>
                     </li>
@@ -76,8 +79,7 @@
                         // - using await requires the function that calls it to be async
                         $ (async () => {
                             // Change serviceURL to your own
-
-                            var serviceURL = "http://127.0.0.1:5000/holdings/lol";
+                            var serviceURL = "http://127.0.0.1:5000/holdings/<?php echo $username ?>";
 
                             try {
                                 const response =
@@ -87,7 +89,7 @@
                                 const data = await response.json();
                                 var holdings = data.holdings; //the arr is in data.books of the JSON data
 
-                                // array or array.length are falsy
+                                // array or array.length are false
                                 if (!holdings || !holdings.length) {
                                     showError('You have no holdings!')
                                 } else {
@@ -133,59 +135,7 @@
         <section id="news" class="three">
             <div class="container">
                 <h2>Market</h2><br>
-                <table>
-                    <tr>
-                        <th>Symbol</th>
-                        <th>Name</th>
-                        <th>Qty</th>
-                        <th>Current Price ($)</th>
-                        <th>Change %</th>
-                    </tr>
-                    <tr>
-                        <td>GGL</td>
-                        <td>Google</td>
-                        <td>200</td>
-                        <td class="center">20.00</td>
-                        <td><i class="fas fa-angle-double-up" style="color:#4caf50;"></i><strong style="color:#4caf50;">
-                                12.00% </strong></td>
-                    </tr>
-                    <tr>
-                        <td>APPL</td>
-                        <td>Apple</td>
-                        <td>400</td>
-                        <td class="center">28.00</td>
-                        <td><i class="fas fa-angle-double-down" style="color:#c80000;"></i><strong
-                                style="color:#c80000;"> 17.26% </strong></td>
-                    </tr>
-                    <tr>
-                        <td>MCSF</td>
-                        <td>Microsoft</td>
-                        <td>100</td>
-                        <td class="center">32.00</td>
-                        <td><i class="fas fa-angle-double-down" style="color:#c80000;"></i><strong
-                                style="color:#c80000;"> 10.39% </strong></td>
-                    </tr>
-                    <tr>
-                        <td>FB</td>
-                        <td>Facebook</td>
-                        <td>140</td>
-                        <td class="center">28.00</td>
-                        <td><i class="fas fa-angle-double-up" style="color:#4caf50;"></i><strong style="color:#4caf50;">
-                                17.88% </strong></td>
-                    </tr>
-                    <tr>
-                        <td>TWT</td>
-                        <td>Twitter</td>
-                        <td>180</td>
-                        <td class="center">15.00</td>
-                        <td><i class="fas fa-angle-double-down" style="color:#c80000;"></i><strong
-                                style="color:#c80000;"> 5.43% </strong></td>
-                    </tr>
-                    <tr>
-                        <td colspan="6" align="right"><a href=""><i class="fas fa-angle-double-right fa-2x"></i></a>
-                        </td>
-                    </tr>
-                </table>
+                
             </div>
 
             <!-- Footer -->
