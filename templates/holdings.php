@@ -1,7 +1,14 @@
-<!DOCTYPE HTML>
+<?php
+    // header("Access-Control-Allow-Origin: *");
+    // header("Access-Control-Allow-Methods: GET, POST");
+    // header("Access-Control-Allow-Headers: X-Requested-With");
+    ?>
+    <!DOCTYPE HTML>
+
 <html>
 
 <head>
+
     <title>EduTrade</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
@@ -73,19 +80,23 @@
                         <th>Qty</th>
                         <th>Price Bought ($)</th>
                         <th>Current Price ($)</th>
+                        <th>Unrealised P/L</th>
                     </tr>
                     <script>
                         // anonymous async function
                         // - using await requires the function that calls it to be async
                         $ (async () => {
+                            let requestParam = {
+                                headers: { "content-type": "charset=UTF-8" },
+                                mode: 'cors', // allow cross-origin resource sharing
+                                method: 'GET',
+                            }
                             // Change serviceURL to your own
-                            var serviceURL = "http://127.0.0.1:5000/holdings/<?php echo $username ?>";
+                            var serviceURL = "http://127.0.0.1:5010/holdings/<?php echo $username ?>";
 
                             try {
                                 const response =
-                                    await fetch(
-                                        serviceURL, { method: 'GET' }
-                                    );
+                                    await fetch(serviceURL, requestParam);
                                 const data = await response.json();
                                 var holdings = data.holdings; //the arr is in data.books of the JSON data
 
@@ -96,19 +107,28 @@
                                     // for loop to setup all table rows with obtained book data
                                     var rows = "";
                                     for (const stock of holdings) {
+                                        let stockDetails = await getLatestStock(stock.symbol);
+                                        var unrealised = (stockDetails.price - stock.buyprice) * stock.qty;
 
-                                        eachRow =
-                                            "<td>" + stock.symbol + "</td>" +
-                                            "<td>" + "NEED TO ADD NAME" + "</td>" +
-                                            "<td>" + stock.qty + "</td>" +
-                                            "<td>" + stock.buyprice + "</td>" +
-                                            "<td>" + "NEED TO ADD CURRENT PRICE" + "</td>";
+                                        var eachRow = "<td>" + stock.symbol + "</td>"
+                                                    + "<td>" + stockDetails.stockname + "</td>"
+                                                    + "<td>" + String(stock.qty) + "</td>"
+                                                    + "<td>" + String(stock.buyprice) + "</td>"
+                                                    + "<td>" + String(stockDetails.price) + "</td>";
+
+                                        if (unrealised < 0) {
+                                            eachRow = eachRow + "<td style='color:#e63e32'>" + unrealised.toFixed(2) + "</td>";
+                                        } else {
+                                            eachRow = eachRow + "<td style='color:#4caf50'>" + unrealised.toFixed(2) + "</td>";
+                                        }
                                         rows += "<tr>" + eachRow + "</tr>";
                                     }
                                     // add all the rows to the table
                                     $('#allHoldings').append(rows);
                                 }
                             } catch (error) {
+                                var rows = "<tr><td colspan='6'>Currently unable to display your holdings.</td></tr>";
+                                $('#allHoldings').append(rows);
                                 // Errors when calling the service; such as network error,
                                 // service offline, etc
                                 showError
@@ -117,26 +137,19 @@
                             } // error
                         });
                     </script>
-                    <tr>
-                        <td>GGL</td>
-                        <td>Google</td>
-                        <td>200</td>
-                        <td class="center">15.00</td>
-                        <td class="center">20.00</td>
-                    </tr>
                     <!-- <tr>
-                        <td colspan="6" align="right"><a href=""><i class="fas fa-angle-double-right fa-2x"></i></a>
+                        <td colspan="6" align="right">
                         </td>
                     </tr> -->
                 </table>
+                <a href="">Click here to set your stock limits!<i class="fas fa-angle-double-right fa-2x"></i></a>
             </div>
         </section>
 
-        <section id="news" class="three">
+        <!-- <section id="news" class="three">
             <div class="container">
                 <h2>Market</h2><br>
-                
-            </div>
+            </div> -->
 
             <!-- Footer -->
             <!-- <div id="footer"> -->
@@ -154,7 +167,36 @@
             $('#main-container')
                 .append("<label>" + message + "</label>");
         }
+
+        async function getLatestStock(symbol) {
+            let requestParam = {
+                headers: { "content-type": "charset=UTF-8" },
+                mode: 'cors', // allow cross-origin resource sharing
+                method: 'GET',
+            }
+            var serviceURL = "http://127.0.0.1:6010/stock/" + symbol;
+
+            try {
+                const response =
+                    await fetch(serviceURL, requestParam);
+                const data = await response.json();
+                // array or array.length are false
+                if (data) {
+                    return data;
+                } else {
+                    showError('No such stock!')
+                }
+            } catch (error) {
+                // Errors when calling the service; such as network error,
+                // service offline, etc
+                showError
+                    ('There is a problem retrieving holdings data, please try again later.<br />' + error);
+
+            } // error
+        }
     </script>
+
+
 </body>
 
 </html>
