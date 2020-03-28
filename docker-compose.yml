@@ -2,8 +2,8 @@ version: '3.7'
 
 services:
     rabbitmq:
-        image: rabbitmq:3
-        container_name: host.docker.internal
+        image: earnestng/esd_stock:rabbitmq
+        container_name: rabbitmq
         # ports:
         #     - "5673:5672"
         #     - "15673:15672"
@@ -12,19 +12,26 @@ services:
         environment:
             - RABBITMQ_DEFAULT_USER=guest
             - RABBITMQ_DEFAULT_PASS=guest  
-        # volumes:
-        #     -
-        # command:
-        # depends_on: 
-        #     - 
     user:
-      image: edutrade:user1
-      ports:
-        - "5001:5000"
-    trading:
-      image: edutrade:trading1
-      ports:
-        - "5002:5001"
+        build: ./user/      #image: earnestng/esd_stock:user
+        ports:
+            - "5010:5010"
+    trading:            
+        build: ./trading/   #image: earnestng/esd_stock:trading
+        ports:
+            - "5020:5020"
+    alerting:           
+        build: ./alerting/  #image: earnestng/esd_stock:alerting
+        ports:
+            - "5030:5030"
+    stock:              
+        build: ./stock/     #image: earnestng/esd_stock:stock
+        ports:
+            - "6010:6010"
+    news:               
+        build: ./news/      #image: earnestng/esd_stock:news
+        ports:
+            - "6020:6020"
 networks:
     broker_network: 
         driver: "bridge"
