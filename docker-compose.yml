@@ -1,5 +1,14 @@
 version: '3.7'
 
+###############################################################
+# Current Port Allocation:
+    # user      5010:5010
+    # trading   5020:5020
+    # alerting  5030:5030
+    # stock     6010:6010
+    # news      6020:6020
+###############################################################
+
 services:
     rabbitmq:
         image: earnestng/esd_stock:rabbitmq
@@ -12,32 +21,50 @@ services:
         environment:
             - RABBITMQ_DEFAULT_USER=guest
             - RABBITMQ_DEFAULT_PASS=guest  
+
+    ############################################################
+    ##  if we want to run a database inside our docker :)
+    db: 
+        image: mysql
+        ports: 
+            - "3308:3306"
+        expose:
+            - '3308'
+        volumes:
+            - ./sql-files:/docker-entrypoint-initdb.d
+    ############################################################
+
     user:
-        build: ./user/      #image: earnestng/esd_stock:user
+        #build: ./user/      
+        image: earnestng/esd_stock:user
         environment: 
             - "dbURL=mysql+mysqlconnector://root@host.docker.internal:3306/user"
         ports:
             - "5010:5010"
     trading:            
-        build: ./trading/   #image: earnestng/esd_stock:trading
+        #build: ./trading/   
+        image: earnestng/esd_stock:trading
         environment: 
             - "dbURL=mysql+mysqlconnector://root@host.docker.internal:3306/transaction"
         ports:
             - "5020:5020"
     alerting:           
-        build: ./alerting/  #image: earnestng/esd_stock:alerting
+        #build: ./alerting/  
+        image: earnestng/esd_stock:alerting
         environment: 
             - "dbURL=mysql+mysqlconnector://root@host.docker.internal:3306/alert"
         ports:
             - "5030:5030"
     stock:              
-        build: ./stock/     #image: earnestng/esd_stock:stock
+        #build: ./stock/     
+        image: earnestng/esd_stock:stock
         environment: 
             - "dbURL=mysql+mysqlconnector://root@host.docker.internal:3306/stock"
         ports:
             - "6010:6010"
     news:               
-        build: ./news/      #image: earnestng/esd_stock:news
+        #build: ./news/      
+        image: earnestng/esd_stock:news
         environment: 
             - "dbURL=mysql+mysqlconnector://root@host.docker.internal:3306/news"
         ports:
