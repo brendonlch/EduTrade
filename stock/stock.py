@@ -139,10 +139,8 @@ def get_all_stock():
         eprint()
     return "System stopped"
 
-@app.route("/stock/<string:stockname>") # StockData
-def get_stock_data(stockname):
-    stock = Stock.query.filter_by(stockname=stockname).first()
-    symbol = stock.symbol
+@app.route("/stock/<string:symbol>") # StockData
+def get_stock_data(symbol):
     latest_stock = Stockdata.query.filter_by(symbol=symbol).first()
     #stock_price = latest_stock.price
     return jsonify(latest_stock.json())
@@ -155,6 +153,10 @@ def get_all_stock_price():
         stockdata = Stockdata.query.filter_by(symbol=key).first()
         list_of_prices[key] = stockdata.price
     return jsonify(list_of_prices)
+
+@app.route("/stock/allstockdata")
+def get_all_stock_data():
+    return jsonify({"stocksdata": [stockdata.json() for stockdata in Stockdata.query.all()]})
 
 @app.route("/stock/symbol")
 def get_all_symbol():
@@ -211,6 +213,6 @@ def send_message(update_stock):
     channel.basic_publish(exchange=exchangename, routing_key="stock.info", body=message)
 
 if __name__ == '__main__': 
-    app.run(host='0.0.0.0',port=6000, debug=True)
+    app.run(host='0.0.0.0',port=6010, debug=True)
 
        

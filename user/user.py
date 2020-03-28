@@ -185,6 +185,9 @@ def update_user(username):
 
 @app.route("/holdings/<string:username>") #To find bought stock
 def get_all_holdings(username):
+    # Stockname
+    # Current price
+
     return jsonify({"holdings": [user.json() for user in Holdings.query.filter_by(username=username)]})
 
 
@@ -249,4 +252,4 @@ def get_user_by_id(username):
     return False
 
 if __name__ == '__main__':
-    app.run(host = '0.0.0.0',port=5000, debug=True)
+    app.run(host = '0.0.0.0',port=5010, debug=True)
