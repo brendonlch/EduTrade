@@ -22,9 +22,6 @@
     <script src="../css/dashboard/assets/js/jquery.scrollex.min.js"></script>
     <script src="../css/dashboard/assets/js/browser.min.js"></script>
     <script src="../css/dashboard/assets/js/breakpoints.min.js"></script>
-    <script src="../css/dashboard/assets/js/util.js"></script>
-    <script src="../css/dashboard/assets/js/main.js"></script>
-    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 </head>
 
 <body class="is-preload">
@@ -48,10 +45,9 @@
             <nav id="nav">
                 <ul>
                     <li><a href="#top" id="top-link"><span class="icon solid fa-home">My dashboard</span></a></li>
-                    <li><a id="holdings-link"><span class="icon solid fa-book-open">Holdings</span></a></li>
-                    <li><a href="stocks.html" id="about-link"><span class="icon solid fa-search-dollar">Market</span></a>
-                    </li>
-                    <li><a href="#settings" id="contact-link"><span class="icon solid fa-user-circle">Account</span></a>
+                    <li><a href="#holdings" id="holdings-link"><span class="icon solid fa-book-open">Holdings</span></a></li>
+                    <li><a href="stocks.html" id="stocks-link"><span class="icon solid fa-search-dollar">Market</span></a></li>
+                    <li><a href="account.php" id="account-link"><span class="icon solid fa-user-circle">Account</span></a>
                     </li>
                 </ul>
             </nav>
@@ -98,13 +94,13 @@
                                 const response =
                                     await fetch(serviceURL, requestParam);
                                 const data = await response.json();
-                                var holdings = data.holdings; //the arr is in data.books of the JSON data
+                                var holdings = data.holdings; //the arr is in data.holdings of the JSON data
 
                                 // array or array.length are false
                                 if (!holdings || !holdings.length) {
                                     showError('You have no holdings!')
                                 } else {
-                                    // for loop to setup all table rows with obtained book data
+                                    // for loop to setup all table rows with obtained holdings data
                                     var rows = "";
                                     for (const stock of holdings) {
                                         let stockDetails = await getLatestStock(stock.symbol);
@@ -195,6 +191,9 @@
             } // error
         }
     </script>
+    <script src="../css/dashboard/assets/js/util.js"></script>
+    <script src="../css/dashboard/assets/js/main.js"></script>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 
 
 </body>
