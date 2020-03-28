@@ -1,5 +1,4 @@
-#! /bin/bash
-
+#!/bin/bash
 # Start the first process
 python user.py &
 # Start the second process
