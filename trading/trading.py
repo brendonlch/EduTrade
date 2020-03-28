@@ -2,6 +2,7 @@ import pika
 import uuid
 import json
 from datetime import datetime, time, timedelta
+import time
 import sys
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
@@ -101,7 +102,7 @@ def purchase():
     # Automating Transaction ID and Transaction Time
     transactions = [transaction.json() for transaction in Transaction.query.all()]
     data['transactionid'] = 1 if len(transactions) == 0 else max(transactions, key = lambda x:x['transactionid'])['transactionid'] + 1
-    data['transactiontime'] = (datetime.datetime.now()- timedelta(hours = 4)).strftime("%Y/%m/%d %H:%M:%S")
+    data['transactiontime'] = (datetime.now()- timedelta(hours = 4)).strftime("%Y/%m/%d %H:%M:%S")
 
     order = Transaction(**data)
     #Communicate with user management
@@ -133,7 +134,7 @@ def sell():
     # Automating Transaction ID and Transaction Time
     transactions = [transaction.json() for transaction in Transaction.query.all()]
     data['transactionid'] = 1 if len(transactions) == 0 else max(transactions, key = lambda x:x['transactionid'])['transactionid'] + 1
-    data['transactiontime'] = (datetime.datetime.now()- timedelta(hours = 4)).strftime("%Y/%m/%d %H:%M:%S")
+    data['transactiontime'] = (datetime.now()- timedelta(hours = 4)).strftime("%Y/%m/%d %H:%M:%S")
     
     #####################################
     purchasedtime = data['purchasedtime']
@@ -238,4 +239,4 @@ def update_correlation_status(corrid,status):
 
 
 if __name__ == '__main__': #So that it can run with this file instead of another file importing this file
-    app.run(host = '0.0.0.0', port=5001, debug=True)
+    app.run(host = '0.0.0.0', port=5020, debug=True)
