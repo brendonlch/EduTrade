@@ -15,6 +15,8 @@
     <script src="../css/dashboard/assets/js/jquery.scrollex.min.js"></script>
     <script src="../css/dashboard/assets/js/browser.min.js"></script>
     <script src="../css/dashboard/assets/js/breakpoints.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
 
 </head>
 
@@ -67,24 +69,24 @@
 
 
                         <!-- edit form column -->
-                        <form id="accountform" class="form-horizontal" role="form">
+                        <form id="accountform" method="POST" class="form-horizontal" role="form">
                             <div class="form-group">
                                 <label class="col-lg-3 control-label">Username:</label>
                                 <div class="col-lg-8">
-                                    <input id="username" class="form-control" type="text" value="">
+                                    <input id="username" class="form-control" type="text" value="" disabled style="background: #dddddd">
                                 </div>
                             </div>
                             <div class="
                             ">
                                 <label class="col-lg-3 control-label">Name:</label>
                                 <div class="col-lg-8">
-                                    <input id="name" class="form-control" type="text" value="">
+                                    <input id="name" class="form-control" type="text" value="" disabled style="background: #dddddd">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="col-lg-3 control-label">Age:</label>
                                 <div class="col-lg-8">
-                                    <input id="age" class="form-control" type="text" value="">
+                                    <input id="age" class="form-control" type="text" value="" disabled style="background: #dddddd">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -110,7 +112,7 @@
                             <div class="form-group">
                                 <label class="col-md-3 control-label">Confirm password:</label>
                                 <div class="col-md-8">
-                                    <input id="confirmpassword" class="form-control" type="password">
+                                    <input id="confirmedpassword" class="form-control" type="password">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -118,7 +120,7 @@
                                 <div class="col-md-8">
                                     <input type="submit" class="btn btn-primary" value="Save Changes">
                                     <span></span>
-                                    <input type="reset" id="reset" class="btn btn-default" value="Cancel">
+                                    <input type="reset" id="reset" class="btn btn-default" value="Reset">
                                 </div>
                             </div>
                         </form>
@@ -126,7 +128,12 @@
     </div>
     </section>
 
-    <script type="text/javascript">
+    <script>
+        function isEmail(email) {
+            var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+            return regex.test(email);
+        }
+
         async function getData(serviceURL) {
             let requestParam = {
                 headers: {
@@ -147,20 +154,25 @@
                 document.getElementById("error").textContent = "Unable to display user account details.";
             }
             username = data.username;
+            document.getElementById("username").placeholder = username;
             document.getElementById("username").value = username;
             document.getElementById("usernametop").textContent = username;
             name = data.name;
+            document.getElementById("name").placeholder = name;
             document.getElementById("name").value = name;
             age = data.age;
+            document.getElementById("age").placeholder = age;
             document.getElementById("age").value = age;
             email = data.email;
+            document.getElementById("email").placeholder = email;
             document.getElementById("email").value = email;
             institution = data.institution;
+            document.getElementById("institution").placeholder = institution;
             document.getElementById("institution").value = institution;
             password = data.password;
             document.getElementById("password").value = password;
             credits = data.credit;
-            document.getElementById("credits").textContent = "Credits =" + credits;
+            document.getElementById("credits").textContent = "Credits: " + credits;
         }
 
         $(function() {
@@ -171,31 +183,63 @@
         async function postData(serviceURL, requestBody) {
             var requestParam = {
                 headers: {
-                    "content-type": "charset=UTF-8; application/json;"
+                    "Accept": "application/json;",
+                    "Content-Type": "application/json;"
                 },
                 mode: 'cors', // other options: no-cors, etc.
                 method: 'POST',
-                body: JSON.stringify(requestBody)
-            }
+                body: JSON.stringify(requestBody),
+            };
             try {
                 const response = await fetch(serviceURL, requestParam);
                 data = await response.json();
                 console.log(data);
+                Swal.fire({
+                    title: 'Success!',
+                    text: "You have successfully made changes to your account",
+                    icon: 'success',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'Okay'
+                })
+					
             } catch (error) {
-                console.error(error);
+                console.log(error);
             }
         }
-        $("#accountform").submit(function() {
-            //     var username = $('#username').val();
-            // console.log(username)
-            var serviceURL = "http://localhost:5000/update_user/" + <?php echo $username ?>;
+        $("#accountform").submit(function(event) {
+            event.preventDefault();
+            var email = document.getElementById("email").value;
+            var password = document.getElementById("password").value;
+            var confirmedPassword = document.getElementById("confirmedpassword").value;
+            if (!isEmail(email)) {
+                Swal.fire({
+					title: 'Invalid Email',
+					text: "Please enter a valid email",
+					icon: 'warning',
+					confirmButtonColor: '#3085d6',
+					confirmButtonText: 'Okay'
+					})
+				return false;
+            }
+            else if (password != confirmedPassword){
+                Swal.fire({
+					title: 'Password Mismatch',
+					text: "Please enter a correct password",
+					icon: 'warning',
+					confirmButtonColor: '#3085d6',
+					confirmButtonText: 'Okay'
+					})
+                return false;
+            }
+            var username = document.getElementById("username").value;
+            var serviceURL = "http://localhost:5010/user/update/" + username;
             var requestBody = {
-                username: data.username,
-                name: data.name,
-                age: data.age,
-                email: data.email,
-                institution: data.institution,
-                password: data.password
+                username: document.getElementById("username").value,
+                name: document.getElementById("name").value,
+                age: document.getElementById("age").value,
+                email: document.getElementById("email").value,
+                institution: document.getElementById("institution").value,
+                password: document.getElementById("password").value
             };
             postData(serviceURL, requestBody);
         });
