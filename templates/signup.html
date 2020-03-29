@@ -9,13 +9,13 @@
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 
 	<!--===============================================================================================-->
-	<link rel="icon" type="image/png" href="../images/icons/icon.png" />
+	<link rel="icon" type="image/png" href="../css/images/icons/icon.png"/>
 	<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="../vendor/bootstrap/css/bootstrap.min.css">
 	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="../fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
 	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="../fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
 	<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="../vendor/animate/animate.css">
 	<!--===============================================================================================-->
@@ -27,18 +27,18 @@
 	<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="../vendor/daterangepicker/daterangepicker.css">
 	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="../css/util.css">
-	<link rel="stylesheet" type="text/css" href="../css/main.css">
+	<link rel="stylesheet" type="text/css" href="../css/login & signup/util.css">
+	<link rel="stylesheet" type="text/css" href="../css/login & signup/main.css">
 	<!--===============================================================================================-->
 </head>
 
 <body>
 
 	<div class="limiter">
-		<div class="container-login100" style="background-image: url('../images/bg2.jpg');">
+		<div class="container-login100" style="background-image: url('../css/images/bg2.jpg');">
 			<div class="wrap-login100 p-t-30 p-b-50" style="width: 90vw">
 				<span class="login100-form-logo">
-					<img src="../images/icons/logo.png" alt="EduTrade" height="42" width="300" />
+					<img src="../css/images/icons/logo.png" alt="EduTrade" height="42" width="300" />
 				</span>
 
 				<form id="userSignUpForm" class="login100-form validate-form p-b-33 p-t-5" method="POST">
@@ -153,8 +153,8 @@
 							text: "You have successfully registered for an account!",
 							icon: 'success',
 							confirmButtonColor: '#3085d6',
-							confirmButtonText: 'Okay'
-						})
+							confirmButtonText: 'Okay',
+						}); window.location.replace("http://localhost/GitHub/EduTrade/templates/login.html");
 					}
 				} catch (error) {
 					// Errors when calling the service; such as network error, 

@@ -9,13 +9,13 @@
 
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!--===============================================================================================-->
-	<link rel="icon" type="image/png" href="../images/icons/icon.png" />
+	<link rel="icon" type="image/png" href="../css/images/icons/icon.png"/>
 	<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="../vendor/bootstrap/css/bootstrap.min.css">
 	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="../fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
 	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="../fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
 	<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="../vendor/animate/animate.css">
 	<!--===============================================================================================-->
@@ -27,18 +27,18 @@
 	<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="../vendor/daterangepicker/daterangepicker.css">
 	<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="../css/util.css">
-	<link rel="stylesheet" type="text/css" href="../css/main.css">
+	<link rel="stylesheet" type="text/css" href="../css/login & signup/util.css">
+	<link rel="stylesheet" type="text/css" href="../css/login & signup/main.css">
 	<!--===============================================================================================-->
 </head>
 
 <body>
 
 	<div class="limiter">
-		<div class="container-login100" style="background-image: url('../images/bg2.jpg');">
+		<div class="container-login100" style="background-image: url('../css/images/bg2.jpg');">
 			<div class="wrap-login100 p-t-30 p-b-50">
 				<span class="login100-form-logo">
-					<img src="../images/icons/logo.png" alt="EduTrade" height="42" width="300" />
+					<img src="../css/images/icons/logo.png" alt="EduTrade" height="42" width="300" />
 				</span>
 
 				<form id = 'userLoginForm' class="login100-form validate-form p-b-33 p-t-5" method='POST'>
@@ -73,7 +73,7 @@
 			event.preventDefault();
 			var username = $('#username').val();
 			var password = $('#password').val();
-			var serviceURL = "http://127.0.0.1:5000/userauthenticate";
+			var serviceURL = "http://127.0.0.1:5010/userauthenticate";
 			try {
 				const response =
 				await fetch(
@@ -85,7 +85,8 @@
 				);
 				const data = await response.json();
 				if (data['status'] == 'success'){
-					window.location.replace("http://localhost/EduTrade/templates/index.html");
+					window.location.replace("http://localhost/GitHub/EduTrade/templates/dashboard.html");
+					sessionStorage.setItem("user", username);
 				}
 				else if (data['status'] == 'fail') {
 					Swal.fire({
@@ -101,8 +102,7 @@
 				// service offline, etc
 				Swal.fire({
 					text: error,
-					icon: 'error
-					warning',
+					icon: 'error warning',
 					confirmButtonColor: '#3085d6',
 					confirmButtonText: 'Okay'
 				})

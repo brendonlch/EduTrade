@@ -1,133 +1,268 @@
 <!DOCTYPE HTML>
 <html>
-	<head>
-		<title>EduTrade</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="../css/dashboard/assets/css/main.css" />
-		<!--===============================================================================================-->
-		<!-- <link rel="icon" type="image/png" href="../images/icons/icon.png" /> -->
-		<!-- ===============================================================================================-->
 
-		<style>
+<head>
+	<title>EduTrade</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="../css/dashboard/assets/css/main.css" />
+	<!--===============================================================================================-->
+	<link rel="icon" type="image/png" href="../css/dashboard/images/icon.png" />
+	<!-- ===============================================================================================-->
+	<!-- Scripts -->
+	<script src="../css/dashboard/assets/js/jquery.min.js"></script>
+	<script src="../css/dashboard/assets/js/jquery.scrolly.min.js"></script>
+	<script src="../css/dashboard/assets/js/jquery.scrollex.min.js"></script>
+	<script src="../css/dashboard/assets/js/browser.min.js"></script>
+	<script src="../css/dashboard/assets/js/breakpoints.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+	<style>
 		input::-webkit-outer-spin-button,
 		input::-webkit-inner-spin-button {
-		-webkit-appearance: none;
-		margin: 0;
+			-webkit-appearance: none;
+			margin: 0;
 		}
-		</style>
-	</head>
 
-	<body class="is-preload">
+		.box {
+		width:300px;
+		height:30px;
+		
+		background-color:#d9d9d9;
+		position: relative;
+		}
+	</style>
+	<script>
+		// anonymous async function 
+		// - using await requires the function that calls it to be async
+		$(async () => {
+			// Change serviceURL to your own
+			var serviceURL = "http://127.0.0.1:6010/stock/allstockdata";
 
-		<!-- Header -->
-			<div id="header">
+			try {
+				const response =
+					await fetch(
+					serviceURL, { method: 'GET', mode: 'cors' }
+				);
+				const data = await response.json();
+				var stocks = data.stocksdata //the arr is in data.books of the JSON data
+				// console.log(stocks)
 
-				<div class="top">
-
-					<!-- Logo -->
-						<div id="logo">
-							<span class="image avatar48"><img src="images/earn.png" alt="" /></span>
-							<h1 id="title">BrydonMemeLord</h1>
-							<p>Balance &nbsp; $e-dollar</p>
-						</div>
-
-					<!-- Nav -->
-						<nav id="nav">
-							<ul>
-								<li><a href="#top" id="top-link"><span class="icon solid fa-home">My dashboard</span></a></li>
-								<li><a href="#portfolio" id="portfolio-link"><span class="icon solid fa-book-open">Portfolio</span></a></li>
-								<li><a href="#market" id="about-link"><span class="icon solid fa-search-dollar">Market</span></a></li>
-								<li><a href="#settings" id="contact-link"><span class="icon solid fa-user-circle">Account</span></a></li>
-							</ul>
-						</nav>
-
-				</div>
-			</div>
-
-		<!-- Main -->
-			<div id="main">
-					
-				<!-- Portfolio -->
-					<section id="portfolio" class="two">
-						<div class="container">
-							<h2>Stocks List</h2><br><br>
-							<table id="stockstable">
-								<tr>
-									<th>Symbol</th>
-									<th>Name</th>
-									<th>Volume</th>
-									<th>Current Price ($)</th>
-									<th>Trade</th>
-								</tr>
-							</table>
-						</div>
-					</section>	
-
-			</div>
-
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.scrolly.min.js"></script>
-			<script src="assets/js/jquery.scrollex.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
-			<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-			<script>
-				// Helper function to display error message
-				function showError(message) {
-					// Hide the table and button in the event of error
-			 
-					// Display an error under the main container
-					$('#main')
-						.append("<label>"+message+"</label>");
+				// array or array.length are falsy
+				if (data.length == 0) {
+					Swal.fire({
+                            title: 'Warning!',
+                            text: "Stock list empty or undefined",
+                            icon: 'warning',
+                            confirmButtonColor: '#4caf50',
+                            confirmButtonText: 'Okay'
+                        })
+				} else {
+					// for loop to setup all table rows with obtained book data
+					var rows = "";
+					for (const stock of stocks) {
+						// console.log(stock)
+						eachRow =
+							"<td>" + stock.symbol + "</td>" +
+							"<td>" + stock.stockname + "</td>" +
+							"<td>" + stock.volume + "</td>" +
+							"<td>" + stock.price + "</td>" +
+							"<td><button type='submit' class='submitbtn' value='" + stock.symbol + "'>Buy / Sell</button></td>";
+						rows += "<tr>" + eachRow + "</tr>";
+					}
+					// add all the rows to the table
+					$('#stockstable').append(rows);
 				}
-			 
-				// anonymous async function 
-				// - using await requires the function that calls it to be async
-				$(async() => {           
-					// Change serviceURL to your own
-					var serviceURL = "http://127.0.0.1:6004/stock/getalldatastocks";
-			 
-					try {
-						const response =
-						 await fetch(
-						   serviceURL, { method: 'GET' }
-						);
-						const data = await response.json();
-						var stocks = data.stocksdata //the arr is in data.books of the JSON data
-						// console.log(stocks)
-			 
-						// array or array.length are falsy
-						if (data.length == 0) {
-							showError('Stocks list empty or undefined.')
-						} else {
-							// for loop to setup all table rows with obtained book data
-							var rows = "";
-							for (const stock of stocks) {
-								// console.log(stock)
-								eachRow =
-									"<td><label>" + stock.symbol + "</label></td>" +
-									"<td>" + stock.stockname + "</td>" +
-									"<td>" + stock.volume + "</td>" +
-									"<td>" + stock.price + "</td>" +
-									"<td><button type='submit' value='"+ stock.symbol +"'>Buy / Sell</button></td>";
-								rows += "<tr>" + eachRow + "</tr>";
-							}
-							// add all the rows to the table
-							$('#stockstable').append(rows);
-						}
-					} catch (error) {
-						// Errors when calling the service; such as network error, 
-						// service offline, etc
-						showError('There is a problem retrieving books data, please try again later.<br />'+error);
-					} // error
-				});
-			</script>
+			} catch (error) {
+				// Errors when calling the service; such as network error, 
+				// service offline, etc
+				Swal.fire({
+                            title: 'Error!',
+                            text: "Unable to display stock data",
+                            icon: 'error',
+                            confirmButtonColor: '#4caf50',
+                            confirmButtonText: 'Okay'
+                        })
+			} // error
+		});
+	</script>
+</head>
+
+<body class="is-preload">
+
+	<!-- Retrieve session -->
+	<script>
+		var rowStock = new Array();
+		var username = sessionStorage.getItem("user");
+	</script>
+
+
+	<!-- Header -->
+	<div id="header">
+
+		<div class="top">
+
+			<!-- Logo -->
+			<div id="logo">
+				<h1 id="usernametop">Username</h1>
+				<p id="credits">Balance</p>
+				<p id="logout" style="font-size: small; text-align: right;"><a href="login.html">Logout</a></p>
+			</div>
+
+			<!-- Nav -->
+			<nav id="nav">
+				<ul>
+					<li><a href="dashboard.html" id="index-link"><span class="icon solid fa-home">My
+								dashboard</span></a></li>
+					<li><a href="#holdings" id="holdings-link"><span
+								class="icon solid fa-book-open">Holdings</span></a></li>
+					<li><a href="trading.html" id="trading-link"><span
+								class="icon solid fa-search-dollar">Trading</span></a></li>
+					<li><a href="account.html" id="account-link"><span class="icon solid fa-user-circle">Account</span></a>
+					</li>
+				</ul>
+			</nav>
+
+		</div>
+	</div>
+
+	<!-- Main -->
+	<div id="main">
+
+		<!-- Portfolio -->
+		<section id="stocks" style="background-image: none;">
+            <div class="container">
+              <h2>Stocks List</h2><br><br>
+              <table id="stockstable">
+                <tr>
+                  <th>Symbol</th>
+                  <th>Name</th>
+                  <th>Volume</th>
+                  <th>Current Price ($)</th>
+                  <th>Trade</th>
+                </tr>
+              </table>
+            </div>
+		  </section>  
+		  
+		<!-- Purchasing stocks-->
+		<section id="trading" style="background-image: none;">
+            <div class="container">
+              <h2>Purchase Here!</h2><br>
+              <div class="row">
+                <table id="tradingtable" style="width: 350px; margin-left: 130px;">
+                  <tr>
+					<th>Symbol</th>
+					<td style="background-color: grey;" id="selectedsymbol">-</td>
+				  </tr>
+				  <tr>
+					<th>Name</th>
+					<td style="background-color: grey;" id="selectedname">-</td>
+				  </tr>
+				  <tr>
+					<th>Price ($)</th>
+					<td style="background-color: grey;" id="selectedprice">-</td>
+				  </tr>
+				  <tr>
+					<th>Volume</th>
+					<td style="background-color: grey;" id="selectedvolume">-</td>
+				  </tr>
+				</table>
+				<form method= "POST" id="tradingform">
+					<table class="box">
+						<tr style="background-color:#d9d9d9;">
+							<td style="font-size: larger; font-weight: bold; color:black">Quantity:</td>
+							<td><input type="text" id="userquantity" placeholder="Quantity" min="1" max="999" style=" text-align: center; padding-bottom: 10px; width: 150px;"/></td>
+						</tr>
+						<tr style="background-color:#d9d9d9;">
+							<td style="font-size: larger; font-weight: bold; color:black">Total $:</td>
+							<td><input type="text" id="totalprice" disabled readonly style=" text-align: center; padding-bottom: 10px; font-weight: bold; width: 150px;"/>
+							</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td><button type="button" class="purchasebutton" colspan="2" style ="width: 100px; height: 50px; font-size: large; font-weight: bold;">Purchase</button></td>
+						</tr>
+					</table>
+				</form>
+			</div>
+            </div>
+          </section> 
+
+	</div>
+
+	<script>
+        $(document).on('click', '.purchasebutton', function() {  
+          console.log(rowStock);
+          var stocksymbol = rowStock[0];
+          var stockname = rowStock[1];
+          var stockvol = rowStock[2];
+          var stockcurrentprice = rowStock[3];
+          var userquantity = $('#userquantity').val();
+          // document.getElementById("#totalprice").value = userquantity * stockcurrentprice
+          // console.log(stocksymbol, stockname, stockvol, stockcurrentprice);
+          console.log(userquantity);
+          async function postData(serviceURL, requestBody) {
+              var requestParam = {
+                  headers: { "Accept": "application/json;", "Content-Type": "application/json;" },
+                  mode: 'cors', // other options: no-cors, etc.
+                  method: 'POST',
+                  body: JSON.stringify(requestBody)
+              }
+              try {
+                  const response = await fetch(serviceURL,requestParam);
+                  data = await response.json();
+                  console.log(data);
+              } catch (error) {
+                  console.error("no");
+              }
+          }
+        //     var username = "earnest"; // e.g., 9781449474453
+            var serviceURL = "http://127.0.0.1:5020/purchase";
+			var userquantity = parseInt(document.getElementById('userquantity').value);
+			var stockcurrentprice = parseFloat(document.getElementById('selectedprice').textContent);
+			var totalprice = parseFloat(document.getElementById('totalprice').value);
+            var requestBody = {
+                username: "brydon", symbol: stocksymbol, price: totalprice, qty: userquantity, transactiontype: "Buy"
+            };
+        //   console.log(requestBody);
+            postData(serviceURL, requestBody);
+        });
+        </script>
+      <script>
+        $(document).on('change', '#userquantity', function() {
+          var userquantity = document.getElementById('userquantity').value;
+          var stockcurrentprice = document.getElementById('selectedprice').textContent;
+          document.getElementById("totalprice").value = userquantity * stockcurrentprice;
+        //   console.log(userquantity);
+        //   console.log(stockcurrentprice);
+        });
+
+        $(document).on('click', '.submitbtn', function() {
+          var currentRow=$(this).closest("tr");
+          var stocksymbol=currentRow.find("td:eq(0)").html();
+          var stockname=currentRow.find("td:eq(1)").html();
+          var stockvolume=currentRow.find("td:eq(2)").html();
+          var stockcurrentprice=currentRow.find("td:eq(3)").html();
+
+          rowStock = [stocksymbol, stockname, stockvolume, stockcurrentprice];
+		  document.getElementById('selectedsymbol').innerHTML = stocksymbol;
+		  document.getElementById('selectedname').innerHTML = stockname;
+		  document.getElementById('selectedprice').innerHTML = stockcurrentprice;
+		  document.getElementById('selectedvolume').innerHTML = stockvolume;
+		  var userquantity = document.getElementById('userquantity').value;
+          var stockcurrentprice = document.getElementById('selectedprice').textContent;
+          document.getElementById("totalprice").value = userquantity * stockcurrentprice;
+          
+        });
+      </script>
+
+	<script src="../css/dashboard/assets/js/util.js"></script>
+	<script src="../css/dashboard/assets/js/main.js"></script>
+	<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 
 
 
-	</body>
+</body>
+
 </html>

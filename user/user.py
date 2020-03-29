@@ -8,15 +8,14 @@ from flask_cors import CORS
 from os import environ
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/user'
+# app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/user'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 CORS(app)
-
-###  This microservice contain User, Holdings, and Correlation class 
-""" 
+###  This microservice contain User, Holdings, and Correlation class
+"""
 List of Functions for User
     @app.route("/user")
     - get_all_users()           -> return all the users in the 'user' database
@@ -25,9 +24,9 @@ List of Functions for User
     @app.route("/user/<string:username>", methods=['POST'])
     - add_user(username)        -> insert user info into 'user' database using POST method
 
-List of Functions for Holdings 
+List of Functions for Holdings
     @app.route("/holdings/<string:username>")
-    - get_all_holdings(username)     -> return all holdings that the user has with username as input 
+    - get_all_holdings(username)     -> return all holdings that the user has with username as input
     @app.route("/holdings/<string:username>", methods=['POST'])
     - add_stock_to_user(username)    -> insert a stock transaction to 'holdings' database using POST method
     @app.route("/holdings/remove",  methods=['POST'])
@@ -39,7 +38,7 @@ Other Functions
 
 """
 
-    Databases 
+    Databases
 
 """
 #FOR DEBUGGING - eprint()
@@ -72,7 +71,7 @@ class User(db.Model):
         self.institution = institution
         self.credit = credit
 
-    def json(self): 
+    def json(self):
         return {"username": self.username, "password": self.password, "name": self.name, "age": self.age
             , "email": self.email, "institution": self.institution, "credit": self.credit}
 
@@ -98,7 +97,7 @@ class Holdings(db.Model):
         self.limit = limit
         self.datepurchased = datepurchased
 
-    def json(self): 
+    def json(self):
         return {"username": self.username, "symbol": self.symbol, "qty": self.qty, "buyprice": self.buyprice
             , "limit": self.limit, "datepurchased": self.datepurchased}
 
@@ -117,7 +116,7 @@ class UserCorrelation(db.Model):
         self.corrid = corrid
         self.status = status
 
-    def json(self): 
+    def json(self):
         return {"corrid": self.corrid, "status": self.status}
 
 
@@ -126,7 +125,7 @@ class UserCorrelation(db.Model):
 
 @app.route("/user")
 def get_all_users():
-    return jsonify({"users": [user.json() for user in User.query.all()]}) 
+    return jsonify({"users": [user.json() for user in User.query.all()]})
 
 @app.route("/user/<string:username>")
 def get_user_by_id(username):
@@ -134,7 +133,7 @@ def get_user_by_id(username):
     if user:
         return jsonify(user.json()), 200
     return jsonify({"message": "User not found"}), 404
-    
+
 @app.route("/userauthenticate", methods=['POST'])
 def user_authenticate():
     data = request.get_json()
@@ -155,8 +154,8 @@ def add_user(username):
     eprint(data)
     user = User(username, **data) # **data represents the rest of the data
     try:
-        db.session.add(user) 
-        db.session.commit()  
+        db.session.add(user)
+        db.session.commit()
     except:
         return jsonify({"message": "An error occurred creating the user."}), 500
     return jsonify(user.json()), 201
@@ -166,19 +165,24 @@ def delete_user(username):
     current_user = User.query.filter_by(username=username).first()
     if (current_user):
         try:
-            db.session.delete(current_user) 
-            db.session.commit()  
+            db.session.delete(current_user)
+            db.session.commit()
         except:
             return jsonify({"message": "An error occurred deleting the user."}), 500
     return 201
 
 @app.route("/user/update/<string:username>", methods=['POST'])
 def update_user(username):
-    if (User.query.filter_by(username=username).first()):
+    user = User.query.filter_by(username=username).first()
+    if user:
         data = request.get_json()
-        user = User(username, **data) # **data represents the rest of the data
-    try: 
-        db.session.commit()  
+        user.name = data["name"]
+        user.age = data["age"]
+        user.email = data["email"]
+        user.institution = data["institution"]
+        user.password = data["password"]
+    try:
+        db.session.commit()
     except:
         return jsonify({"message": "An error occurred updating the user."}), 500
     return jsonify(user.json()), 201
@@ -187,8 +191,8 @@ def update_user(username):
 def get_all_holdings(username):
     # Stockname
     # Current price
-    
-    return jsonify({"holdings": [user.json() for user in Holdings.query.filter_by(username=username)]}) 
+
+    return jsonify({"holdings": [user.json() for user in Holdings.query.filter_by(username=username)]})
 
 
 def minus_credit(order):
@@ -208,7 +212,7 @@ def add_credit(order):
     except:
         return False
     return True
-    
+
 def add_holding(order):
     user = User.query.filter_by(username=order['username']).first()
     holding = Holdings(order['username'],order['symbol'],order['qty'],order['price'],0,order['transactiontime'])
@@ -251,5 +255,5 @@ def get_user_by_id(username):
         return user.json()
     return False
 
-if __name__ == '__main__': 
+if __name__ == '__main__':
     app.run(host = '0.0.0.0',port=5010, debug=True)
