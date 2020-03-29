@@ -20,10 +20,12 @@
 </head>
 
 <body class="is-preload">
-    <?php
-    // $username = $_POST['username'];
-    $username = "lol";
-    ?>
+
+    <!-- Retrieve session -->
+    <script>
+        var username = sessionStorage.getItem("user");
+    </script>
+
     <!-- Header -->
     <div id="header">
 
@@ -31,9 +33,9 @@
 
             <!-- Logo -->
             <div id="logo">
-                <span class="image avatar48"><img src="../css/dashboard/images/earn.png" alt="" /></span>
-                <h1 id="title">BrydonMemeLord</h1>
-                <p>Balance &nbsp; $e-dollar</p>
+                <h1 id="usernametop">Username</h1>
+                <p id="credits">Balance</p>
+                <p id="logout" style="font-size: small; text-align: right;"><a href = "login.html">Logout</a></p>
             </div>
 
             <!-- Nav -->
@@ -87,7 +89,7 @@
                                 method: 'GET',
                             }
                             // Change serviceURL to your own
-                            var serviceURL = "http://127.0.0.1:5010/holdings/<?php echo $username ?>";
+                            var serviceURL = "http://127.0.0.1:5010/holdings/" + username;
 
                             try {
                                 const response =

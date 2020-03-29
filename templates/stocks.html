@@ -1,133 +1,159 @@
 <!DOCTYPE HTML>
 <html>
-	<head>
-		<title>EduTrade</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="../css/dashboard/assets/css/main.css" />
-		<!--===============================================================================================-->
-		<!-- <link rel="icon" type="image/png" href="../images/icons/icon.png" /> -->
-		<!-- ===============================================================================================-->
 
-		<style>
+<head>
+	<title>EduTrade</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="../css/dashboard/assets/css/main.css" />
+	<!--===============================================================================================-->
+	<link rel="icon" type="image/png" href="../css/dashboard/images/icon.png" />
+	<!-- ===============================================================================================-->
+	<!-- Scripts -->
+	<script src="../css/dashboard/assets/js/jquery.min.js"></script>
+	<script src="../css/dashboard/assets/js/jquery.scrolly.min.js"></script>
+	<script src="../css/dashboard/assets/js/jquery.scrollex.min.js"></script>
+	<script src="../css/dashboard/assets/js/browser.min.js"></script>
+	<script src="../css/dashboard/assets/js/breakpoints.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
+	<style>
 		input::-webkit-outer-spin-button,
 		input::-webkit-inner-spin-button {
-		-webkit-appearance: none;
-		margin: 0;
+			-webkit-appearance: none;
+			margin: 0;
 		}
-		</style>
-	</head>
+	</style>
+</head>
 
-	<body class="is-preload">
+<body class="is-preload">
 
-		<!-- Header -->
-			<div id="header">
+	<!-- Retrieve session -->
+	<script>
+		var username = sessionStorage.getItem("user");
+	</script>
 
-				<div class="top">
 
-					<!-- Logo -->
-						<div id="logo">
-							<span class="image avatar48"><img src="images/earn.png" alt="" /></span>
-							<h1 id="title">BrydonMemeLord</h1>
-							<p>Balance &nbsp; $e-dollar</p>
-						</div>
+	<!-- Header -->
+	<div id="header">
 
-					<!-- Nav -->
-						<nav id="nav">
-							<ul>
-								<li><a href="#top" id="top-link"><span class="icon solid fa-home">My dashboard</span></a></li>
-								<li><a href="#portfolio" id="portfolio-link"><span class="icon solid fa-book-open">Portfolio</span></a></li>
-								<li><a href="#market" id="about-link"><span class="icon solid fa-search-dollar">Market</span></a></li>
-								<li><a href="#settings" id="contact-link"><span class="icon solid fa-user-circle">Account</span></a></li>
-							</ul>
-						</nav>
+		<div class="top">
 
-				</div>
+			<!-- Logo -->
+			<div id="logo">
+				<h1 id="usernametop">Username</h1>
+				<p id="credits">Balance</p>
+				<p id="logout" style="font-size: small; text-align: right;"><a href="login.html">Logout</a></p>
 			</div>
 
-		<!-- Main -->
-			<div id="main">
-					
-				<!-- Portfolio -->
-					<section id="portfolio" class="two">
-						<div class="container">
-							<h2>Stocks List</h2><br><br>
-							<table id="stockstable">
-								<tr>
-									<th>Symbol</th>
-									<th>Name</th>
-									<th>Volume</th>
-									<th>Current Price ($)</th>
-									<th>Trade</th>
-								</tr>
-							</table>
-						</div>
-					</section>	
+			<!-- Nav -->
+			<nav id="nav">
+				<ul>
+					<li><a href="dashboard.html" id="index-link"><span class="icon solid fa-home">My
+								dashboard</span></a></li>
+					<li><a href="#holdings" id="holdings-link"><span
+								class="icon solid fa-book-open">Holdings</span></a></li>
+					<li><a href="trading.html" id="trading-link"><span
+								class="icon solid fa-search-dollar">Trading</span></a></li>
+					<li><a href="account.html" id="account-link"><span class="icon solid fa-user-circle">Account</span></a>
+					</li>
+				</ul>
+			</nav>
 
+		</div>
+	</div>
+
+	<!-- Main -->
+	<div id="main">
+
+		<!-- Portfolio -->
+		<section id="holdings" class="two">
+			<div class="container">
+				<h2>Stocks List</h2><br><br>
+				<table id="stockstable">
+					<tr>
+						<th>Symbol</th>
+						<th>Name</th>
+						<th>Volume</th>
+						<th>Current Price ($)</th>
+						<th>Trade</th>
+					</tr>
+				</table>
 			</div>
+		</section>
 
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.scrolly.min.js"></script>
-			<script src="assets/js/jquery.scrollex.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
-			<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-			<script>
-				// Helper function to display error message
-				function showError(message) {
-					// Hide the table and button in the event of error
-			 
-					// Display an error under the main container
-					$('#main')
-						.append("<label>"+message+"</label>");
+	</div>
+
+	<script>
+		// Helper function to display error message
+		function showError(message) {
+			// Hide the table and button in the event of error
+
+			// Display an error under the main container
+			$('#main')
+				.append("<label>" + message + "</label>");
+		}
+
+		// anonymous async function 
+		// - using await requires the function that calls it to be async
+		$(async () => {
+			// Change serviceURL to your own
+			var serviceURL = "http://127.0.0.1:6010/stock/allstockdata";
+
+			try {
+				const response =
+					await fetch(
+						serviceURL, { method: 'GET' }
+					);
+				const data = await response.json();
+				var stocks = data.stocksdata //the arr is in data.books of the JSON data
+				// console.log(stocks)
+
+				// array or array.length are falsy
+				if (data.length == 0) {
+					Swal.fire({
+                            title: 'Warning!',
+                            text: "Stock list empty or undefined",
+                            icon: 'warning',
+                            confirmButtonColor: '#4caf50',
+                            confirmButtonText: 'Okay'
+                        })
+				} else {
+					// for loop to setup all table rows with obtained book data
+					var rows = "";
+					for (const stock of stocks) {
+						// console.log(stock)
+						eachRow =
+							"<td><label>" + stock.symbol + "</label></td>" +
+							"<td>" + stock.stockname + "</td>" +
+							"<td>" + stock.volume + "</td>" +
+							"<td>" + stock.price + "</td>" +
+							"<td><button type='submit' value='" + stock.symbol + "'>Buy / Sell</button></td>";
+						rows += "<tr>" + eachRow + "</tr>";
+					}
+					// add all the rows to the table
+					$('#stockstable').append(rows);
 				}
-			 
-				// anonymous async function 
-				// - using await requires the function that calls it to be async
-				$(async() => {           
-					// Change serviceURL to your own
-					var serviceURL = "http://127.0.0.1:6004/stock/getalldatastocks";
-			 
-					try {
-						const response =
-						 await fetch(
-						   serviceURL, { method: 'GET' }
-						);
-						const data = await response.json();
-						var stocks = data.stocksdata //the arr is in data.books of the JSON data
-						// console.log(stocks)
-			 
-						// array or array.length are falsy
-						if (data.length == 0) {
-							showError('Stocks list empty or undefined.')
-						} else {
-							// for loop to setup all table rows with obtained book data
-							var rows = "";
-							for (const stock of stocks) {
-								// console.log(stock)
-								eachRow =
-									"<td><label>" + stock.symbol + "</label></td>" +
-									"<td>" + stock.stockname + "</td>" +
-									"<td>" + stock.volume + "</td>" +
-									"<td>" + stock.price + "</td>" +
-									"<td><button type='submit' value='"+ stock.symbol +"'>Buy / Sell</button></td>";
-								rows += "<tr>" + eachRow + "</tr>";
-							}
-							// add all the rows to the table
-							$('#stockstable').append(rows);
-						}
-					} catch (error) {
-						// Errors when calling the service; such as network error, 
-						// service offline, etc
-						showError('There is a problem retrieving books data, please try again later.<br />'+error);
-					} // error
-				});
-			</script>
+			} catch (error) {
+				// Errors when calling the service; such as network error, 
+				// service offline, etc
+				Swal.fire({
+                            title: 'Error!',
+                            text: "Unable to display stock data",
+                            icon: 'error',
+                            confirmButtonColor: '#4caf50',
+                            confirmButtonText: 'Okay'
+                        })
+						} // error
+		});
+	</script>
+
+	<script src="../css/dashboard/assets/js/util.js"></script>
+	<script src="../css/dashboard/assets/js/main.js"></script>
+	<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 
 
 
-	</body>
+</body>
+
 </html>
