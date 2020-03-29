@@ -77,6 +77,13 @@ class AlertCorrelation(db.Model):
         return {"correlation_id": self.correlation_id, "status": self.status}
 ###########################################################################
 
+@app.route("/alert/<string:username>")
+def get_alert_by_id(username):
+    alert = Alert.query.filter_by(username=username).all()
+    if alert:
+        return jsonify({"alerts": [each.json() for each in alert]}), 200
+    return jsonify({"message": "Alert not found"}), 404
+
 # function to create/add an alert
 @app.route("/alert/add", methods=["POST"])
 def add_alert():
