@@ -206,7 +206,6 @@
                     try {
                         const response = await fetch(serviceURL, requestParam);
                         data = await response.json();
-                        console.log(data);
                         Swal.fire({
                             title: 'Success!',
                             text: "You have successfully made changes to your account",

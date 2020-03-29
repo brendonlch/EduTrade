@@ -17,6 +17,8 @@
     <script src="../css/dashboard/assets/js/jquery.scrollex.min.js"></script>
     <script src="../css/dashboard/assets/js/browser.min.js"></script>
     <script src="../css/dashboard/assets/js/breakpoints.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
 </head>
 
 <body class="is-preload">
@@ -117,9 +119,9 @@
                                             "<td>" + String(stockDetails.price) + "</td>";
 
                                         if (unrealised < 0) {
-                                            eachRow = eachRow + "<td style='color:#e63e32'>" + unrealised.toFixed(2) + "</td>";
+                                            eachRow = eachRow + "<td> <strong style='color:#e63e32'>" + unrealised.toFixed(2) + "</strong></td>";
                                         } else {
-                                            eachRow = eachRow + "<td style='color:#4caf50'>" + unrealised.toFixed(2) + "</td>";
+                                            eachRow = eachRow + "<td><strong style='color:#4caf50'>" + unrealised.toFixed(2) + "</strong></td>";
                                         }
                                         rows += "<tr>" + eachRow + "</tr>";
                                     }
@@ -244,6 +246,8 @@
                         <th>Symbol</th>
                         <th>Price</th>
                         <th>Alert Type</th>
+                        <th style="width:110px"></th>
+
                     </tr>
 
                     <script>
@@ -268,7 +272,9 @@
                                     var eachRow = "<td>" + alert.alertid + "</td>" +
                                         "<td>" + alert.symbol + "</td>" +
                                         "<td>" + alert.price + "</td>" +
-                                        "<td>" + alert.alerttype + "</td>";                                    rows += eachRow;
+                                        "<td>" + alert.alerttype + "</td>" +
+                                        "<td><i class='far fa-edit' style='padding: 0 3px'></i><i class='far fa-trash-alt' style='padding: 0 3px'></i></td>";
+                                        rows += "<tr>" + eachRow + "</tr>";
                                 }
                                 // add all the rows to the table
                                 $('#useralerts').append(rows);
@@ -305,6 +311,16 @@
                     try {
                         const response = await fetch(serviceURL, requestParam);
                         const data = await response.json();
+                        Swal.fire({
+                            title: 'Success!',
+                            text: "You have successfully created an alert for your stock",
+                            icon: 'success',
+                            confirmButtonColor: '#4caf50',
+                            confirmButtonText: 'Okay'}).then(
+                            function(){ 
+                                location.reload();
+                            }            
+                        )
                     } catch (error) {
                         // Errors when calling the service; such as network error,
                         // service offline, etc
@@ -313,13 +329,10 @@
 
                     } // error
                 })
-            </script>
-        </section>
+                $(function () {
+                    let alerts = getAlerts(serviceURL);
+                    })
 
-                        $(function () {
-                        
-                        let alerts = getAlerts(serviceURL);
-                        });
                     </script>
             </div>
         </section>
@@ -338,6 +351,14 @@
         function showError(message) {
             // Display an error under the main container
             alert(message);
+            Swal.fire({
+                            title: 'Error!',
+                            text: message,
+                            icon: 'error',
+                            confirmButtonColor: '#4caf50',
+                            confirmButtonText: 'Okay'
+                        })
+
         }
 
         async function getLatestStock(symbol) {
