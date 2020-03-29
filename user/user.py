@@ -14,7 +14,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 CORS(app)
-
 ###  This microservice contain User, Holdings, and Correlation class
 """
 List of Functions for User
@@ -174,9 +173,14 @@ def delete_user(username):
 
 @app.route("/user/update/<string:username>", methods=['POST'])
 def update_user(username):
-    if (User.query.filter_by(username=username).first()):
+    user = User.query.filter_by(username=username).first()
+    if user:
         data = request.get_json()
-        user = User(username, **data) # **data represents the rest of the data
+        user.name = data["name"]
+        user.age = data["age"]
+        user.email = data["email"]
+        user.institution = data["institution"]
+        user.password = data["password"]
     try:
         db.session.commit()
     except:
