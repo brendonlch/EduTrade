@@ -1,10 +1,11 @@
 <!DOCTYPE HTML>
-<html>
+<html style='scroll-behavior: smooth'>
 
 <head>
 	<title>EduTrade</title>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 	<link rel="stylesheet" href="../css/dashboard/assets/css/main.css" />
 	<!--===============================================================================================-->
 	<link rel="icon" type="image/png" href="../css/dashboard/images/icon.png" />
@@ -16,6 +17,7 @@
 	<script src="../css/dashboard/assets/js/browser.min.js"></script>
 	<script src="../css/dashboard/assets/js/breakpoints.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+	
 
 	<style>
 		input::-webkit-outer-spin-button,
@@ -30,6 +32,7 @@
 		
 		background-color:#d9d9d9;
 		position: relative;
+		
 		}
 	</style>
 	<script>
@@ -65,10 +68,10 @@
 						eachRow =
 							"<td>" + stock.symbol + "</td>" +
 							"<td>" + stock.stockname + "</td>" +
-							"<td>" + stock.volume + "</td>" +
+							"<td>" + stock.volume.toLocaleString() + "</td>" +
 							"<td>" + stock.price + "</td>" +
-							"<td><button type='submit' class='submitbtn' value='" + stock.symbol + "'>Buy / Sell</button></td>";
-						rows += "<tr>" + eachRow + "</tr>";
+							"<td><a href = '#trading'><button type='submit' class='submitbtn' style='width:10vw; padding: 0.5vmin; font-size:2.5vmin' value='" + stock.symbol + "'>Buy</button></a></td>";
+						rows += "<tr style='font-size:3vmin; font-family:Rouge Script, cursive'>" + eachRow + "</tr>";
 					}
 					// add all the rows to the table
 					$('#stockstable').append(rows);
@@ -116,8 +119,10 @@
 								dashboard</span></a></li>
 					<li><a href="#holdings" id="holdings-link"><span
 								class="icon solid fa-book-open">Holdings</span></a></li>
-					<li><a href="trading.html" id="trading-link"><span
-								class="icon solid fa-search-dollar">Trading</span></a></li>
+					<li><a href="#stocks" id="trading-link"><span
+								class="icon solid fa-search-dollar">View Market</span></a></li>
+					<li><a href="#trading" id="trading-link"><span
+									class="icon solid fa-search-dollar">Trading</span></a></li>
 					<li><a href="account.html" id="account-link"><span class="icon solid fa-user-circle">Account</span></a>
 					</li>
 				</ul>
@@ -129,26 +134,26 @@
 	<!-- Main -->
 	<div id="main">
 
-		<!-- Portfolio -->
-		<section id="stocks" style="background-image: none;">
+		<!-- All Stock -->
+		<section id="stocks" style="background-image: none; height:100vh">
             <div class="container">
-              <h2>Stocks List</h2><br><br>
-              <table id="stockstable">
-                <tr>
+              <h2 style ="font-size: 5vmin; font-family: 'Rouge Script', cursive">Stocks List</h2><br><br>
+              <table id="stockstable" class = "table table-striped">
+                <tr style = "font-size: 2.5vmin; font-family:'Rouge Script', cursive">
                   <th>Symbol</th>
                   <th>Name</th>
                   <th>Volume</th>
                   <th>Current Price ($)</th>
-                  <th>Trade</th>
+                  <th>Purchase</th>
                 </tr>
               </table>
             </div>
 		  </section>  
 		  
 		<!-- Purchasing stocks-->
-		<section id="trading" style="background-image: none;">
+		<section id="trading" style="background-image: none; height:100vh">
             <div class="container">
-              <h2>Purchase Here!</h2><br>
+              <h2 style ="font-size: 5vmin; font-family: 'Rouge Script', cursive">Purchase Here!</h2><br>
               <div class="row">
                 <table id="tradingtable" style="width: 350px; margin-left: 130px;">
                   <tr>
@@ -169,6 +174,7 @@
 				  </tr>
 				</table>
 				<form method= "POST" id="tradingform">
+					<nav>
 					<table class="box">
 						<tr style="background-color:#d9d9d9;">
 							<td style="font-size: larger; font-weight: bold; color:black">Quantity:</td>
@@ -184,6 +190,7 @@
 							<td><button type="button" class="purchasebutton" colspan="2" style ="width: 100px; height: 50px; font-size: large; font-weight: bold;">Purchase</button></td>
 						</tr>
 					</table>
+					</nav>
 				</form>
 			</div>
             </div>
@@ -235,7 +242,7 @@
 			var stockcurrentprice = parseFloat(document.getElementById('selectedprice').textContent);
 			var totalprice = parseFloat(document.getElementById('totalprice').value);
             var requestBody = {
-                username: "brydon", symbol: stocksymbol, price: totalprice, qty: userquantity, transactiontype: "Buy"
+                username: username, symbol: stocksymbol, price: totalprice, qty: userquantity, transactiontype: "Buy"
             };
         //   console.log(requestBody);
             postData(serviceURL, requestBody);
