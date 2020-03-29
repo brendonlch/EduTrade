@@ -1,143 +1,266 @@
 <!DOCTYPE HTML>
 <html>
-	<head>
-		<title>EduTrade</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="../css/dashboard/assets/css/main.css" />
-		<!--===============================================================================================-->
-		<link rel="icon" type="image/png" href="../images/icons/icon.png" />
-		<!--===============================================================================================-->
-		<!-- Scripts -->
-		<script src="../css/dashboard/assets/js/jquery.min.js"></script>
-		<script src="../css/dashboard/assets/js/jquery.scrolly.min.js"></script>
-		<script src="../css/dashboard/assets/js/jquery.scrollex.min.js"></script>
-		<script src="../css/dashboard/assets/js/browser.min.js"></script>
-		<script src="../css/dashboard/assets/js/breakpoints.min.js"></script>
-		<script src="../css/dashboard/assets/js/util.js"></script>
-		<script src="../css/dashboard/assets/js/main.js"></script>
-		<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-	</head>
 
-	<body class="is-preload">
+<head>
+    <title>EduTrade</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="../css/dashboard/assets/css/main.css" />
+    <!--===============================================================================================-->
+    <link rel="icon" type="image/png" href="../css/dashboard/images/icon.png" />
+    <!--===============================================================================================-->
+    <!-- Scripts -->
+    <script src="../css/dashboard/assets/js/jquery.min.js"></script>
+    <script src="../css/dashboard/assets/js/jquery.scrolly.min.js"></script>
+    <script src="../css/dashboard/assets/js/jquery.scrollex.min.js"></script>
+    <script src="../css/dashboard/assets/js/browser.min.js"></script>
+    <script src="../css/dashboard/assets/js/breakpoints.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 
-		
 
-		<!-- Header -->
-			<div id="header">
+</head>
 
-				<div class="top">
+<body class="is-preload">
 
-					<!-- Logo -->
-						<div id="logo">
-							<span class="image avatar48"><img src="../css/dashboard/images/earn.png" alt="" /></span>
-							<h1 id="title">BrydonMemeLord</h1>
-							<p>Balance &nbsp; $e-dollar</p>
-						</div>
+    <!-- Retrieve session -->
+    <script>
+        var username = sessionStorage.getItem("user");
+    </script>
 
-					<!-- Nav -->
-						<nav id="nav">
-							<ul>
-								<li><a href="#top" id="top-link"><span class="icon solid fa-home">My dashboard</span></a></li>
-								<li><a href="#holdings" id="holdings-link"><span class="icon solid fa-book-open">Holdings</span></a></li>
-								<li><a href="#market" id="about-link"><span class="icon solid fa-search-dollar">Market</span></a></li>
-								<li><a href="#account" id="accounts-link"><span class="icon solid fa-user-circle">Account</span></a></li>
-							</ul>
-						</nav>
+    <!-- Header -->
+    <div id="header">
+        <div class="top">
+            <!-- Logo -->
+            <div id="logo">
+                <h1 id="usernametop">Username</h1>
+                <p id="credits">Balance</p>
+                <p id="logout" style="font-size: small; text-align: right;"><a href = "login.html">Logout</a></p>
+            </div>
 
-				</div>
-			</div>
+            <!-- Nav -->
+            <nav id="nav">
+                <ul>
+                    <li><a href="dashboard.html" id="index-link"><span class="icon solid fa-home">My
+                                dashboard</span></a></li>
+                    <li><a href="holdings.php" id="holdings-link"><span
+                                class="icon solid fa-book-open">Holdings</span></a></li>
+                    <li><a href="trading.html" id="trading-link"><span
+                                class="icon solid fa-search-dollar">Trading</span></a></li>
+                    <li><a href="#account" id="account-link"><span class="icon solid fa-user-circle">Account</span></a>
+                    </li>
+                </ul>
+            </nav>
 
-		<!-- Main -->
-			<div id="main">
+        </div>
+    </div>
 
-				<!-- Intro -->
-				<section id="top" class="one cover dark">
-					<div class="container">
-						<h2>Account</h2>
-					</div>
-				</section>
+    <!-- Main -->
+    <div id="main">
 
-				<!-- Portfolio -->
-			<section id="account" class="four">
-				<div class="container">
-					<h2>Edit Profile</h2>
-					<hr>
-						<!-- Pic Upload -->
-						<div class="col-md-3">
-						<div class="text-center">
-							<img src="../css/dashboard/images/earn.png" class="avatar img-circle" alt="avatar" style="height: 200px; width: 300px;">
-							<h6>Upload a different photo...</h6>
-							<input type="file">
-						</div>
-						</div>
-						<!-- edit form column -->
-						<form class="form-horizontal" role="form">
-							<div class="form-group">
-							<label class="col-lg-3 control-label">Username:</label>
-							<div class="col-lg-8">
-								<input class="form-control" type="text" value="fetch username here">
-							</div>
-							</div>
-							<div class="form-group">
-							<label class="col-lg-3 control-label">Name:</label>
-								<div class="col-lg-8">
-									<input class="form-control" type="text" value="BrydonMemeLord">
-								</div>
-							</div>
-							<div class="form-group">
-							<label class="col-lg-3 control-label">Age:</label>
-								<div class="col-lg-8">
-									<input class="form-control" type="text" value="age">
-								</div>
-							</div>
-							<div class="form-group">
-							<label class="col-lg-3 control-label">Email:</label>
-								<div class="col-lg-8">
-									<input class="form-control" type="text" value="email@email.com">
-								</div>
-							</div>
-								<div class="form-group">
-								<label class="col-lg-3 control-label">Institution:</label>
-									<div class="col-lg-8">
-										<div class="ui-select">
-										<select id="user_time_zone" class="form-control">
-											<option value="School 1">School 1</option>
-											<option value="School 2">School 2</option>
-											<option value="School 3">School 3</option>
-											<option value="School 4">School 4</option>
-											<option value="School 5">School 5</option>
-											<option value="School 6" selected="selected">School 6</option>
-											<option value="School 7">School 7</option>
-											<option value="School 8">School 8</option>
-										</select>
-										</div>
-									</div>
-								</div>
-								<div class="form-group">
-								<label class="col-md-3 control-label">Password:</label>
-									<div class="col-md-8">
-										<input class="form-control" type="password" value="password">
-									</div>
-								</div>
-								<div class="form-group">
-								<label class="col-md-3 control-label">Confirm password:</label>
-								<div class="col-md-8">
-									<input class="form-control" type="password" value="password">
-								</div>
-								</div>
-								<div class="form-group">
-								<label class="col-md-3 control-label"></label>
-								<div class="col-md-8">
-									<input type="button" class="btn btn-primary" value="Save Changes">
-										<span></span>
-									<input type="reset" class="btn btn-default" value="Cancel">
-								</div>
-								</div>
-							</form>
-							</div>
-				</div>
-			</section>
-					
-	</body>
+        <!-- Intro -->
+        <section id="top" class="one cover dark">
+            <div class="container">
+                <h2>Here is your account details!</h2>
+            </div>
+        </section>
+
+        <!-- Portfolio -->
+        <section id="account" class="four">
+            <div class="container">
+                <h2>Edit Profile</h2>
+                <hr>
+                <h1 id="error">
+                    <h1>
+
+
+                        <!-- edit form column -->
+                        <form id="accountform" method="POST" class="form-horizontal" role="form">
+                            <div class="form-group">
+                                <label class="col-lg-3 control-label">Username:</label>
+                                <div class="col-lg-8">
+                                    <input id="username" class="form-control" type="text" value="" disabled
+                                        style="background: #dddddd">
+                                </div>
+                            </div>
+                            <div class="
+                            ">
+                                <label class="col-lg-3 control-label">Name:</label>
+                                <div class="col-lg-8">
+                                    <input id="name" class="form-control" type="text" value="" disabled
+                                        style="background: #dddddd">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 control-label">Age:</label>
+                                <div class="col-lg-8">
+                                    <input id="age" class="form-control" type="text" value="" disabled
+                                        style="background: #dddddd">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 control-label">Email:</label>
+                                <div class="col-lg-8">
+                                    <input id="email" class="form-control" type="text" value="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 control-label">Institution:</label>
+                                <div class="col-lg-8">
+                                    <div class="ui-select">
+                                        <input id="institution" class="form-control" type="text" value="">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">Password:</label>
+                                <div class="col-md-8">
+                                    <input id="password" class="form-control" type="password" value="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">Confirm password:</label>
+                                <div class="col-md-8">
+                                    <input id="confirmedpassword" class="form-control" type="password">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-3 control-label"></label>
+                                <div class="col-md-8">
+                                    <input type="submit" class="btn btn-primary" value="Save Changes">
+                                    <span></span>
+                                    <input type="reset" id="reset" class="btn btn-default" value="Reset">
+                                </div>
+                            </div>
+                        </form>
+            </div>
+
+
+            <script>
+                function isEmail(email) {
+                    var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+                    return regex.test(email);
+                }
+
+                async function getData(serviceURL) {
+                    let requestParam = {
+                        headers: {
+                            "content-type": "charset=UTF-8"
+                        },
+                        mode: "cors",
+                        method: "GET",
+                    }
+
+                    try {
+                        const response = await fetch(serviceURL, requestParam);
+                        data = await response.json();
+                        // console.log(data);
+                    } catch (error) {
+                        console.error(error);
+                        "Currently unable to display your holdings";
+                        $("form").hide();
+                        Swal.fire({
+                            title: 'Error!',
+                            text: "Unable to display user account details",
+                            icon: 'error',
+                            confirmButtonColor: '#4caf50',
+                            confirmButtonText: 'Okay'
+                        })
+                    }
+                    username = data.username;
+                    document.getElementById("username").placeholder = username;
+                    document.getElementById("username").value = username;
+                    document.getElementById("usernametop").textContent = username;
+                    name = data.name;
+                    document.getElementById("name").placeholder = name;
+                    document.getElementById("name").value = name;
+                    age = data.age;
+                    document.getElementById("age").placeholder = age;
+                    document.getElementById("age").value = age;
+                    email = data.email;
+                    document.getElementById("email").placeholder = email;
+                    document.getElementById("email").value = email;
+                    institution = data.institution;
+                    document.getElementById("institution").placeholder = institution;
+                    document.getElementById("institution").value = institution;
+                    password = data.password;
+                    document.getElementById("password").value = password;
+                    credits = data.credit;
+                    document.getElementById("credits").textContent = "Credits: " + credits;
+                }
+
+                $(function () {
+                    var serviceURL = "http://localhost:5010/user/" + username;
+                    user = getData(serviceURL);
+                });
+
+                async function postData(serviceURL, requestBody) {
+                    var requestParam = {
+                        headers: {
+                            "Accept": "application/json;",
+                            "Content-Type": "application/json;"
+                        },
+                        mode: 'cors', // other options: no-cors, etc.
+                        method: 'POST',
+                        body: JSON.stringify(requestBody),
+                    };
+                    try {
+                        const response = await fetch(serviceURL, requestParam);
+                        data = await response.json();
+                        console.log(data);
+                        Swal.fire({
+                            title: 'Success!',
+                            text: "You have successfully made changes to your account",
+                            icon: 'success',
+                            confirmButtonColor: '#4caf50',
+                            confirmButtonText: 'Okay'
+                        })
+
+                    } catch (error) {
+                        console.log(error);
+                    }
+                }
+                $("#accountform").submit(function (event) {
+                    event.preventDefault();
+                    var email = document.getElementById("email").value;
+                    var password = document.getElementById("password").value;
+                    var confirmedPassword = document.getElementById("confirmedpassword").value;
+                    if (!isEmail(email)) {
+                        Swal.fire({
+                            title: 'Invalid Email',
+                            text: "Please enter a valid email",
+                            icon: 'warning',
+                            confirmButtonColor: '#4caf50',
+                            confirmButtonText: 'Okay'
+                        })
+                        return false;
+                    } else if (password != confirmedPassword) {
+                        Swal.fire({
+                            title: 'Password Mismatch',
+                            text: "Please enter a correct password",
+                            icon: 'warning',
+                            confirmButtonColor: '#4caf50',
+                            confirmButtonText: 'Okay'
+                        })
+                        return false;
+                    }
+                    var username = document.getElementById("username").value;
+                    var serviceURL = "http://localhost:5010/user/update/" + username;
+                    var requestBody = {
+                        username: document.getElementById("username").value,
+                        name: document.getElementById("name").value,
+                        age: document.getElementById("age").value,
+                        email: document.getElementById("email").value,
+                        institution: document.getElementById("institution").value,
+                        password: document.getElementById("password").value
+                    };
+                    postData(serviceURL, requestBody);
+                });
+            </script>
+
+            <script src="../css/dashboard/assets/js/util.js"></script>
+            <script src="../css/dashboard/assets/js/main.js"></script>
+            <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+</body>
+
 </html>
