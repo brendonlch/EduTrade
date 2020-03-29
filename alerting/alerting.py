@@ -91,7 +91,6 @@ def add_alert():
     # Automating Alert ID
     alerts = [alert.json() for alert in Alert.query.all()]
     data['alertid'] = 1 if len(alerts) == 0 else max(alerts, key = lambda x:x['alertid'])['alertid'] + 1
-
     alert = Alert(**data) #data represents the rest of the data 
     try:
         db.session.add(alert)
@@ -107,7 +106,9 @@ def update_alert():
     data = request.get_json()
     alert = Alert.query.filter_by(username=data["username"], symbol=data["symbol"], alerttype=data["alerttype"]).first() # gets data by username, symbol and alerttype
     
-    alert.percentage = data["percentage"]
+    if alert:
+        alert.price = data['price']
+        alert.alerttype = data['alerttype']
     
     try:
         db.session.commit()
