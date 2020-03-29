@@ -6,7 +6,7 @@ import sys
 import time
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from datetime import datetime, timedelta
 from os import environ
 
