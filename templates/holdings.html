@@ -155,23 +155,24 @@
             <div class="container">
                 <h2>Set new alert</h2><br>
                 <form class="form-horizontal" role="form" id="alertForm">
-                    <input type="hidden" value="" id="username" name="username" >
+                    <input type="hidden" value="" id="username" name="username">
                     <table>
                         <tr>
                             <td colspan="1">
                                 <label class="col-lg-3 control-label">Symbol:</label><input type="text" id="symbol"
-                                    name="symbol" size="15"/>
+                                    name="symbol" size="15" />
                             </td>
                             <td colspan="2">
                                 <label class="col-lg-3 control-label">Alert Type:</label>
                                 <select id="alerttype" name="alerttype">
-                                    <option value="less"> < </option>
+                                    <option value="less">
+                                        < </option>
                                     <option value="more"> > </option>
                                 </select>
                             </td>
                             <td colspan="1">
                                 <label class="col-lg-3 control-label">Price:</label><input type="text" id="price"
-                                    name="price" size="15"/>
+                                    name="price" size="15" />
                             </td>
                         </tr>
                     </table>
@@ -180,65 +181,114 @@
 
             </div>
             <script>
-                $("#alertForm").submit( function () {
+                $("#alertForm").submit(function () {
                     let requestParam = {
-                                headers: {
-                                    "content-type": "charset=UTF-8"
-                                },
-                                mode: 'cors', // allow cross-origin resource sharing
-                                method: 'POST',
-                            }
-                            // Change serviceURL to your own
-                            var serviceURL = "http://127.0.0.1:5010/holdings/" + username;
+                        headers: {
+                            "content-type": "charset=UTF-8"
+                        },
+                        mode: 'cors', // allow cross-origin resource sharing
+                        method: 'POST',
+                    }
+                    // Change serviceURL to your own
+                    var serviceURL = "http://127.0.0.1:5010/holdings/" + username;
 
-                            try {
-                                const response =
-                                    await fetch(serviceURL, requestParam);
-                                const data = await response.json();
-                                var holdings = data.holdings; //the arr is in data.holdings of the JSON data
+                    try {
+                        const response = await fetch(serviceURL, requestParam);
+                        const data = await response.json();
+                        var holdings = data.holdings; //the arr is in data.holdings of the JSON data
 
-                                // array or array.length are false
-                                if (!holdings || !holdings.length) {
-                                    showError('You have no holdings!')
+                        // array or array.length are false
+                        if (!holdings || !holdings.length) {
+                            showError('You have no holdings!')
+                        } else {
+                            // for loop to setup all table rows with obtained holdings data
+                            var rows = "";
+                            for (const stock of holdings) {
+                                let stockDetails = await getLatestStock(stock.symbol);
+                                var unrealised = (stockDetails.price - stock.buyprice) * stock.qty;
+
+                                var eachRow = "<td>" + stock.symbol + "</td>" +
+                                    "<td>" + stockDetails.stockname + "</td>" +
+                                    "<td>" + String(stock.qty) + "</td>" +
+                                    "<td>" + String(stock.buyprice) + "</td>" +
+                                    "<td>" + String(stockDetails.price) + "</td>";
+
+                                if (unrealised < 0) {
+                                    eachRow = eachRow + "<td style='color:#e63e32'>" + unrealised.toFixed(2) + "</td>";
                                 } else {
-                                    // for loop to setup all table rows with obtained holdings data
-                                    var rows = "";
-                                    for (const stock of holdings) {
-                                        let stockDetails = await getLatestStock(stock.symbol);
-                                        var unrealised = (stockDetails.price - stock.buyprice) * stock.qty;
-
-                                        var eachRow = "<td>" + stock.symbol + "</td>" +
-                                            "<td>" + stockDetails.stockname + "</td>" +
-                                            "<td>" + String(stock.qty) + "</td>" +
-                                            "<td>" + String(stock.buyprice) + "</td>" +
-                                            "<td>" + String(stockDetails.price) + "</td>";
-
-                                        if (unrealised < 0) {
-                                            eachRow = eachRow + "<td style='color:#e63e32'>" + unrealised.toFixed(2) + "</td>";
-                                        } else {
-                                            eachRow = eachRow + "<td style='color:#4caf50'>" + unrealised.toFixed(2) + "</td>";
-                                        }
-                                        rows += "<tr>" + eachRow + "</tr>";
-                                    }
-                                    // add all the rows to the table
-                                    $('#allHoldings').append(rows);
+                                    eachRow = eachRow + "<td style='color:#4caf50'>" + unrealised.toFixed(2) + "</td>";
                                 }
-                            } catch (error) {
-                                var rows = "<tr><td colspan='6'>Currently unable to display your holdings.</td></tr>";
-                                $('#allHoldings').append(rows);
-                                // Errors when calling the service; such as network error,
-                                // service offline, etc
-                                showError
-                                    ('There is a problem retrieving holdings data, please try again later.<br />' + error);
+                                rows += "<tr>" + eachRow + "</tr>";
+                            }
+                            // add all the rows to the table
+                            $('#allHoldings').append(rows);
+                        }
+                    } catch (error) {
+                        var rows = "<tr><td colspan='6'>Currently unable to display your holdings.</td></tr>";
+                        $('#allHoldings').append(rows);
+                        // Errors when calling the service; such as network error,
+                        // service offline, etc
+                        showError
+                            ('There is a problem retrieving holdings data, please try again later.<br />' + error);
 
-                            } // error
+                    } // error
                 })
             </script>
         </section>
 
-        <section id="another" class="two">
+        <section id="currentalerts" class="two">
             <div class="container">
-                <h2>Another Section</h2><br>
+                <h2>Current Alerts</h2><br>
+                <table id="useralerts">
+                    <tr>
+                        <th>Alert ID</th>
+                        <th>Symbol</th>
+                        <th>Price</th>
+                        <th>Alert Type</th>
+                    </tr>
+
+                    <script>
+
+                        var serviceURL = "http://localhost:5030/alert/" + username;
+                        async function getAlerts(serviceURL) {
+                            let requestParam = {
+                                headers: {
+                                    "content-type": "charset=UTF-8"
+                                },
+                                mode: "cors",
+                                method: "GET",
+                            }
+
+                            try {
+                                const response = await fetch(serviceURL, requestParam);
+                                data = await response.json();
+                                var alerts = data.alerts;
+                                // for loop to setup all table rows with obtained alert data
+                                var rows = "";
+                                for (const alert of alerts) {
+                                    var eachRow = "<td>" + alert.alertid + "</td>" +
+                                        "<td>" + alert.symbol + "</td>" +
+                                        "<td>" + alert.price + "</td>" +
+                                        "<td>" + alert.alerttype + "</td>";                                    rows += eachRow;
+                                }
+                                // add all the rows to the table
+                                $('#useralerts').append(rows);
+                            }
+                            catch (error) {
+                                var rows = "<tr><td colspan='6'>Currently unable to display your alerts.</td></tr>";
+                                $('#useralerts').append(rows);
+                                // Errors when calling the service; such as network error,
+                                // service offline, etc
+                                showError
+                                    ('There is a problem retrieving alert data, please try again later.<br />' + error);
+                            } // error
+                        };
+
+                        $(function () {
+                        
+                        let alerts = getAlerts(serviceURL);
+                        });
+                    </script>
             </div>
         </section>
 
