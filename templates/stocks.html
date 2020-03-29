@@ -1,6 +1,5 @@
 <!DOCTYPE HTML>
 <html>
-
 <head>
 	<title>EduTrade</title>
 	<meta charset="utf-8" />
@@ -16,7 +15,12 @@
 	<script src="../css/dashboard/assets/js/browser.min.js"></script>
 	<script src="../css/dashboard/assets/js/breakpoints.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-
+	<script type = "text/javascript" src = "https://www.gstatic.com/charts/loader.js">
+	</script>
+	<script type = "text/javascript">
+	   google.charts.load('current', {packages: ['corechart','line']});  
+	</script>
+	
 	<style>
 		input::-webkit-outer-spin-button,
 		input::-webkit-inner-spin-button {
@@ -50,13 +54,7 @@
 
 				// array or array.length are falsy
 				if (data.length == 0) {
-					Swal.fire({
-                            title: 'Warning!',
-                            text: "Stock list empty or undefined",
-                            icon: 'warning',
-                            confirmButtonColor: '#4caf50',
-                            confirmButtonText: 'Okay'
-                        })
+					console.log("no stocks");
 				} else {
 					// for loop to setup all table rows with obtained book data
 					var rows = "";
@@ -76,15 +74,10 @@
 			} catch (error) {
 				// Errors when calling the service; such as network error, 
 				// service offline, etc
-				Swal.fire({
-                            title: 'Error!',
-                            text: "Unable to display stock data",
-                            icon: 'error',
-                            confirmButtonColor: '#4caf50',
-                            confirmButtonText: 'Okay'
-                        })
+				console.log(error);
 			} // error
 		});
+		
 	</script>
 </head>
 
@@ -143,7 +136,69 @@
                 </tr>
               </table>
             </div>
-		  </section>  
+		</section>  
+
+		<!-- Stock past prices chart-->
+		<section id="pastpricechart" style="background-color: gray;">
+			<div id = "pastpricecontainer" style = "width: 500px; height: 400px; margin: 0 200px 0 200px;">
+			<script>
+			   function drawChart() {
+				  // Define the chart to be drawn.
+
+				  var data = new google.visualization.DataTable();
+				  data.addColumn('string', 'Month');
+				  data.addColumn('number', 'Symbol Name');
+				 
+				  data.addRows([
+					 ['Jan',  7.0],
+					 ['Feb',  6.9],
+					 ['Mar',  9.5]
+				  ]);
+					 
+				  // Set chart options
+				  var options = {'title' : 'Past Prices',
+					 hAxis: {
+						title: 'Time'
+					 },
+					 vAxis: {
+						title: 'Prices'
+					 },   
+					 'width':650,
+					 'height':400	  
+				  };
+	  
+				  // Instantiate and draw the chart.
+				  var chart = new google.visualization.LineChart(document.getElementById('pastpricecontainer'));
+				  chart.draw(data, options);
+
+				  var months = ['Apr', 'May', 'Jun', 'Jul'];
+					setInterval(function() {
+						var count = 0;
+						// instead of this random, you can make an ajax call for the current cpu usage or what ever data you want to display
+						var random = Math.random() * 30 + 20;
+						data.addRow([months[count], random]);
+						chart.draw(data, options);
+						count++;
+					}, 250);
+			   }
+			   google.charts.setOnLoadCallback(drawChart);
+			
+			</script>
+			</div>
+		</section>
+
+		<!-- Stock news of ind stock-->
+		<section>
+			<div class="container">
+				<table id="newstable">
+					<tr>
+						<th>Author</th>
+						<th>News Title</th>
+						<th>News URL</th>
+					</tr>
+				</table>
+			</div>
+		</section>
 		  
 		<!-- Purchasing stocks-->
 		<section id="trading" style="background-image: none;">
@@ -192,6 +247,7 @@
 	</div>
 
 	<script>
+		
         $(document).on('click', '.purchasebutton', function() {  
           console.log(rowStock);
           var stocksymbol = rowStock[0];
@@ -250,6 +306,51 @@
         //   console.log(stockcurrentprice);
         });
 
+		async function getnewsbysymbol(ticker){
+			
+				// Change serviceURL to your own
+				var serviceURL = "http://127.0.0.1:6020/news/getnews/" + ticker;
+				// console.log("I AM HERE");
+				try {
+					const response =
+						await fetch(
+						serviceURL, { method: 'GET', mode: 'cors' }
+					);
+					const data = await response.json();
+					var stocksnews = data.news //the arr is in data.books of the JSON data
+					// console.log(stocksnews);
+					for (const news of stocksnews) {
+						// console.log(stock)
+						eachRow =
+							"<td>" + stock.author + "</td>" +
+							"<td>" + stock.title + "</td>" +
+							"<td>" + stock.url + "</td>" ;
+						rows += "<tr>" + eachRow + "</tr>";
+					}
+					$('#newstable').append(rows);
+				} catch (error) {
+					// Errors when calling the service; such as network error, 
+					// service offline, etc
+					Swal.fire({
+						title: 'Error!',
+						text: "Unable to display stock data",
+						icon: 'error',
+						confirmButtonColor: '#4caf50',
+						confirmButtonText: 'Okay'
+					})
+				// error
+			};
+		};
+
+		$(document).on("click", "#stockstable tbody tr", function() {
+			var thisrow = $(this).closest("tr")
+			var stocksymbol=thisrow.find("td:eq(0)").html();
+			// console.log(stocksymbol);
+			getnewsbysymbol(stocksymbol);
+		});
+
+
+
         $(document).on('click', '.submitbtn', function() {
           var currentRow=$(this).closest("tr");
           var stocksymbol=currentRow.find("td:eq(0)").html();
@@ -272,6 +373,8 @@
 	<script src="../css/dashboard/assets/js/util.js"></script>
 	<script src="../css/dashboard/assets/js/main.js"></script>
 	<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+	<script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
+	<script src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
 
 
 
