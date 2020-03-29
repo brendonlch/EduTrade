@@ -44,6 +44,9 @@ services:
     user:
         #build: ./user/      
         image: earnestng/esd_stock:user
+        networks: 
+            - kong-net
+        container_name: user1
         environment: 
             # - "dbURL=mysql+mysqlconnector://root:root@host.docker.internal:3306/user" # for mac
             - "dbURL=mysql+mysqlconnector://root@host.docker.internal:3306/user" # for windows
@@ -52,6 +55,9 @@ services:
     trading:            
         #build: ./trading/   
         image: earnestng/esd_stock:trading
+        networks: 
+            - kong-net
+        container_name: trading1
         environment: 
             # - "dbURL=mysql+mysqlconnector://root:root@host.docker.internal:3306/transaction" # for mac
             - "dbURL=mysql+mysqlconnector://root@host.docker.internal:3306/transaction" # for windows
@@ -61,6 +67,9 @@ services:
     alerting:           
         #build: ./alerting/  
         image: earnestng/esd_stock:alerting
+        networks: 
+            - kong-net
+        container_name: alerting
         environment: 
             # - "dbURL=mysql+mysqlconnector://root:root@host.docker.internal:3306/alert" # for mac
             - "dbURL=mysql+mysqlconnector://root@host.docker.internal:3306/alert" # for windows
@@ -69,6 +78,9 @@ services:
     stock:              
         #build: ./stock/     
         image: earnestng/esd_stock:stock
+        networks: 
+            - kong-net
+        container_name: stock
         environment: 
             # - "dbURL=mysql+mysqlconnector://root:root@host.docker.internal:3306/stock" # for mac
             - "dbURL=mysql+mysqlconnector://root@host.docker.internal:3306/stock" # for windows
@@ -77,6 +89,9 @@ services:
     news:               
         #build: ./news/      
         image: earnestng/esd_stock:news
+        networks: 
+            - kong-net
+        container_name: news
         environment: 
             # - "dbURL=mysql+mysqlconnector://root:root@host.docker.internal:3306/news" # for mac
             - "dbURL=mysql+mysqlconnector://root@host.docker.internal:3306/news" # for windows
