@@ -17,7 +17,15 @@
 	<script src="../css/dashboard/assets/js/breakpoints.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 
-	<style>
+	
+	<head>
+		<title>EduTrade</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+		
+		<style>
 		input::-webkit-outer-spin-button,
 		input::-webkit-inner-spin-button {
 			-webkit-appearance: none;
@@ -156,4 +164,233 @@
 
 </body>
 
+		.btnSelect {
+			background-color: #f44336;
+			border: 2px solid #f44336;
+			border-radius: 4px;
+			color: white;
+			cursor: pointer;
+		}
+		
+        </style>
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+			<script>
+				var rowStock = new Array();
+				// Helper function to display error message
+				function showError(message) {
+					// Hide the table and button in the event of error
+					$('#stockstable').hide()
+					// Display an error under the main container
+					// $('#main')
+					// 	.append("<label>"+message+"</label>");
+					
+				}
+			 
+				// anonymous async function 
+				// - using await requires the function that calls it to be async
+				$(async() => {           
+					// Change serviceURL to your own
+					var serviceURL = "http://127.0.0.1:6010/stock/allstockdata";
+			 
+					try {
+						const response =
+						 await fetch(
+						   serviceURL, { method: 'GET', mode: 'cors' }
+						);
+						const data = await response.json();
+						var stocks = data.stocksdata //the arr is in data.books of the JSON data
+						// console.log(stocks)
+			 
+						// array or array.length are falsy
+						if (data.length == 0) {
+							showError('Stocks list empty or undefined.')
+						} else {
+							// for loop to setup all table rows with obtained book data
+							var rows = "";
+							for (const stock of stocks) {
+								// console.log(stock)
+								eachRow =
+									"<td>" + stock.symbol + "</td>" +
+									"<td>" + stock.stockname + "</td>" +
+									"<td>" + stock.volume + "</td>" +
+									"<td>" + stock.price + "</td>" +
+									"<td><button type='button' class='submitbtn'>Buy / Sell</button></td>";
+								rows += "<tr>" + eachRow + "</tr>";
+							}
+							// add all the rows to the table
+							$('#stockstable').append(rows);
+						}
+					} catch (error) {
+						// Errors when calling the service; such as network error, 
+						// service offline, etc
+						showError('There is a problem retrieving books data, please try again later.<br />'+error);
+					} // error
+				});
+			</script>
+			<style>
+				input::-webkit-outer-spin-button,
+				input::-webkit-inner-spin-button {
+				-webkit-appearance: none;
+				margin: 0;
+				}
+				</style>
+				<!-- <script>
+					$(document).ready(function(){
+					   $("#userquantity").change(function() {
+						  $("#totalprice").val($("#userquantity").val() * 2);
+					  });
+					});
+				</script> -->
+				
+	</head>
+
+	<body>
+
+		<!-- Header -->
+			<div id="header">
+
+				<div class="top">
+
+					<!-- Logo -->
+						<div id="logo">
+							<span class="image avatar48"><img src="images/earn.png" alt="" /></span>
+							<h1 id="title">BrydonMemeLord</h1>
+							<p>Balance &nbsp; $e-dollar</p>
+						</div>
+
+					<!-- Nav -->
+						<nav id="nav">
+							<ul>
+								<li><a href="#top" id="top-link"><span class="icon solid fa-home">My dashboard</span></a></li>
+								<li><a href="#portfolio" id="portfolio-link"><span class="icon solid fa-book-open">Portfolio</span></a></li>
+								<li><a href="#market" id="about-link"><span class="icon solid fa-search-dollar">Market</span></a></li>
+								<li><a href="#settings" id="contact-link"><span class="icon solid fa-user-circle">Account</span></a></li>
+							</ul>
+						</nav>
+
+				</div>
+			</div>
+
+		<!-- Main -->
+			<div id="main">
+				<!-- Portfolio -->
+					<section id="stocks" style="background-image: none;">
+						<div class="container">
+							<h2>Stocks List</h2><br><br>
+							<table id="stockstable">
+								<tr>
+									<th>Symbol</th>
+									<th>Name</th>
+									<th>Volume</th>
+									<th>Current Price ($)</th>
+									<th>Trade</th>
+								</tr>
+							</table>
+						</div>
+					</section>	
+
+					<section id="trading" style="background-image: none;">
+						<div class="container">
+							<h2>Trading List</h2><br><br>
+							<form method= "POST" id="tradingform">
+								<table id="tradingtable">
+									<tr>
+										<th>Symbol</th>
+										<th>Name</th>
+										<th>Volume</th>
+										<th>Current Price ($)</th>
+									</tr>
+								</table>
+
+								<input type="text" id="userquantity" placeholder="Quantity" min="1" max="999" style="width: 120px; text-align: center; padding-bottom: 10px; left: 43%;"/>
+								<br>
+									<select id="transactiontype" name="transactiontype" style="width:400px; text-align: center; left: 28%;">
+										<option value="default" selected>Select transaction type</option>
+										<option value="buy">Buy</option>
+										<option value="sell">Sell</option>
+									</select>
+									<br>
+									<h4>Total Price ($):</h4> <br>
+									<input type="text" id="totalprice" disabled readonly style="width: 120px; text-align: center; left: 43%; padding-bottom: 10px; font-weight: bold;"/>
+								</div>
+								<br>
+								<div class="col-12">
+									<button type="button" class="purchasebutton" style ="width: 100px; height: 50px; font-size: large; font-weight: bold;">Purchase</button>
+								</div>
+							</form>
+							
+						</div>
+					</section>	
+			</div>
+			<script>
+				$(document).on('click', '.purchasebutton', function() {	
+					console.log(rowStock);
+					var stocksymbol = rowStock[0];
+					var stockname = rowStock[1];
+					var stockvol = rowStock[2];
+					var stockcurrentprice = rowStock[3];
+					var userquantity = $('#userquantity').val();
+					// document.getElementById("#totalprice").value = userquantity * stockcurrentprice
+					// console.log(stocksymbol, stockname, stockvol, stockcurrentprice);
+					console.log(userquantity);
+					async function postData(serviceURL, requestBody) {
+					    var requestParam = {
+					        headers: { "Accept": "application/json;", "Content-Type": "application/json;" },
+					        mode: 'cors', // other options: no-cors, etc.
+					        method: 'POST',
+					        body: JSON.stringify(requestBody)
+					    }
+					    try {
+					        const response = await fetch(serviceURL,requestParam);
+					        data = await response.json();
+					        console.log(data);
+					    } catch (error) {
+					        console.error("no");
+					    }
+					}
+				//     var username = "earnest"; // e.g., 9781449474453
+				    var serviceURL = "http://127.0.0.1:5020/purchase";
+				    var requestBody = {
+				        username: username, symbol: stocksymbol, price: stockcurrentprice, qty: userquantity, transactiontype: "Buy"
+				    };
+					console.log(requestBody);
+				    postData(serviceURL, requestBody);
+				});
+				</script>
+			<script>
+				$(document).on('change', '#userquantity', function() {
+					var userquantity = document.getElementById('userquantity').value;
+					var stockcurrentprice = document.getElementById('currentprice').textContent;
+					document.getElementById("totalprice").value = userquantity * stockcurrentprice;
+					console.log(userquantity);
+					console.log(stockcurrentprice);
+				});
+
+				$(document).on('click', '.submitbtn', function() {
+					$("#tradingtable").find("tr:not(:first)").remove();
+					var currentRow=$(this).closest("tr");
+					var stocksymbol=currentRow.find("td:eq(0)").html();
+					var stockname=currentRow.find("td:eq(1)").html();
+					var stockvolume=currentRow.find("td:eq(2)").html();
+					var stockcurrentprice=currentRow.find("td:eq(3)").html();
+					rowStock = [stocksymbol, stockname, stockvolume, stockcurrentprice];
+					eachRow =		
+									"<tr id='"+ stocksymbol +"'><td>" + stocksymbol + "</td>" +
+									"<td>" + stockname + "</td>" +
+									"<td>" + stockvolume + "</td>" +	
+									"<td id = 'currentprice'>" + stockcurrentprice + "</td></tr>";
+					$('#tradingtable').append(eachRow);    
+					var userquantity = document.getElementById('userquantity').value;
+					document.getElementById("totalprice").value = userquantity * stockcurrentprice;
+				});
+			</script>
+			
+	</body>
 </html>
