@@ -159,7 +159,7 @@ def get_all_stock_data():
     all_symbol = get_all_symbol()
     stockdata_dict = {"stocksdata": []}
     for symbol in all_symbol:
-        latest_stock = Stockdata.query.filter_by(symbol=symbol).first()
+        latest_stock = Stockdata.query.filter_by(symbol=symbol).order_by(Stockdata.time.desc()).first()
         stockdata_dict["stocksdata"].append(latest_stock.json())
     return jsonify(stockdata_dict)
 
