@@ -107,7 +107,9 @@ def update_alert():
     data = request.get_json()
     alert = Alert.query.filter_by(username=data["username"], symbol=data["symbol"], alerttype=data["alerttype"]).first() # gets data by username, symbol and alerttype
     
-    alert.percentage = data["percentage"]
+    if alert:
+        alert.price = data['price']
+        alert.alerttype = data['alerttype']
     
     try:
         db.session.commit()
