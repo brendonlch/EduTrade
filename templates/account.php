@@ -37,7 +37,7 @@
 						<nav id="nav">
 							<ul>
 								<li><a href="index.html" id="index-link"><span class="icon solid fa-home">My dashboard</span></a></li>
-								<li><a href="holdings.html" id="holdings-link"><span class="icon solid fa-book-open">Holdings</span></a></li>
+								<li><a href="holdings.php" id="holdings-link"><span class="icon solid fa-book-open">Holdings</span></a></li>
 								<li><a href="trading.html" id="trading-link"><span class="icon solid fa-search-dollar">Market</span></a></li>
 								<li><a href="#account" id="account-link"><span class="icon solid fa-user-circle">Account</span></a></li>
 							</ul>

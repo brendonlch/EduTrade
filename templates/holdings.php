@@ -1,9 +1,4 @@
-<?php
-    // header("Access-Control-Allow-Origin: *");
-    // header("Access-Control-Allow-Methods: GET, POST");
-    // header("Access-Control-Allow-Headers: X-Requested-With");
-    ?>
-    <!DOCTYPE HTML>
+<!DOCTYPE HTML>
 
 <html>
 
@@ -51,7 +46,7 @@
                     <li><a id="holdings-link"><span class="icon solid fa-book-open">Holdings</span></a></li>
                     <li><a href="stocks.html" id="about-link"><span class="icon solid fa-search-dollar">Market</span></a>
                     </li>
-                    <li><a href="#settings" id="contact-link"><span class="icon solid fa-user-circle">Account</span></a>
+                    <li><a href="account.php" id="contact-link"><span class="icon solid fa-user-circle">Account</span></a>
                     </li>
                 </ul>
             </nav>
@@ -72,7 +67,7 @@
         <!-- Portfolio -->
         <section id="holdings" class="two">
             <div class="container">
-                <h2>Holdings</h2><br><br>
+                <h2>Holdings</h2><br>
                 <table id="allHoldings">
                     <tr>
                         <th>Symbol</th>
@@ -85,11 +80,15 @@
                     <script>
                         // anonymous async function
                         // - using await requires the function that calls it to be async
-                        $ (async () => {
-                            let requestParam = {
-                                headers: { "content-type": "charset=UTF-8" },
-                                mode: 'cors', // allow cross-origin resource sharing
-                                method: 'GET',
+
+                        $(async () => {
+
+                            let requestParam = {
+                                headers: {
+                                    "content-type": "charset=UTF-8"
+                                },
+                                mode: 'cors', // allow cross-origin resource sharing
+                                method: 'GET',
                             }
                             // Change serviceURL to your own
                             var serviceURL = "http://127.0.0.1:5010/holdings/<?php echo $username ?>";
@@ -110,11 +109,11 @@
                                         let stockDetails = await getLatestStock(stock.symbol);
                                         var unrealised = (stockDetails.price - stock.buyprice) * stock.qty;
 
-                                        var eachRow = "<td>" + stock.symbol + "</td>"
-                                                    + "<td>" + stockDetails.stockname + "</td>"
-                                                    + "<td>" + String(stock.qty) + "</td>"
-                                                    + "<td>" + String(stock.buyprice) + "</td>"
-                                                    + "<td>" + String(stockDetails.price) + "</td>";
+                                        var eachRow = "<td>" + stock.symbol + "</td>" +
+                                            "<td>" + stockDetails.stockname + "</td>" +
+                                            "<td>" + String(stock.qty) + "</td>" +
+                                            "<td>" + String(stock.buyprice) + "</td>" +
+                                            "<td>" + String(stockDetails.price) + "</td>";
 
                                         if (unrealised < 0) {
                                             eachRow = eachRow + "<td style='color:#e63e32'>" + unrealised.toFixed(2) + "</td>";
@@ -135,28 +134,99 @@
                                     ('There is a problem retrieving holdings data, please try again later.<br />' + error);
 
                             } // error
+
                         });
                     </script>
-                    <!-- <tr>
-                        <td colspan="6" align="right">
-                        </td>
-                    </tr> -->
                 </table>
-                <a href="">Click here to set your stock limits!<i class="fas fa-angle-double-right fa-2x"></i></a>
+
+
+            </div>
+            <a href="#alerts" id="newAlert">Set an alert so you know when you buy / sell!<br><i class="fas fa-angle-double-down fa-2x"></i></a>
+            <!--
+                    Alerts requires user to add symbol, price and alert type (< / >)
+                 -->
+            <div>
             </div>
         </section>
 
-        <!-- <section id="news" class="three">
+        <section id="alerts" class="three">
             <div class="container">
-                <h2>Market</h2><br>
-            </div> -->
+            <script>
+                    async function getStockSymbols() {
+                        let requestParam = {
+                            headers: {
+                                "content-type": "charset=UTF-8"
+                            },
+                            mode: 'cors', // allow cross-origin resource sharing
+                            method: 'GET',
+                        }
+                        // Change serviceURL to your own
+                        var serviceURL = "http://127.0.0.1:6010/stock/symbol";
 
-            <!-- Footer -->
-            <!-- <div id="footer"> -->
+                        try {
+                            const response =
+                                await fetch(serviceURL, requestParam);
+                            const data = await response.json();
+                            var holdings = data.holdings; //the arr is in data.books of the JSON data
+
+                            // array or array.length are false
+                            if (!holdings || !holdings.length) {
+                                showError('You have no holdings!')
+                            } else {
+                                // for loop to setup all table rows with obtained book data
+                                var options = "";
+                                for (const stock of holdings) {
+                                    options = options + `<option value="${stock.symbol}">< "${stock.symbol}"</option>`;
+                                    console.log(options);
+                                }
+                                // add all the rows to the table
+                                console.log(options);
+                                document.getElementById('symbol').innerHTML = rows;
+                            }
+                        } catch (error) {
+                            // Errors when calling the service; such as network error,
+                            // service offline, etc
+                            showError
+                                ('There is a problem retrieving stock symbols from the database. Please try again later.<br />' + error);
+
+                        } // error
+
+                    }
+                </script>  
+                <h2>Alerts</h2><br>
+                <form class="form-horizontal" role="form">
+                    <label class="col-lg-3 control-label">Symbol:</label><select id="symbol" name="symbol">
+                        <script>
+                            let symbols = await getStockSymbols();
+                        </script>
+                    </select>
+                    <label class="col-lg-3 control-label">Price:</label><input type="text" id="quantity" name="quantity" />
+                    <label class="col-lg-3 control-label">Alert Type:</label><select id="type" name="type">
+                        <option value="less">
+                            < "less than" </option> <option value="more">> "more than"</i>
+                        </option>
+                    </select>
+                </form>
+
+            </div>
+        </section>
+
+        <!-- <section id="another" class="two">
+            <div class="container">
+                <h2>Another Section</h2><br>
+            </div>
+        </section> -->
+
+        <!-- Footer -->
+        <!-- <div id="footer"> -->
 
     </div>
 
     <script>
+        // $(function () {
+        //     $("#alerts").hide();
+        // })
+
         // Helper function to display error message
         function showError(message) {
             // Hide the table and button in the event of error
@@ -169,10 +239,12 @@
         }
 
         async function getLatestStock(symbol) {
-            let requestParam = {
-                headers: { "content-type": "charset=UTF-8" },
-                mode: 'cors', // allow cross-origin resource sharing
-                method: 'GET',
+            let requestParam = {
+                headers: {
+                    "content-type": "charset=UTF-8"
+                },
+                mode: 'cors', // allow cross-origin resource sharing
+                method: 'GET',
             }
             var serviceURL = "http://127.0.0.1:6010/stock/" + symbol;
 
@@ -194,6 +266,10 @@
 
             } // error
         }
+
+        $("#newAlert").click(function() {
+            $("#alerts").show();
+        })
     </script>
 
 

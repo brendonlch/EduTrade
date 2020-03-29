@@ -24,14 +24,14 @@ services:
 
     ############################################################
     ##  if we want to run a database inside our docker :)
-    db: 
-        image: mysql
-        ports: 
-            - "3308:3306"
-        expose:
-            - '3308'
-        volumes:
-            - ./sql-files:/docker-entrypoint-initdb.d
+    # db: 
+    #     image: mysql
+    #     ports: 
+    #         - "3308:3306"
+    #     expose:
+    #         - '3308'
+    #     volumes:
+    #         - ./sql-files:/docker-entrypoint-initdb.d
     ############################################################
 
     user:
