@@ -212,9 +212,21 @@
               try {
                   const response = await fetch(serviceURL,requestParam);
                   data = await response.json();
-                  console.log(data);
+                  Swal.fire({
+                            title: 'Success!',
+                            text: "You can see your purchased stocks in your holdings!",
+                            icon: 'success',
+                            confirmButtonColor: '#4caf50',
+                            confirmButtonText: 'Okay'
+                        })
               } catch (error) {
-                  console.error("no");
+				Swal.fire({
+                            title: 'Unsuccessful!',
+                            text: "Please check if you have enough credits to purchase!",
+                            icon: 'fail',
+                            confirmButtonColor: '#4caf50',
+                            confirmButtonText: 'Okay'
+                        })
               }
           }
         //     var username = "earnest"; // e.g., 9781449474453
