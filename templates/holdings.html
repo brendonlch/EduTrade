@@ -86,7 +86,7 @@
 
                             let requestParam = {
                                 headers: {
-                                    "content-type": "charset=UTF-8"
+                                    "Content-Type": "charset=UTF-8"
                                 },
                                 mode: 'cors', // allow cross-origin resource sharing
                                 method: 'GET',
@@ -154,8 +154,7 @@
         <section id="alerts" class="three">
             <div class="container">
                 <h2>Set new alert</h2><br>
-                <form class="form-horizontal" role="form" id="alertForm">
-                    <input type="hidden" value="" id="username" name="username">
+                <form class="form-horizontal" role="form" id="alertForm" method = "POST">
                     <table>
                         <tr>
                             <td colspan="1">
@@ -165,9 +164,8 @@
                             <td colspan="2">
                                 <label class="col-lg-3 control-label">Alert Type:</label>
                                 <select id="alerttype" name="alerttype">
-                                    <option value="less">
-                                        < </option>
-                                    <option value="more"> > </option>
+                                    <option value="<"> < </option>
+                                    <option value=">"> > </option>
                                 </select>
                             </td>
                             <td colspan="1">
@@ -176,6 +174,7 @@
                             </td>
                         </tr>
                     </table>
+                    <input type="submit">
                 </form>
 
 
@@ -283,6 +282,39 @@
                                     ('There is a problem retrieving alert data, please try again later.<br />' + error);
                             } // error
                         };
+                $("#alertForm").submit( async function (event) {
+                    event.preventDefault();
+
+                    var user = username;
+                    var symbol = $("#symbol").val();
+                    var price = $("#price").val();
+                    var alerttype = $("#alerttype").val();
+
+                    var post = JSON.stringify({username: user, symbol: symbol, price: price, alerttype: alerttype});
+                    console.log(post);
+
+                    let requestParam = {
+                                headers: {"Content-Type": "application/json;", "Accept": "application/json"},
+                                body: JSON.stringify({username: user, symbol: symbol, price: price, alerttype: alerttype}),
+                                mode: 'cors', // allow cross-origin resource sharing
+                                method: 'POST',
+                            }
+                    // Change serviceURL to your own
+                    var serviceURL = "http://127.0.0.1:5030/alert/add";
+
+                    try {
+                        const response = await fetch(serviceURL, requestParam);
+                        const data = await response.json();
+                    } catch (error) {
+                        // Errors when calling the service; such as network error,
+                        // service offline, etc
+                        showError
+                            ('There is an error creating alerts, please try again later.\n' + error);
+
+                    } // error
+                })
+            </script>
+        </section>
 
                         $(function () {
                         
@@ -298,19 +330,14 @@
     </div>
 
     <script>
-        // $(function () {
-        //     $("#alerts").hide();
-        // })
+        $(function () {
+            $("#alerts").hide();
+        })
 
         // Helper function to display error message
         function showError(message) {
-            // Hide the table and button in the event of error
-            $('#booksTable').hide();
-            $('#addBookBtn').hide();
-
             // Display an error under the main container
-            $('#main-container')
-                .append("<label>" + message + "</label>");
+            alert(message);
         }
 
         async function getLatestStock(symbol) {
@@ -348,7 +375,6 @@
     <script src="../css/dashboard/assets/js/util.js"></script>
     <script src="../css/dashboard/assets/js/main.js"></script>
     <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-
 
 </body>
 
