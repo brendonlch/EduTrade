@@ -91,7 +91,6 @@ def add_alert():
     # Automating Alert ID
     alerts = [alert.json() for alert in Alert.query.all()]
     data['alertid'] = 1 if len(alerts) == 0 else max(alerts, key = lambda x:x['alertid'])['alertid'] + 1
-
     alert = Alert(**data) #data represents the rest of the data 
     try:
         db.session.add(alert)
