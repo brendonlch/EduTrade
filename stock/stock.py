@@ -12,7 +12,7 @@ from os import environ
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/stock'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/stock'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -156,7 +156,12 @@ def get_all_stock_price():
 
 @app.route("/stock/allstockdata")
 def get_all_stock_data():
-    return jsonify({"stocksdata": [stockdata.json() for stockdata in Stockdata.query.all()]})
+    all_symbol = get_all_symbol()
+    stockdata_dict = {"stocksdata": []}
+    for symbol in all_symbol:
+        latest_stock = Stockdata.query.filter_by(symbol=symbol).first()
+        stockdata_dict["stocksdata"].append(latest_stock.json())
+    return jsonify(stockdata_dict)
 
 @app.route("/stock/symbol")
 def get_all_symbol():
