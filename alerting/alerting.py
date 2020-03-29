@@ -102,19 +102,18 @@ def add_alert():
     return jsonify(alert.json()), 201 # adds the alert into alert database
 
 # function to update an alert
-@app.route("/alert/update", methods=["POST"])
+@app.route("/alert/update", methods=['POST'])
 def update_alert():
     data = request.get_json()
-    alert = Alert.query.filter_by(username=data["username"], symbol=data["symbol"], alerttype=data["alerttype"]).first() # gets data by username, symbol and alerttype
-    
-    alert.percentage = data["percentage"]
-    
+    alert = Alert.query.filter_by(username=data["username"], symbol=data["symbol"], alerttype=data["alerttype"]).first()
+    if alert:
+        alert.price = data["price"]
+        alert.alerttype = data["alerttype"]
     try:
         db.session.commit()
     except:
         return jsonify({"message": "An error occurred updating the alert."}), 500
-
-    return jsonify(alert.json()), 201 # updates the alert in alert database
+    return jsonify(alert.json()), 201
 
 # function to delete an alert
 @app.route("/alert/delete", methods=["POST"])
