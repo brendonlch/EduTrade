@@ -56,7 +56,7 @@ class Stockdata(db.Model):
     stockname = db.Column(db.String(64), nullable=False)
     price = db.Column(db.Float(precision=2), nullable=False)
     volume = db.Column(db.Integer(), nullable=False)
-    time = db.Column(db.String(64), nullable=False)
+    time = db.Column(db.String(64), nullable=False, primary_key=True)
 
     def __init__(self, symbol, stockname, price, volume, time): #Initialise the objects
         self.symbol = symbol
@@ -139,11 +139,18 @@ def get_all_stock():
         eprint()
     return "System stopped"
 
+@app.route("/stock/past/<string:symbol>") # StockData
+def get_all_data(symbol):
+    return jsonify({"stock": [stocksData.json() for stocksData in Stockdata.query.filter_by(symbol=symbol)]})
+
+
 @app.route("/stock/<string:symbol>") # StockData
 def get_stock_data(symbol):
     latest_stock = Stockdata.query.filter_by(symbol=symbol).first()
     #stock_price = latest_stock.price
     return jsonify(latest_stock.json())
+
+
 
 @app.route("/stock/all")  # Symbol : Price
 def get_all_stock_price():
