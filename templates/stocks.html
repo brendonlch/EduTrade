@@ -11,6 +11,9 @@
 	<link rel="icon" type="image/png" href="../css/dashboard/images/icon.png" />
 	<!-- ===============================================================================================-->
 	<!-- Scripts -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+	
+
 	<script src="../css/dashboard/assets/js/jquery.min.js"></script>
 	<script src="../css/dashboard/assets/js/jquery.scrolly.min.js"></script>
 	<script src="../css/dashboard/assets/js/jquery.scrollex.min.js"></script>
@@ -19,10 +22,13 @@
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 	<script type = "text/javascript" src = "https://www.gstatic.com/charts/loader.js">
 	</script>
+	<!-- For Modal-->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />	
+
 	<script type = "text/javascript">
 	   google.charts.load('current', {packages: ['corechart','line']});  
 	</script>
-	
 	<style>
 		input::-webkit-outer-spin-button,
 		input::-webkit-inner-spin-button {
@@ -36,10 +42,19 @@
 		
 		background-color:#d9d9d9;
 		position: relative;
+		}
+		a, a:active, a:focus{
+			outline: none; /* Works in Firefox, Chrome, IE8 and above */ 
 		
 		}
+		.modal {
+			width: 60vw;
+			max-width: 80vw;
+			}
+
 	</style>
 	<script>
+		
 		// anonymous async function 
 		// - using await requires the function that calls it to be async
 		$(async () => {
@@ -68,7 +83,9 @@
 							"<td>" + stock.stockname + "</td>" +
 							"<td>" + stock.volume.toLocaleString() + "</td>" +
 							"<td>" + stock.price + "</td>" +
-							"<td><a href = '#trading'><button type='submit' class='submitbtn' style='width:10vw; padding: 0.5vmin; font-size:2.5vmin' value='" + stock.symbol + "'>Buy</button></a></td>";
+							"<td><a href = '#trading'><button type='submit' class='submitbtn' style='width:10vw; padding: 0.5vmin; font-size:2.5vmin' value='" + stock.symbol + "'>Buy</button></a></td>" +
+							"<td style='width:12vw'><a href='#'><i id='newsicon' style='padding:0 1vw' class='far fa-lg fa-newspaper'></i></a>"+
+							"<i style='padding:0 1vw' class='fas fa-lg fa-chart-line'></i></td>";
 						rows += "<tr style='font-size:3vmin; font-family:Rouge Script, cursive'>" + eachRow + "</tr>";
 					}
 					// add all the rows to the table
@@ -126,26 +143,43 @@
 
 	<!-- Main -->
 	<div id="main">
+		<!-- Stock news of ind stock-->
+		<section id = "news" style="overflow:scroll;" class='modal'>
+			<h2 style ="font-size: 5vmin; font-family: 'Rouge Script', cursive; text-align: center;">Related News</h2>
+			<div class="container">
+				<table id="newstable" class = "table table-striped">
+					<tr style ="font-size: 2.5vmin; font-family:'Rouge Script', cursive">
+						<th>Author</th>
+						<th>News Title</th>
+						<th>Published Date</th>
+					</tr>
+				</table>
+			</div>
+		</section>
 
 		<!-- All Stock -->
-		<section id="stocks" style="background-image: none; height:100vh">
+		<section id="stocks" style="background-image: none; height:100vh; position: relative">
             <div class="container">
-              <h2 style ="font-size: 5vmin; font-family: 'Rouge Script', cursive">Stocks List</h2><br><br>
+              <h2 style ="font-size: 5vmin; font-family: 'Rouge Script', cursive">Stocks List</h2><br>
               <table id="stockstable" class = "table table-striped">
                 <tr style = "font-size: 2.5vmin; font-family:'Rouge Script', cursive">
                   <th>Symbol</th>
                   <th>Name</th>
                   <th>Volume</th>
                   <th>Current Price ($)</th>
-                  <th>Purchase</th>
+				  <th>Purchase</th>
+				  <th></th>
                 </tr>
               </table>
             </div>
 		</section>  
 
-		<!-- Stock past prices chart-->
-		<section id="pastpricechart" style="background-color: gray;">
-			<div id = "pastpricecontainer" style = "width: 500px; height: 400px; margin: 0 200px 0 200px;">
+		
+
+		<!-- Stock past prices chart
+		<section id="pastpricechart" style="height:100vh">
+			<div id = "pastpricecontainer">
+				<h2 style ="font-size: 5vmin; font-family: 'Rouge Script', cursive">Price Chart</h2>
 			<script>
 			   function drawChart() {
 				  // Define the chart to be drawn.
@@ -190,28 +224,17 @@
 			
 			</script>
 			</div>
-		</section>
+		</section> -->
 
-		<!-- Stock news of ind stock-->
-		<section>
-			<div class="container">
-				<table id="newstable">
-					<tr>
-						<th>Author</th>
-						<th>News Title</th>
-						<th>News URL</th>
-					</tr>
-				</table>
-			</div>
-		</section>
+		
 		  
 		<!-- Purchasing stocks-->
-		<section id="trading" style="background-image: none; height:100vh">
+		<section id="trading" style="background-image: none; height:100vh; position:relative">
             <div class="container">
-              <h2 style ="font-size: 5vmin; font-family: 'Rouge Script', cursive">Purchase Here!</h2><br>
+              <h2 style ="font-size: 4vmin; font-family: 'Rouge Script', cursive">Purchase Here!</h2><br>
               <div class="row">
                 <table id="tradingtable" style="width: 350px; margin-left: 130px;">
-                  <tr>
+                  <tr rowspan=2>
 					<th>Symbol</th>
 					<td style="background-color: grey;" id="selectedsymbol">-</td>
 				  </tr>
@@ -254,9 +277,8 @@
 	</div>
 
 	<script>
-		
+
         $(document).on('click', '.purchasebutton', function() {  
-          console.log(rowStock);
           var stocksymbol = rowStock[0];
           var stockname = rowStock[1];
           var stockvol = rowStock[2];
@@ -303,9 +325,8 @@
         //   console.log(requestBody);
             postData(serviceURL, requestBody);
         });
-        </script>
-      <script>
-        $(document).on('change', '#userquantity', function() {
+
+        $(document).on('input', '#userquantity', function() {
           var userquantity = document.getElementById('userquantity').value;
           var stockcurrentprice = document.getElementById('selectedprice').textContent;
           document.getElementById("totalprice").value = userquantity * stockcurrentprice;
@@ -314,10 +335,10 @@
         });
 
 		async function getnewsbysymbol(ticker){
+				$("#newstable").find("tr:gt(0)").remove(); // clear table
 				var newsrows = "";
 				// Change serviceURL to your own
 				var serviceURL = "http://127.0.0.1:6020/news/getnews/" + ticker;
-				// console.log("I AM HERE");
 				try {
 					const response =
 						await fetch(
@@ -330,9 +351,9 @@
 						// console.log(stock)
 						eachrownews =
 							"<td>" + news.author + "</td>" +
-							"<td>" + news.title + "</td>" +
-							"<td><a href='" + news.url + "'>" + news.url +"</a></td>" ;
-						newsrows += "<tr>" + eachrownews + "</tr>";
+							"<td><a href='" + news.url + "' target='_blank'>" + news.title + "</a></td>" +
+							"<td>" + news.publish_date + "</td>";
+						newsrows += "<tr style='font-size:2vmin; font-family:Rouge Script, cursive'>" + eachrownews + "</tr>";
 						console.log(eachrownews);
 					}
 					$('#newstable').append(newsrows);
@@ -343,11 +364,12 @@
 				// error
 			};
 		};
-
-		$(document).on("click", "#stockstable tbody tr", function() {
+		$(document).on("click", "#newsicon", function() {
+			$("#news").modal({
+				fadeDuration: 200,
+			});
 			var thisrow = $(this).closest("tr")
 			var stocksymbol=thisrow.find("td:eq(0)").html();
-			// console.log(stocksymbol);
 			getnewsbysymbol(stocksymbol);
 		});
 
@@ -375,8 +397,9 @@
 	<script src="../css/dashboard/assets/js/util.js"></script>
 	<script src="../css/dashboard/assets/js/main.js"></script>
 	<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-	<script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
-	<script src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
+	<!-- <script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script> -->
+	<!-- <script src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script> -->
+	<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>. -->
 
 
 
