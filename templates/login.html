@@ -85,7 +85,7 @@
 				);
 				const data = await response.json();
 				if (data['status'] == 'success'){
-					window.location.replace("http://localhost/GitHub/EduTrade/templates/dashboard.html");
+					window.location.replace("./dashboard.html");
 					sessionStorage.setItem("user", username);
 				}
 				else if (data['status'] == 'fail') {
