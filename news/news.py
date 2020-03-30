@@ -79,6 +79,9 @@ def get_news_by_tickers(symbol):
     
   return jsonify({"Status": "Successfully added"}) ,201
 
+@app.route("/news/getnews/<string:ticker>", methods=['GET'])
+def get_news_db_ticker(ticker):
+  return jsonify({"news": [news.json() for news in News.query.filter_by(ticker=ticker)]})
 
 
 if __name__ == '__main__':

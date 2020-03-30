@@ -52,7 +52,7 @@ services:
             - "dbURL=mysql+mysqlconnector://root@host.docker.internal:3306/user" # for windows
         ports:
             - "5010:5010"
-    trading:            
+    trading1:            
         #build: ./trading/   
         image: earnestng/esd_stock:trading
         networks: 
@@ -61,15 +61,22 @@ services:
         environment: 
             # - "dbURL=mysql+mysqlconnector://root:root@host.docker.internal:3306/transaction" # for mac
             - "dbURL=mysql+mysqlconnector://root@host.docker.internal:3306/transaction" # for windows
-
         ports:
             - "5020:5020"
+    trading2:
+        image: earnestng/esd_stock:trading
+        networks: 
+            - kong-net
+        container_name: trading2
+        environment: 
+            # - "dbURL=mysql+mysqlconnector://root:root@host.docker.internal:3306/transaction" # for mac
+            - "dbURL=mysql+mysqlconnector://root@host.docker.internal:3306/transaction" # for windows
     alerting:           
         #build: ./alerting/  
         image: earnestng/esd_stock:alerting
         networks: 
             - kong-net
-        container_name: alerting
+        container_name: alerting1
         environment: 
             # - "dbURL=mysql+mysqlconnector://root:root@host.docker.internal:3306/alert" # for mac
             - "dbURL=mysql+mysqlconnector://root@host.docker.internal:3306/alert" # for windows
@@ -80,7 +87,7 @@ services:
         image: earnestng/esd_stock:stock
         networks: 
             - kong-net
-        container_name: stock
+        container_name: stock1
         environment: 
             # - "dbURL=mysql+mysqlconnector://root:root@host.docker.internal:3306/stock" # for mac
             - "dbURL=mysql+mysqlconnector://root@host.docker.internal:3306/stock" # for windows
@@ -91,7 +98,7 @@ services:
         image: earnestng/esd_stock:news
         networks: 
             - kong-net
-        container_name: news
+        container_name: news1
         environment: 
             # - "dbURL=mysql+mysqlconnector://root:root@host.docker.internal:3306/news" # for mac
             - "dbURL=mysql+mysqlconnector://root@host.docker.internal:3306/news" # for windows
@@ -167,6 +174,27 @@ services:
             - "8001:8001"
             - "8443:8443"
             - "8444:8444"
+        # plugins:
+        #     name: cors
+        #     service: edutrade.trading
+        #     config: 
+        #         origins: 
+        #             - '*'
+        #         methods:
+        #             - GET
+        #             - POST
+        #         headers:
+        #             - Accept
+        #             - Accept-Version
+        #             - Content-Length
+        #             - Content-MD5
+        #             - Content-Type
+        #             - Date
+        #             - X-Auth-Token
+        #         exposed_headers:
+        #             - X-Auth-Token
+        #         credentials: true
+        #         max_age: 3600
     
     #######################################
     # Konga database prepare

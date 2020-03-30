@@ -8,8 +8,8 @@ from flask_cors import CORS
 from os import environ
 
 app = Flask(__name__)
-# app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/user'
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/user'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -197,12 +197,15 @@ def get_all_holdings(username):
 
 def minus_credit(order):
     user = User.query.filter_by(username=order['username']).first()
-    user.credit = user.credit - (order['qty']*order['price'])
-    try:
-        db.session.commit()
-    except:
+    if user.credit >= (order['qty']*order['price']):
+        user.credit = user.credit - (order['qty']*order['price'])
+        try:
+            db.session.commit()
+        except:
+            return False
+        return True
+    else:
         return False
-    return True
 
 def add_credit(order):
     user = User.query.filter_by(username=order['username']).first()

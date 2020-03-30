@@ -16,11 +16,11 @@ import pika
 # If see errors like "ModuleNotFoundError: No module named 'pika'", need to
 # make sure the 'pip' version used to install 'pika' matches the python version used.
 
-hostname = "host.docker.internal" # default broker hostname. Web management interface default at http://localhost:15672
-port = 5672 # default messaging port.
-    # connect to the broker and set up a communication channel in the 
-credentials = pika.PlainCredentials('guest', 'guest')
-connection = pika.BlockingConnection(pika.ConnectionParameters(host=hostname, port=port, virtual_host="/", credentials=credentials))
+# hostname = "host.docker.internal" # default broker hostname. Web management interface default at http://localhost:15672
+# port = 5672 # default messaging port.
+#     # connect to the broker and set up a communication channel in the 
+# credentials = pika.PlainCredentials('guest', 'guest')
+# connection = pika.BlockingConnection(pika.ConnectionParameters(host=hostname, port=port, virtual_host="/", credentials=credentials))
 
 
 def receive_trade():
