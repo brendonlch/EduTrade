@@ -11,8 +11,8 @@ from os import environ
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/news'
+# app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/news'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 CORS(app)
@@ -57,8 +57,6 @@ class News(db.Model):
 @app.route("/news/<string:symbol>", methods =['GET'])
 def get_news_by_tickers(symbol):
   url = (f'https://stocknewsapi.com/api/v1?tickers={symbol}&items=10&token=yiuzo44nggvo8trouq4lkmtsdq4bclz7omhvqkmq')
-
-
   response = requests.get(url)
   metadata = response.json()
   for news in metadata["data"]:
