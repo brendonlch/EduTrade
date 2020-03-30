@@ -2273,20 +2273,24 @@ input,  textarea {
 			}
 
 			#main > section.one {
-				background-color: #81918E;
+				background-color: #ebf1f1;
 				background-image: url("../../images/background2.jpg");
 			}
 
 			#main > section.two {
-				background-color: #f5fafa;
+				background-color: #e2e7e7;
 			}
 
 			#main > section.three {
-				background-color: #ecf1f1;
+				background-color: #ebf1f1;
 			}
 
 			#main > section.four {
-				background-color: #e8edec;
+				background-color: #e2e7e7;
+			}
+
+			#main > section.five {
+				background-color: #ebf1f1;
 			}
 
 /* Wide */
