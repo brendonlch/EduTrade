@@ -18,6 +18,7 @@
 	<script src="../css/dashboard/assets/js/browser.min.js"></script>
 	<script src="../css/dashboard/assets/js/breakpoints.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+	<script src="../js/strftime.js"></script>
 
 </head>
 
@@ -113,12 +114,12 @@
 									for (const stock of holdings) {
 										let stockDetails = await getLatestStock(stock.symbol);
 										var unrealised = (stockDetails.price - stock.buyprice) * stock.qty;
-										const date = new Date(stock.datepurchased);
-
+										var date = new Date(stock.datepurchased);
+										date.setHours(date.getHours() - 8);
 										var eachRow = "<td>" + stock.symbol + "</td>" +
 											"<td>" + stockDetails.stockname + "</td>" +
 											"<td>" + String(stock.qty) + "</td>" +
-											"<td>" + date.toLocaleString('en-GB') + "</td>" +
+											"<td>" + strftime("%Y-%m-%d %H:%M:%S", date) + "</td>" +
 											"<td>" + String(stock.buyprice) + "</td>" +
 											"<td>" + String(stockDetails.price) + "</td>";
 
@@ -463,6 +464,7 @@
 		  var userquantity = $('#userquantity').val();
 		//   console.log(userquantity);
 		  async function postData(serviceURL, requestBody) {
+			  console.log(JSON.stringify(requestBody));
 			  var requestParam = {
 				  headers: { "Accept": "application/json;", "Content-Type": "application/json;" },
 				  mode: 'cors', // other options: no-cors, etc.
@@ -472,13 +474,16 @@
 			  try {
 				  const response = await fetch(serviceURL,requestParam);
 				  data = await response.json();
-				  Swal.fire({
+				  if (data) {
+					Swal.fire({
 							title: 'Success!',
 							text: "You have sold your stocks!",
 							icon: 'success',
 							confirmButtonColor: '#4caf50',
 							confirmButtonText: 'Okay'
 						})
+				  }
+
 			  } catch (error) {
 				Swal.fire({
 							title: 'Unsuccessful!',
@@ -499,6 +504,7 @@
 			postData(serviceURL, requestBody);
 		});
 
+		// Upon changing the value in "Quantity" field, auto calculate and display
 		$(document).on('change', '#userquantity', function() {
 		  var userquantity = document.getElementById('userquantity').value;
 		  var stockcurrentprice = document.getElementById('selectedprice').textContent;
@@ -508,6 +514,7 @@
 		//   console.log(stockcurrentprice);
 		});
 
+		// Upon clicking the "Sell Now" button, auto fill the form
 		$(document).on('click', '.submitbtn', function() {
 		  var currentRow=$(this).closest("tr");
 		  var holdingsymbol=currentRow.find("td:eq(0)").html();
