@@ -314,7 +314,7 @@
         });
 
 		async function getnewsbysymbol(ticker){
-			
+				var newsrows = "";
 				// Change serviceURL to your own
 				var serviceURL = "http://127.0.0.1:6020/news/getnews/" + ticker;
 				// console.log("I AM HERE");
@@ -325,26 +325,21 @@
 					);
 					const data = await response.json();
 					var stocksnews = data.news //the arr is in data.books of the JSON data
-					// console.log(stocksnews);
+					console.log(stocksnews);
 					for (const news of stocksnews) {
 						// console.log(stock)
-						eachRow =
-							"<td>" + stock.author + "</td>" +
-							"<td>" + stock.title + "</td>" +
-							"<td>" + stock.url + "</td>" ;
-						rows += "<tr>" + eachRow + "</tr>";
+						eachrownews =
+							"<td>" + news.author + "</td>" +
+							"<td>" + news.title + "</td>" +
+							"<td><a href='" + news.url + "'>" + news.url +"</a></td>" ;
+						newsrows += "<tr>" + eachrownews + "</tr>";
+						console.log(eachrownews);
 					}
-					$('#newstable').append(rows);
+					$('#newstable').append(newsrows);
 				} catch (error) {
 					// Errors when calling the service; such as network error, 
 					// service offline, etc
-					Swal.fire({
-						title: 'Error!',
-						text: "Unable to display stock data",
-						icon: 'error',
-						confirmButtonColor: '#4caf50',
-						confirmButtonText: 'Okay'
-					})
+					// console.log(error);
 				// error
 			};
 		};
