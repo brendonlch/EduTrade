@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `news` (
   `ticker` varchar(64) NOT NULL, 
   `title` varchar(2048) NOT NULL,
   `url` varchar(1000) NOT NULL,
-  PRIMARY KEY (`url`)
+  PRIMARY KEY (`url`,`ticker`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --

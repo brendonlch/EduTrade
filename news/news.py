@@ -30,7 +30,7 @@ class News(db.Model):
     publish_date = db.Column(db.DateTime, nullable=False)
     ticker = db.Column(db.String(64), primary_key=True)
     title = db.Column(db.String(2048), nullable=False)
-    url = db.Column(db.String(1000), primary_key=True)
+    url = db.Column(db.String(500), primary_key=True)
 
     def __init__(self, author, description, publish_date, ticker, title, url): #Initialise the objects
         self.author = author
