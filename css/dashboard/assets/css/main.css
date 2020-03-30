@@ -45,6 +45,22 @@ table {
 	border-spacing: 0;
 }
 
+
+.slideRightToLeft {
+    background-color: white;
+    color: white;
+    padding: 10px;
+    margin: 5px 0;
+    margin-left: 100%;
+    min-width: 100%;
+    transition: all 0.5s;
+}
+
+.slideRightToLeft.show {
+    display: block;
+    margin-left: 0%;
+}
+
 td.center {
 	text-align: center;
 }
@@ -94,10 +110,10 @@ input,  textarea {
 			-webkit-animation: none !important;
 			-ms-animation: none !important;
 			animation: none !important;
-			-moz-transition: none !important;
+			/* -moz-transition: none !important;
 			-webkit-transition: none !important;
 			-ms-transition: none !important;
-			transition: none !important;
+			transition: none !important; */
 		}
 
 	input, textarea, select {
@@ -165,10 +181,10 @@ input,  textarea {
 		text-decoration: none;
 		color: inherit;
 		border-bottom: dotted 1px rgba(128, 128, 128, 0.5);
-		-moz-transition: color 0.35s ease-in-out, border-bottom-color 0.35s ease-in-out;
+		/* -moz-transition: color 0.35s ease-in-out, border-bottom-color 0.35s ease-in-out;
 		-webkit-transition: color 0.35s ease-in-out, border-bottom-color 0.35s ease-in-out;
 		-ms-transition: color 0.35s ease-in-out, border-bottom-color 0.35s ease-in-out;
-		transition: color 0.35s ease-in-out, border-bottom-color 0.35s ease-in-out;
+		transition: color 0.35s ease-in-out, border-bottom-color 0.35s ease-in-out; */
 		outline: 0;
 	}
 
@@ -1856,10 +1872,10 @@ input,  textarea {
 		padding: 0.75em 1em 0.75em 1em;
 		box-shadow: inset 0 0.1em 0.1em 0 rgba(0, 0, 0, 0.05);
 		border: solid 1px rgba(0, 0, 0, 0.15);
-		-moz-transition: all 0.35s ease-in-out;
+		/* -moz-transition: all 0.35s ease-in-out;
 		-webkit-transition: all 0.35s ease-in-out;
 		-ms-transition: all 0.35s ease-in-out;
-		transition: all 0.35s ease-in-out;
+		transition: all 0.35s ease-in-out; */
 	}
 
 		form input[type="text"]:focus,
@@ -1965,10 +1981,10 @@ input,  textarea {
 		background-image: -webkit-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15)), url("images/overlay.png");
 		background-image: -ms-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15)), url("images/overlay.png");
 		background-image: linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15)), url("images/overlay.png");
-		-moz-transition: background-color 0.35s ease-in-out;
+		/* -moz-transition: background-color 0.35s ease-in-out;
 		-webkit-transition: background-color 0.35s ease-in-out;
 		-ms-transition: background-color 0.35s ease-in-out;
-		transition: background-color 0.35s ease-in-out;
+		transition: background-color 0.35s ease-in-out; */
 	}
 
 		input[type="button"]:hover,
@@ -2094,10 +2110,10 @@ input,  textarea {
 
 			#header .icons a {
 				color: #41484c;
-				-moz-transition: color 0.35s ease-in-out;
-				-webkit-transition: color 0.35s ease-in-out;
+				/* -moz-transition: color 0.35s ease-in-out;
+				-webkit-transition: color  ease-in-out;
 				-ms-transition: color 0.35s ease-in-out;
-				transition: color 0.35s ease-in-out;
+				transition: color 0.35s ease-in-out; */
 			}
 
 				#header .icons a:hover {
@@ -2151,10 +2167,10 @@ input,  textarea {
 				text-decoration: none;
 				outline: 0;
 				border: 0;
-				-moz-transition: none;
+				/* -moz-transition: none;
 				-webkit-transition: none;
 				-ms-transition: none;
-				transition: none;
+				transition: none; */
 			}
 
 				#nav ul li a span {
@@ -2436,10 +2452,10 @@ input,  textarea {
 				-webkit-transform: translateX(-275px);
 				-ms-transform: translateX(-275px);
 				transform: translateX(-275px);
-				-moz-transition: -moz-transform 0.5s ease;
+				/* -moz-transition: -moz-transform 0.5s ease;
 				-webkit-transition: -webkit-transform 0.5s ease;
 				-ms-transition: -ms-transform 0.5s ease;
-				transition: transform 0.5s ease;
+				transition: transform 0.5s ease; */
 				-webkit-overflow-scrolling: touch;
 				display: block;
 				height: 100%;
@@ -2479,10 +2495,10 @@ input,  textarea {
 				-webkit-backface-visibility: hidden;
 				-ms-backface-visibility: hidden;
 				backface-visibility: hidden;
-				-moz-transition: -moz-transform 0.5s ease;
+				/* -moz-transition: -moz-transform 0.5s ease;
 				-webkit-transition: -webkit-transform 0.5s ease;
 				-ms-transition: -ms-transform 0.5s ease;
-				transition: transform 0.5s ease;
+				transition: transform 0.5s ease; */
 				display: block;
 				height: 2.25em;
 				left: 0;
@@ -2567,10 +2583,10 @@ input,  textarea {
 				-webkit-backface-visibility: hidden;
 				-ms-backface-visibility: hidden;
 				backface-visibility: hidden;
-				-moz-transition: -moz-transform 0.5s ease;
+				/* -moz-transition: -moz-transform 0.5s ease;
 				-webkit-transition: -webkit-transform 0.5s ease;
 				-ms-transition: -ms-transform 0.5s ease;
-				transition: transform 0.5s ease;
+				transition: transform 0.5s ease; */
 				padding-bottom: 1px;
 				margin-left: 0;
 			}
