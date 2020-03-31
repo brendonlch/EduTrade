@@ -237,17 +237,18 @@
 
 						try {
 							const response = await fetch(serviceURL, requestParam);
-							data = await response.json();
+							const data = await response.json();
 							var alerts = data.alerts;
 							// for loop to setup all table rows with obtained alert data
 							var rows = "";
 							for (const alert of alerts) {
 								var eachRow = "<td>" + alert.alertid + "</td>" +
-									"<td>" + alert.symbol + "</td>" +
-									"<td>" + alert.price + "</td>" +
-									"<td>" + alert.alerttype + "</td>" +
-									"<td><i class='far fa-edit' style='padding: 0 3px'></i><i class='far fa-trash-alt' style='padding: 0 3px'></i></td>";
-									rows += "<tr>" + eachRow + "</tr>";
+									"<td id='selectedsymbol'>" + alert.symbol + "</td>" +
+									"<td id='selectedalerttype'>" + alert.alerttype + "</td>" +
+									"<td id='selectedprice'>" + alert.price + "</td>" +
+									"<td><a href= '#editalerts' id='editalertbtn'><i class='far fa-edit' style='padding: 0 3px'></i></a>" +
+									"<a href='' id='deletealertbtn'><i class='far fa-trash-alt' style='padding: 0 3px'></i></a></td>";
+								rows += "<tr>" + eachRow + "</tr>";
 							}
 							// add all the rows to the table
 							$('#useralerts').append(rows);
@@ -261,52 +262,41 @@
 								('There is a problem retrieving alert data, please try again later.<br />' + error);
 						} // error
 					};
-					$("#alertForm").submit( async function (event) {
-						event.preventDefault();
-
-						var user = username;
-						var symbol = $("#symbol").val();
-						var price = $("#price").val();
-						var alerttype = $("#alerttype").val();
-
-						var post = JSON.stringify({username: user, symbol: symbol, price: price, alerttype: alerttype});
-						console.log(post);
-
-						let requestParam = {
-									headers: {"Content-Type": "application/json;", "Accept": "application/json"},
-									body: JSON.stringify({username: user, symbol: symbol, price: price, alerttype: alerttype}),
-									mode: 'cors', // allow cross-origin resource sharing
-									method: 'POST',
-								}
-						// Change serviceURL to your own
-						var serviceURL = "http://127.0.0.1:5030/alert/add";
-
-						try {
-							const response = await fetch(serviceURL, requestParam);
-							const data = await response.json();
-							Swal.fire({
-								title: 'Success!',
-								text: "You have successfully created an alert for your stock",
-								icon: 'success',
-								confirmButtonColor: '#4caf50',
-								confirmButtonText: 'Okay'}).then(
-								function(){
-									location.reload();
-								}
-							)
-						} catch (error) {
-							// Errors when calling the service; such as network error,
-							// service offline, etc
-							showError
-								('There is an error creating alerts, please try again later.\n' + error);
-
-						} // error
-					})
 					$(function () {
 						let alerts = getAlerts(serviceURL);
 						})
 				</script>
 			</div>
+		</section>
+
+		<!-- Editing existing alerts -->
+		<section id="editalerts" class="two">
+            <div class="container">
+                <h2>Edit Alert</h2>
+                <form class="form-horizontal" role="form" id="editalertForm" method="POST">
+                    <table>
+                        <tr>
+                            <td colspan="1">
+                                <label class="col-lg-3 control-label">Symbol:</label><input type="text" id="editsymbol"
+                                    name="symbol" size="15" disabled style="background: #dddddd" />
+                            </td>
+                            <td colspan="2">
+                                <label class="col-lg-3 control-label">Alert Type:</label>
+                                <select id="editalerttype" name="alerttype">
+                                    <option value="<">
+                                        < </option>
+                                    <option value=">"> > </option>
+                                </select>
+                            </td>
+                            <td colspan="1">
+                                <label class="col-lg-3 control-label">Price:</label><input type="text" id="editprice"
+                                    name="price" size="15" />
+                            </td>
+                        </tr>
+                    </table>
+                    <input type="submit" value="Save Changes">
+                </form>
+            </div>
 		</section>
 
 		<!-- Creating a new alert -->
@@ -339,58 +329,47 @@
 
 
 			<script>
-				$("#alertForm").submit(function () {
-					let requestParam = {
-						headers: {
-							"content-type": "charset=UTF-8"
-						},
-						mode: 'cors', // allow cross-origin resource sharing
-						method: 'POST',
-					}
-					// Change serviceURL to your own
-					var serviceURL = "http://127.0.0.1:5010/holdings/" + username;
+				$("#alertForm").submit( async function (event) {
+						event.preventDefault();
 
-					try {
-						const response = await fetch(serviceURL, requestParam);
-						const data = await response.json();
-						var holdings = data.holdings; //the arr is in data.holdings of the JSON data
+						var user = username;
+						var symbol = $("#symbol").val();
+						var price = $("#price").val();
+						var alerttype = $("#alerttype").val();
 
-						// array or array.length are false
-						if (!holdings || !holdings.length) {
-							showError('You have no holdings!')
-						} else {
-							// for loop to setup all table rows with obtained holdings data
-							var rows = "";
-							for (const stock of holdings) {
-								let stockDetails = await getLatestStock(stock.symbol);
-								var unrealised = (stockDetails.price - stock.buyprice) * stock.qty;
+						var post = JSON.stringify({username: user, symbol: symbol, price: price, alerttype: alerttype});
+						console.log(post);
 
-								var eachRow = "<td>" + stock.symbol + "</td>" +
-									"<td>" + stockDetails.stockname + "</td>" +
-									"<td>" + String(stock.qty) + "</td>" +
-									"<td>" + String(stock.buyprice) + "</td>" +
-									"<td>" + String(stockDetails.price) + "</td>";
-
-								if (unrealised < 0) {
-									eachRow = eachRow + "<td style='color:#e63e32'>" + unrealised.toFixed(2) + "</td>";
-								} else {
-									eachRow = eachRow + "<td style='color:#4caf50'>" + unrealised.toFixed(2) + "</td>";
+						let requestParam = {
+									headers: {"Content-Type": "application/json;", "Accept": "application/json"},
+									body: JSON.stringify({username: user, symbol: symbol, price: price, alerttype: alerttype}),
+									mode: 'cors', // allow cross-origin resource sharing
+									method: 'POST',
 								}
-								rows += "<tr>" + eachRow + "</tr>";
-							}
-							// add all the rows to the table
-							$('#allHoldings').append(rows);
-						}
-					} catch (error) {
-						var rows = "<tr><td colspan='6'>Currently unable to display your holdings.</td></tr>";
-						$('#allHoldings').append(rows);
-						// Errors when calling the service; such as network error,
-						// service offline, etc
-						showError
-							('There is a problem retrieving holdings data, please try again later.<br />' + error);
+						// Change serviceURL to your own
+						var serviceURL = "http://127.0.0.1:5030/alert/add";
 
-					} // error
-				})
+						try {
+							const response = await fetch(serviceURL, requestParam);
+							const data = await response.json();
+							Swal.fire({
+								title: 'Success!',
+								text: "You have successfully created an alert for your stock",
+								icon: 'success',
+								confirmButtonColor: '#4caf50',
+								confirmButtonText: 'Okay'}).then(
+								function(){
+									window.location = window.location.href.split("#")[0];
+								}
+							)
+						} catch (error) {
+							// Errors when calling the service; such as network error,
+							// service offline, etc
+							showError
+								('There is an error creating alerts, please try again later.\n' + error);
+
+						} // error
+					})
 			</script>
 		</section>
 
@@ -406,10 +385,18 @@
 			$("#alerts").hide();
 		})
 
+		$(function() {
+            $("#editalerts").hide();
+        })
+
 		// If user selects "Create new alert", show the alert creation form
 		$("#newAlert").click(function () {
 			$("#alerts").show();
 		})
+
+		$(".far fa-edit").click(function () {
+            $("#editalerts").show();
+        })
 
 		// Helper function to display error message
 		function showError(message) {
@@ -452,6 +439,107 @@
 			} // error
 		}
 
+		$(document).on('click', '#editalertbtn', function () {
+           var currentRow = $(this).closest("tr");
+           var stocksymbol = currentRow.find("td:eq(1)").html();
+           var alerttype = currentRow.find("td:eq(2)").html();
+           var price = currentRow.find("td:eq(3)").html();
+
+           document.getElementById('editsymbol').value = stocksymbol;
+           document.getElementById('editalerttype').value = alerttype;
+           document.getElementById('editprice').value = price;
+
+       })
+
+        $("#editalertForm").submit(async function (event) {
+           event.preventDefault();
+
+           var user = username;
+           var symbol = $("#editsymbol").val();
+           var price = $("#editprice").val();
+           var alerttype = $("#editalerttype").val();
+
+           var post = JSON.stringify({ username: user, symbol: symbol, price: price, alerttype: alerttype });
+           console.log(post);
+
+           let requestParam = {
+               headers: { "Content-Type": "application/json;", "Accept": "application/json" },
+               body: JSON.stringify({ username: user, symbol: symbol, price: price, alerttype: alerttype }),
+               mode: 'cors', // allow cross-origin resource sharing
+               method: 'POST',
+           }
+            // Change serviceURL to your own
+           var serviceURL = "http://127.0.0.1:5030/alert/update";
+
+           try {
+              const response = await fetch(serviceURL, requestParam);
+               const data = await response.json();
+               Swal.fire({
+                   title: 'Success!',
+                   text: "You have successfully updated an alert for your stock",
+                   icon: 'success',
+                   confirmButtonColor: '#4caf50',
+                   confirmButtonText: 'Okay'
+               }).then(
+                   function () {
+                       location.reload();
+                   })
+           } catch (error) {
+                // Errors when calling the service; such as network error,
+                // service offline, etc
+               showError
+                   ('There is an error updating alerts, please try again later.\n' + error);
+
+           } // error
+        })
+
+        $(document).on('click', '#deletealertbtn', async function () {
+            event.preventDefault();
+
+            var user = username;
+            var currentRow = $(this).closest("tr");
+            var symbol = currentRow.find("td:eq(1)").html();
+            if (currentRow.find("td:eq(2)").html() == "&lt;") {
+                var alerttype = "<";
+            }
+            else {
+                var alerttype = ">";
+            }
+            var price = currentRow.find("td:eq(3)").html();
+
+            var post = JSON.stringify({ username: user, symbol: symbol, price: price, alerttype: alerttype });
+            
+            let requestParam = {
+                headers: { "Content-Type": "application/json;", "Accept": "application/json" },
+                body: JSON.stringify({ username: user, symbol: symbol, price: price, alerttype: alerttype }),
+                mode: 'cors', // allow cross-origin resource sharing
+                method: 'POST',
+            }
+            // Change serviceURL to your own
+            var serviceURL = "http://127.0.0.1:5030/alert/delete";
+
+            try {
+                const response = await fetch(serviceURL, requestParam);
+                const data = await response.json();
+                console.log(data);
+                Swal.fire({
+                    title: 'Success!',
+                    text: "You have successfully deleted an alert for your stock",
+                    icon: 'success',
+                    confirmButtonColor: '#4caf50',
+                    confirmButtonText: 'Okay'
+                }).then(
+                    function () {
+                        location.reload();
+                    })
+            } catch (error) {
+                // Errors when calling the service; such as network error,
+                // service offline, etc
+                showError
+                    ('There is an error deleting this alert, please try again later.\n' + error);
+
+            } // error
+        })
 
 		// Upon clicking the sell button in the holdings table, 
 		$(document).on('click', '.sellbutton', function() {
