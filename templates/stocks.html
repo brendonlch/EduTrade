@@ -61,6 +61,7 @@
 		$(async () => {
 			// Change serviceURL to your own
 			var serviceURL = "http://127.0.0.1:6010/stock/allstockdata";
+			// var serviceURL = "http://127.0.0.1:8000/stock/stock/allstockdata";
 
 			try {
 				const response =
@@ -341,11 +342,12 @@
               }
           }
             var serviceURL = "http://127.0.0.1:5020/purchase";
+			// var serviceURL = "http://127.0.0.1:8000/trading/purchase";
 			var userquantity = parseInt(document.getElementById('userquantity').value);
 			var stockcurrentprice = parseFloat(document.getElementById('selectedprice').textContent);
 			var totalprice = parseFloat(document.getElementById('totalprice').value);
             var requestBody = {
-                username: username, symbol: stocksymbol, price: totalprice, qty: userquantity, transactiontype: "Buy"
+                username: username, symbol: stocksymbol, price: stockcurrentprice, qty: userquantity, transactiontype: "Buy"
             };
         //   console.log(requestBody);
             postData(serviceURL, requestBody);
