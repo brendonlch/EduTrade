@@ -372,7 +372,8 @@
 				async function getpastpricesbysymbol(symbol){
 				var pastlist = [];
 				// Change serviceURL to your own
-				var serviceURL = "http://127.0.0.1:6010/stock/past/" + symbol;
+				// var serviceURL = "http://127.0.0.1:6010/stock/past/" + symbol;
+				var serviceURL = "http://127.0.0.1:8000/stock/stock/past/" + symbol;
 				// console.log("I AM HERE");
 				try {
 					const response =

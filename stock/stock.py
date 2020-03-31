@@ -166,7 +166,7 @@ def get_all_past_prices(symbol):
 
 @app.route("/stock/<string:symbol>") # StockData
 def get_stock_data(symbol):
-    latest_stock = Stockdata.query.filter_by(symbol=symbol).first()
+    latest_stock = Stockdata.query.filter_by(symbol=symbol).order_by(Stockdata.time.desc()).first()
     #stock_price = latest_stock.price
     return jsonify(latest_stock.json())
 
