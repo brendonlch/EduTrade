@@ -104,10 +104,10 @@
 									await fetch(serviceURL, requestParam);
 								const data = await response.json();
 								var holdings = data.holdings; //the arr is in data.holdings of the JSON data
-
+								
 								// array or array.length are false
 								if (!holdings || !holdings.length) {
-									$('#allHoldings').append("<tr><td>You have no holdings!</td></tr>");
+									$('#allHoldings').append("<tr><td colspan=8 style='background:gray'>You have no holdings!</td></tr>");
 								} else {
 									// for loop to setup all table rows with obtained holdings data
 									var rows = "";
@@ -141,7 +141,7 @@
 								// Errors when calling the service; such as network error,
 								// service offline, etc
 								showError
-									('There is a problem retrieving holdings data, please try again later.<br />' + error);
+									('There is a problem retrieving holdings data, please try again later.' + error);
 							} // error
 
 						});
