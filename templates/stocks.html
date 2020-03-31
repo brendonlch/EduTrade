@@ -28,6 +28,7 @@
 
 	<script type = "text/javascript">
 	   google.charts.load('current', {packages: ['corechart','line']});  
+	//    console.log(testlist);
 	</script>
 	<style>
 		input::-webkit-outer-spin-button,
@@ -60,6 +61,7 @@
 		$(async () => {
 			// Change serviceURL to your own
 			var serviceURL = "http://127.0.0.1:6010/stock/allstockdata";
+			// var serviceURL = "http://127.0.0.1:8000/stock/stock/allstockdata";
 
 			try {
 				const response =
@@ -181,26 +183,62 @@
 			<div id = "pastpricecontainer">
 				<h2 style ="font-size: 5vmin; font-family: 'Rouge Script', cursive">Price Chart</h2>
 			<script>
-			   function drawChart() {
+				async function getpastpricesbysymbol(symbol){
+				var pastlist = [];
+				// Change serviceURL to your own
+				var serviceURL = "http://127.0.0.1:6010/stock/past/" + symbol;
+				// console.log("I AM HERE");
+				try {
+					const response =
+						await fetch(
+						serviceURL, { method: 'GET', mode: 'cors' }
+					);
+					const data = await response.json();
+					var pastdata = data.stock //the arr is in data.books of the JSON data
+					// console.log(pastdata);
+					for (const stock of pastdata) {
+						
+						var date = new Date(stock.time);
+						// d is "Sun Oct 13 2013 20:32:01 GMT+0530 (India Standard Time)"
+						datetext = date.toTimeString();
+						// datestring is "20:32:01 GMT+0530 (India Standard Time)"
+						// Split with ' ' and we g  et: ["20:32:01", "GMT+0530", "(India", "Standard", "Time)"]
+						// Take the first value from array :)
+						datetext = datetext.split(' ')[0];
+						
+						pastlist.push([stock.price, datetext]);
+						
+					}
+						// console.log(pastlist);
+						return pastlist;
+					// $('#newstable').append(newsrows);
+				} catch (error) {
+					// Errors when calling the service; such as network error, 
+					// service offline, etc
+					console.log(error);
+				// error
+			};
+		};
+			   function drawChart(symbol, result) {
 				  // Define the chart to be drawn.
-
 				  var data = new google.visualization.DataTable();
-				  data.addColumn('string', 'Month');
-				  data.addColumn('number', 'Symbol Name');
-				 
-				  data.addRows([
-					 ['Jan',  7.0],
-					 ['Feb',  6.9],
-					 ['Mar',  9.5]
-				  ]);
-					 
-				  // Set chart options
+				  data.addColumn('string', 'Date-Time');
+				  data.addColumn('number', symbol);
+				  for (i =0; i < result.length; i++) {
+					var price = '';
+					var price = parseFloat(result[i][0]);
+					// console.log(typeof price);
+					var time = String(result[i][1]);
+					// console.log(typeof time);
+					data.addRows([[time, price]]);
+				  }
+				//   Set chart options
 				  var options = {'title' : 'Past Prices',
 					 hAxis: {
-						title: 'Time'
+						title: 'Date Time'
 					 },
 					 vAxis: {
-						title: 'Prices'
+						title: 'Prices ($)'
 					 },   
 					 'width':650,
 					 'height':400	  
@@ -209,19 +247,8 @@
 				  // Instantiate and draw the chart.
 				  var chart = new google.visualization.LineChart(document.getElementById('pastpricecontainer'));
 				  chart.draw(data, options);
-
-				  var months = ['Apr', 'May', 'Jun', 'Jul'];
-					setInterval(function() {
-						var count = 0;
-						// instead of this random, you can make an ajax call for the current cpu usage or what ever data you want to display
-						var random = Math.random() * 30 + 20;
-						data.addRow([months[count], random]);
-						chart.draw(data, options);
-						count++;
-					}, 250);
 			   }
-			   google.charts.setOnLoadCallback(drawChart);
-			
+			   
 			</script>
 			</div>
 		</section> -->
@@ -314,13 +341,13 @@
                         })
               }
           }
-        //     var username = "earnest"; // e.g., 9781449474453
             var serviceURL = "http://127.0.0.1:5020/purchase";
+			// var serviceURL = "http://127.0.0.1:8000/trading/purchase";
 			var userquantity = parseInt(document.getElementById('userquantity').value);
 			var stockcurrentprice = parseFloat(document.getElementById('selectedprice').textContent);
 			var totalprice = parseFloat(document.getElementById('totalprice').value);
             var requestBody = {
-                username: username, symbol: stocksymbol, price: totalprice, qty: userquantity, transactiontype: "Buy"
+                username: username, symbol: stocksymbol, price: stockcurrentprice, qty: userquantity, transactiontype: "Buy"
             };
         //   console.log(requestBody);
             postData(serviceURL, requestBody);
@@ -334,6 +361,7 @@
         //   console.log(stockcurrentprice);
         });
 
+		// getting the news by symbol on click on row
 		async function getnewsbysymbol(ticker){
 				$("#newstable").find("tr:gt(0)").remove(); // clear table
 				var newsrows = "";
@@ -360,7 +388,7 @@
 				} catch (error) {
 					// Errors when calling the service; such as network error, 
 					// service offline, etc
-					// console.log(error);
+					console.log(error);
 				// error
 			};
 		};
@@ -372,9 +400,7 @@
 			var stocksymbol=thisrow.find("td:eq(0)").html();
 			getnewsbysymbol(stocksymbol);
 		});
-
-
-
+		
         $(document).on('click', '.submitbtn', function() {
           var currentRow=$(this).closest("tr");
           var stocksymbol=currentRow.find("td:eq(0)").html();
