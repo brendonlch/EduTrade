@@ -89,7 +89,7 @@
 						password: password})});
 				const data = await response.json();
 				if (data['status'] == 'success'){
-					window.location.replace("./dashboard.html");
+					window.location.replace("./index.html");
 					sessionStorage.setItem("user", username);
 				}
 				else if (data['status'] == 'fail') {
