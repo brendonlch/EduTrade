@@ -238,18 +238,23 @@
 						try {
 							const response = await fetch(serviceURL, requestParam);
 							const data = await response.json();
-							var alerts = data.alerts;
-							// for loop to setup all table rows with obtained alert data
 							var rows = "";
-							for (const alert of alerts) {
-								var eachRow = "<td>" + alert.alertid + "</td>" +
-									"<td id='selectedsymbol'>" + alert.symbol + "</td>" +
-									"<td id='selectedalerttype'>" + alert.alerttype + "</td>" +
-									"<td id='selectedprice'>" + alert.price + "</td>" +
-									"<td><a href= '#editalerts' id='editalertbtn'><i class='far fa-edit' style='padding: 0 3px'></i></a>" +
-									"<a href='' id='deletealertbtn'><i class='far fa-trash-alt' style='padding: 0 3px'></i></a></td>";
-								rows += "<tr>" + eachRow + "</tr>";
+							if (data.alerts) {
+								var alerts = data.alerts;
+								// for loop to setup all table rows with obtained alert data
+								for (const alert of alerts) {
+									var eachRow = "<td>" + alert.alertid + "</td>" +
+										"<td id='selectedsymbol'>" + alert.symbol + "</td>" +
+										"<td id='selectedalerttype'>" + alert.alerttype + "</td>" +
+										"<td id='selectedprice'>" + alert.price + "</td>" +
+										"<td><a href= '#editalerts' id='editalertbtn'><i class='far fa-edit' style='padding: 0 3px'></i></a>" +
+										"<a href='' id='deletealertbtn'><i class='far fa-trash-alt' style='padding: 0 3px'></i></a></td>";
+									rows += "<tr>" + eachRow + "</tr>";
+								}
+							} else if (data.message) {
+								rows += "<tr><td colspan='5'>" + "You have no alerts set." + "</td></tr>";
 							}
+							
 							// add all the rows to the table
 							$('#useralerts').append(rows);
 						}
@@ -508,7 +513,7 @@
             var price = currentRow.find("td:eq(3)").html();
 
             var post = JSON.stringify({ username: user, symbol: symbol, price: price, alerttype: alerttype });
-            
+
             let requestParam = {
                 headers: { "Content-Type": "application/json;", "Accept": "application/json" },
                 body: JSON.stringify({ username: user, symbol: symbol, price: price, alerttype: alerttype }),
@@ -517,11 +522,12 @@
             }
             // Change serviceURL to your own
             var serviceURL = "http://127.0.0.1:5030/alert/delete";
-
+			// console.log(requestParam);
             try {
                 const response = await fetch(serviceURL, requestParam);
+				console.log(response);
                 const data = await response.json();
-                console.log(data);
+                // console.log(data);
                 Swal.fire({
                     title: 'Success!',
                     text: "You have successfully deleted an alert for your stock",

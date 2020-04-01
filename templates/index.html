@@ -61,8 +61,8 @@
 		// - using await requires the function that calls it to be async
 		$(async () => {
 			// Change serviceURL to your own
-			// var serviceURL = "http://127.0.0.1:6010/stock/allstockdata";
-			var serviceURL = "http://127.0.0.1:8000/stock/stock/allstockdata";
+			var serviceURL = "http://127.0.0.1:6010/stock/allstockdata";
+			// var serviceURL = "http://127.0.0.1:8000/stock/stock/allstockdata";
 
 			try {
 				const response =
@@ -178,8 +178,8 @@
 								method: 'GET',
 							}
 							// Change serviceURL to your own
-							// var serviceURL = "http://127.0.0.1:5010/holdings/" + username;
-							var serviceURL = "http://127.0.0.1:8000/user/holdings/"+ username;
+							var serviceURL = "http://127.0.0.1:5010/holdings/" + username;
+							// var serviceURL = "http://127.0.0.1:8000/user/holdings/"+ username;
 
 							try {
 								const response =
@@ -274,8 +274,8 @@
 							method: 'POST',
 						}
 						// Change serviceURL to your own
-						// var serviceURL = "http://127.0.0.1:5010/holdings/" + username;
-						var serviceURL = "http://127.0.0.1:8000/user/holdings/" + username;
+						var serviceURL = "http://127.0.0.1:5010/holdings/" + username;
+						// var serviceURL = "http://127.0.0.1:8000/user/holdings/" + username;
 	
 						try {
 							const response = await fetch(serviceURL, requestParam);
@@ -633,8 +633,8 @@
               }
           }
         //     var username = "earnest"; // e.g., 9781449474453
-			// var serviceURL = "http://127.0.0.1:5020/purchase";
-			var serviceURL = "http://127.0.0.1:8000/trading/purchase";
+			var serviceURL = "http://127.0.0.1:5020/purchase";
+			// var serviceURL = "http://127.0.0.1:8000/trading/purchase";
 			var userquantity = parseInt(document.getElementById('userquantity').value);
 			var stockcurrentprice = parseFloat(document.getElementById('selectedprice').textContent);
 			var totalprice = parseFloat(document.getElementById('totalprice').value);
@@ -657,8 +657,8 @@
 				$("#newstable").find("tr:gt(0)").remove(); // clear table
 				var newsrows = "";
 				// Change serviceURL to your own
-				// var serviceURL = "http://127.0.0.1:6020/news/getnews/" + ticker;
-				var serviceURL = "http://127.0.0.1:8000/news/news/getnews/" + ticker;
+				var serviceURL = "http://127.0.0.1:6020/news/getnews/" + ticker;
+				// var serviceURL = "http://127.0.0.1:8000/news/news/getnews/" + ticker;
 				try {
 					const response =
 						await fetch(
@@ -796,8 +796,8 @@
 				mode: 'cors', // allow cross-origin resource sharing
 				method: 'GET',
 			}
-			// var serviceURL = "http://127.0.0.1:6010/stock/" + symbol;
-			var serviceURL = "http://127.0.0.1:8000/stock/stock/" + symbol;
+			var serviceURL = "http://127.0.0.1:6010/stock/" + symbol;
+			// var serviceURL = "http://127.0.0.1:8000/stock/stock/" + symbol;
 			try {
 				const response =
 					await fetch(serviceURL, requestParam);
@@ -857,8 +857,8 @@
 						})
 			  }
 		  }
-			// var serviceURL = "http://127.0.0.1:5020/sell";
-			var serviceURL = "http://127.0.0.1:8000/trading/sell";
+			var serviceURL = "http://127.0.0.1:5020/sell";
+			// var serviceURL = "http://127.0.0.1:8000/trading/sell";
 			var userquantity = parseInt(document.getElementById('selluserquantity').value);
 			var stockcurrentprice = parseFloat(document.getElementById('sellselectedprice').textContent);
 			var requestBody = {
@@ -921,8 +921,8 @@
 		}
 
 		$(function () {
-			// var serviceURL = "http://localhost:5010/user/" + username;
-			var serviceURL = "http://localhost:8000/user/user/" + username;
+			var serviceURL = "http://localhost:5010/user/" + username;
+			// var serviceURL = "http://localhost:8000/user/user/" + username;
 			user = getData(serviceURL);
 		});
 
@@ -976,8 +976,8 @@
 				return false;
 			}
 			var username = document.getElementById("username").value;
-			// var serviceURL = "http://localhost:5010/user/update/" + username;
-			var serviceURL = "http://localhost:8000/user/user/update/" + username;
+			var serviceURL = "http://localhost:5010/user/update/" + username;
+			// var serviceURL = "http://localhost:8000/user/user/update/" + username;
 			var requestBody = {
 				username: document.getElementById("username").value,
 				name: document.getElementById("name").value,
