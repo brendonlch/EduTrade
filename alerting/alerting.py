@@ -129,7 +129,7 @@ def delete_alert():
         except:
             return jsonify({"message": "An error occurred deleting the alert."}), 500
 
-    return jsonify({"message": "Alert successfully deleted."}), 201 # deletes the alert from alert database
+    return jsonify({"message": "Alert successfully deleted"}), 201 # deletes the alert from alert database
 
 def get_all_correlation():
     db.session.commit()
@@ -154,7 +154,7 @@ def delete_alert(data):
         except:
             return jsonify({"message": "An error occurred deleting the alert."}), 500
 
-    return "Alert successfully deleted", 201 # deletes the alert from alert database
+    return jsonify({"message": "Alert successfully deleted"}), 201# deletes the alert from alert database
 
 def sendEmail(data):
     email = data['email']

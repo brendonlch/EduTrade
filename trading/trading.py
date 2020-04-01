@@ -6,7 +6,7 @@ import time
 import sys
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from os import environ
 
 app = Flask(__name__)
@@ -15,7 +15,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
-CORS(app)
+cors = CORS(app, support_credentials=True, resources={r'/*': {"origins": "*"}})
 ###  This microservice contain Transaction class 
 """ 
 List of Functions for User
@@ -96,6 +96,7 @@ class TransactionCorrelation(db.Model):
 
 
 @app.route("/purchase", methods=['POST'])
+@cross_origin(supports_credentials=True)
 def purchase():
     data = request.get_json()
 
@@ -125,7 +126,7 @@ def purchase():
         db.session.commit()
     except:
         return jsonify({"message":"An error occured creating purchase order"}), 500
-    return jsonify(order.json()), 201 
+    return jsonify(order.json()), 200
 
 @app.route("/sell", methods=['POST'])
 def sell():
@@ -167,9 +168,10 @@ def sell():
         try:
             db.session.add(order)
             db.session.commit()
+            return jsonify(order.json()), 200
         except:
             return jsonify({"message":"An error occured creating sell order"}), 500
-    return jsonify(order.json()), 201 
+    return jsonify({"message":"An error occured creating sell order"}), 500
 
 @app.route("/transactionhistory", methods=['GET'])
 def view():
