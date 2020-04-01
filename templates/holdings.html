@@ -287,11 +287,8 @@
                             </td>
                             <td colspan="2">
                                 <label class="col-lg-3 control-label">Alert Type:</label>
-                                <select id="editalerttype" name="alerttype">
-                                    <option value="<">
-                                        < </option>
-                                    <option value=">"> > </option>
-                                </select>
+								<input type="text" id="editalerttype" name="alerttype" disabled style="background: #dddddd">
+							</input>
                             </td>
                             <td colspan="1">
                                 <label class="col-lg-3 control-label">Price:</label><input type="text" id="editprice"
@@ -447,7 +444,12 @@
 		$(document).on('click', '#editalertbtn', function () {
            var currentRow = $(this).closest("tr");
            var stocksymbol = currentRow.find("td:eq(1)").html();
-           var alerttype = currentRow.find("td:eq(2)").html();
+           if (currentRow.find("td:eq(2)").html() == "&gt;") {
+			   var alerttype = ">";
+		   }
+		   else {
+			   var alerttype = "<";
+		   }
            var price = currentRow.find("td:eq(3)").html();
 
            document.getElementById('editsymbol').value = stocksymbol;

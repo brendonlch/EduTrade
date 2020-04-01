@@ -112,7 +112,13 @@
 		var rowStock = new Array();
 		var username = sessionStorage.getItem("user");
 		// console.log(username);
-		$("#usernametop").textContent = username;
+		if (! username) {
+			window.location.replace("login.html")
+		}
+		else {
+			$("#usernametop").textContent = username;
+		}
+
 	</script>
 	
 
@@ -123,7 +129,7 @@
 			<div id="logo">
 				<h1 id="usernametop">Username</h1>
 				<p id="credits">Balance</p>
-				<p id="logout" style="font-size: small; text-align: right;"><a href="login.html">Logout</a></p>
+				<p id="logout" style="font-size: small; text-align: right;"><a href = "login.html">Logout</a></p>
 			</div>
 
 			<!-- Nav -->
@@ -247,7 +253,7 @@
 							<tr style="text-align:center; font-size: 2.5vmin; font-family:'Rouge Script', cursive">
 								<td colspan="1">
 									<label class="col-lg-3 control-label">Symbol:</label><input type="text" id="symbol"
-										name="symbol" size="15" />
+										name="symbol" size="10" />
 								</td>
 								<td colspan="2">
 									<label class="col-lg-3 control-label">Alert Type:</label>
@@ -258,7 +264,7 @@
 								</td>
 								<td colspan="1">
 									<label class="col-lg-3 control-label">Price:</label><input type="text" id="price"
-										name="price" size="15" />
+										name="price" size="10" />
 								</td>
 							</tr>
 						</table>
@@ -319,6 +325,11 @@
 	
 						} // error
 					})
+
+					$("#logout").click(function() {
+						sessionStorage.clear();
+					})
+
 				</script>
 			</section>
 		
@@ -480,7 +491,7 @@
 					<table class="box" style="width:100%">
 						<tr style="background-color:#d9d9d9;">
 							<td style="font-size: larger; font-weight: bold; color:black">Quantity:</td>
-							<td><input type="text" id="userquantity" placeholder="Quantity" min="1" max="999" style=" text-align: center;width:100%"/></td>
+							<td><input type="number" id="userquantity" placeholder="Quantity" min="1" max="999" style=" text-align: center;width:100%"/></td>
 						</tr>
 						<tr style="background-color:#d9d9d9;">
 							<td style="font-size: larger; font-weight: bold; color:black">Total $:</td>
@@ -532,7 +543,7 @@
 					<table class="box" style="width:100%">
 						<tr style="background-color:#d9d9d9;">
 							<td style="font-size: larger; font-weight: bold; color:black">Selling:</td>
-							<td><input type="text" id="selluserquantity" placeholder="Set Quantity" min="1" max="999" style=" text-align: center; "/></td>
+							<td><input type="number" id="selluserquantity" placeholder="Set Quantity" min="1" max="999" style=" text-align: center; "/></td>
 						</tr>
 						<tr style="background-color:#d9d9d9;">
 							<td style="font-size: larger; font-weight: bold; color:black">P/L ($):</td>
@@ -665,6 +676,7 @@
 			var userquantity = parseInt(document.getElementById('userquantity').value);
 			var stockcurrentprice = parseFloat(document.getElementById('selectedprice').textContent);
 			var totalprice = parseFloat(document.getElementById('totalprice').value);
+			totalprice.toFixed(2);
             var requestBody = {
                 username: username, symbol: stocksymbol, price: stockcurrentprice, qty: userquantity, transactiontype: "Buy"
             };
@@ -675,7 +687,7 @@
         $(document).on('input', '#userquantity', function() {
           var userquantity = document.getElementById('userquantity').value;
           var stockcurrentprice = document.getElementById('selectedprice').textContent;
-          document.getElementById("totalprice").value = userquantity * stockcurrentprice;
+          document.getElementById("totalprice").value = (userquantity * stockcurrentprice).toFixed(2);
         //   console.log(userquantity);
         //   console.log(stockcurrentprice);
         });
@@ -784,6 +796,7 @@
 		  var userquantity = document.getElementById('userquantity').value;
           var stockcurrentprice = document.getElementById('selectedprice').textContent;
           document.getElementById("totalprice").value = userquantity * stockcurrentprice;
+		  totalprice.toFixed(2);
           
 		});
 		$(document).on('click', '.sellsubmitbtn', function() {
