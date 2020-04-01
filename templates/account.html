@@ -34,7 +34,7 @@
             <div id="logo">
                 <h1 id="usernametop">Username</h1>
                 <p id="credits">Balance</p>
-                <p id="logout" style="font-size: small; text-align: right;"><a href = "login.html">Logout</a></p>
+                <p id="logout" style="font-size: small; text-align: right;"><a href="login.html">Logout</a></p>
             </div>
 
             <!-- Nav -->
@@ -206,17 +206,43 @@
                     try {
                         const response = await fetch(serviceURL, requestParam);
                         data = await response.json();
+                        let timerInterval
                         Swal.fire({
-                            title: 'Success!',
-                            text: "You have successfully made changes to your account",
-                            icon: 'success',
-                            confirmButtonColor: '#4caf50',
-                            confirmButtonText: 'Okay'
+                            title: 'Purchasing Stock!',
+                            timer: 9000,
+                            timerProgressBar: true,
+                            onBeforeOpen: () => {
+                                Swal.showLoading()
+                                timerInterval = setInterval(() => {
+                                    const content = Swal.getContent()
+                                    if (content) {
+                                        const b = content.querySelector('b')
+                                        if (b) {
+                                            b.textContent = Swal.getTimerLeft()
+                                        }
+                                    }
+                                }, 100)
+                            },
+                            onClose: () => {
+                                clearInterval(timerInterval)
+                            }
+                        }).then((result) => {
+                            /* Read more about handling dismissals below */
+                            if (result.dismiss === Swal.DismissReason.timer) {
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: "You can see your purchased stocks in your holdings!",
+                                    icon: 'success',
+                                    confirmButtonColor: '#4caf50',
+                                    confirmButtonText: 'Okay'
+                                }).then(function () {
+                                    location.reload();
+                                })
+                            }
                         })
-
-                    } catch (error) {
-                        console.log(error);
-                    }
+                } catch (error) {
+                    console.log(error);
+                }
                 }
                 $("#accountform").submit(function (event) {
                     event.preventDefault();
