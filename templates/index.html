@@ -54,6 +54,10 @@
 
 		}
 
+		.modal-header {
+			padding: 2px 16px;
+		}
+
 		.modal {
 			width: 60vw;
 			max-width: 80vw;
@@ -109,7 +113,7 @@
 	</script>
 </head>
 
-<body class="is-preload">
+<body class="is-preload">	
 
 	<!-- Retrieve session -->
 	<script>
@@ -159,12 +163,19 @@
 	<!-- Main -->
 	<div id="main">
 
-		<!-- Portfolio -->
-		<section id="holdings" style="height:100vh; position: relative;" class="two">
+	<!-- Intro -->
+	<section id="top" class="one cover dark">
+		<div class="container">
+			<h2>Welcome to EduTrade, <script>document.write(username)</script>!</h2>
+		</div>
+	</section>
+
+		<!-- Holdings -->
+		<section id="holdings" style="position: relative;" class="two">
 			<div class="container">
-				<h2>Holdings</h2><br>
-				<table id="allHoldings">
-					<tr>
+				<h2 style="font-size: 5vmin; font-family: 'Rouge Script', cursive">Holdings</h2><br>
+				<table id="allHoldings" style="font-family: 'Rouge Script', cursive">
+					<tr style="font-size: 3vmin; font-family:'Rouge Script', cursive">
 						<th>Symbol</th>
 						<th>Name</th>
 						<th>Qty</th>
@@ -221,7 +232,7 @@
 											eachRow = eachRow + "<td><strong style='color:#4caf50'>" + unrealised.toFixed(2) + "</strong></td>";
 										}
 										eachRow = eachRow + "<td><a href='#selling' id='holdingsell'><button type='submit' class='sellsubmitbtn' value='" + stock.symbol + "'>Sell </button></a></td>";
-										rows += "<tr style='font-size:2vmin; font-family:Rouge Script, cursive'>" + eachRow + "</tr>";
+										rows += "<tr style='font-size:2.5vmin'>" + eachRow + "</tr>";
 									}
 									// add all the rows to the table
 									$('#allHoldings').append(rows);
@@ -249,12 +260,12 @@
 		</section>
 
 		<!-- Creating a new alert -->
-		<section id="alerts" style="height:100vh;" class="five">
+		<section id="alerts" class="five">
 			<div class="container">
 				<h2 style="font-size: 5vmin; font-family: 'Rouge Script', cursive">Set New Alert</h2><br>
 				<form class="form-horizontal" role="form" id="alertForm" method="POST">
 					<table>
-						<tr style="text-align:center; font-size: 2.5vmin; font-family:'Rouge Script', cursive">
+						<tr style="text-align:center; font-size: 2.5vmin; font-family:'Rouge Script', cursive; white-space: nowrap;">
 							<td colspan="1">
 								<label class="col-lg-3 control-label">Symbol:</label><input type="text" id="symbol"
 									name="symbol" size="10" />
@@ -275,6 +286,66 @@
 					</table>
 					<input type="submit">
 				</form>
+			</div>
+
+			<div class="container">
+				<h2>Current Alerts</h2><br>
+				<table id="useralerts">
+					<tr>
+						<th>Alert ID</th>
+						<th>Symbol</th>
+						<th>Price</th>
+						<th>Alert Type</th>
+						<th style="width:110px"></th>
+					</tr>
+
+				<script>
+					var serviceURL = "http://localhost:5030/alert/" + username;
+					async function getAlerts(serviceURL) {
+						let requestParam = {
+							headers: {
+								"content-type": "charset=UTF-8"
+							},
+							mode: "cors",
+							method: "GET",
+						}
+
+						try {
+							const response = await fetch(serviceURL, requestParam);
+							const data = await response.json();
+							var rows = "";
+							if (data.alerts) {
+								var alerts = data.alerts;
+								// for loop to setup all table rows with obtained alert data
+								for (const alert of alerts) {
+									var eachRow = "<td>" + alert.alertid + "</td>" +
+										"<td id='selectedsymbol'>" + alert.symbol + "</td>" +
+										"<td id='selectedalerttype'>" + alert.alerttype + "</td>" +
+										"<td id='selectedprice'>" + alert.price + "</td>" +
+										"<td><a href= '#editalerts' id='editalertbtn'><i class='far fa-edit' style='padding: 0 3px'></i></a>" +
+										"<a href='' id='deletealertbtn'><i class='far fa-trash-alt' style='padding: 0 3px'></i></a></td>";
+									rows += "<tr>" + eachRow + "</tr>";
+								}
+							} else if (data.message) {
+								rows += "<tr><td colspan='5'>" + "You have no alerts set." + "</td></tr>";
+							}
+							
+							// add all the rows to the table
+							$('#useralerts').append(rows);
+						}
+						catch (error) {
+							var rows = "<tr><td colspan='6'>Currently unable to display your alerts.</td></tr>";
+							$('#useralerts').append(rows);
+							// Errors when calling the service; such as network error,
+							// service offline, etc
+							showError
+								('There is a problem retrieving alert data, please try again later.<br />' + error);
+						} // error
+					};
+					$(function () {
+						let alerts = getAlerts(serviceURL);
+						})
+				</script>
 			</div>
 			<script>
 				$("#alertForm").submit(async function () {
@@ -336,6 +407,30 @@
 				})
 
 			</script>
+
+	<div class="container" id="editalerts">
+		<h2>Edit Alert</h2>
+		<form class="form-horizontal" role="form" id="editalertForm" method="POST">
+			<table>
+				<tr>
+					<td colspan="1">
+						<label class="col-lg-3 control-label">Symbol:</label><input type="text" id="editsymbol"
+							name="symbol" size="15" disabled style="background: #dddddd" />
+					</td>
+					<td colspan="1">
+						<label class="col-lg-3 control-label" style="white-space: nowrap">Alert Type:</label>
+						<input type="text" id="editalerttype" name="alerttype" disabled style="background: #dddddd">
+					</input>
+					</td>
+					<td colspan="1">
+						<label class="col-lg-3 control-label">Price:</label><input type="text" id="editprice"
+							name="price" size="15" />
+					</td>
+				</tr>
+			</table>
+			<input type="submit" value="Save Changes">
+		</form>
+	</div>
 		</section>
 
 
@@ -370,6 +465,7 @@
 			</div>
 		</section>
 
+		<!-- Price chart for stocks -->
 		<section id="pastpricechart" class="modal" style="height:100vh">
 			<div id="pastpricecontainer" style='width:100%; height:100%; align-content:center;'>
 				<h2 style="font-size: 5vmin; font-family: 'Rouge Script', cursive">Price Chart</h2>
@@ -518,6 +614,7 @@
 				</div>
 			</div>
 		</section>
+
 		<!--Selling Stock-->
 		<section id="selling" style="background-image: none; overflow:scroll;" class="modal">
 			<div class="container" style="text-align:center">
@@ -573,6 +670,7 @@
 			</div>
 		</section>
 
+		<!-- Account Management -->
 		<section id="account" style="background-image: none; height:100vh; position: relative; overflow:scroll">
 			<div class="container">
 				<h2 style="font-size: 5vmin; font-family: 'Rouge Script', cursive">Edit Profile</h2><br>
@@ -586,8 +684,7 @@
 									style="background: #dddddd">
 							</div>
 						</div>
-						<div class="
-					">
+						<div class="form-group">
 							<label class="col-lg-3 control-label">Name:</label>
 							<div class="col-lg-8">
 								<input id="name" class="form-control" type="text" value="" disabled
@@ -637,13 +734,26 @@
 						</div>
 					</form>
 			</div>
-
+		</section>
 
 
 	</div>
 	<!--main-->
 
 	<script>
+
+		$(function() {
+			$("#editalerts").hide();
+		})
+
+		// If user selects "Create new alert", show the alert creation form
+		$("#newAlert").click(function () {
+			$("#alerts").show();
+		})
+
+		$(".far fa-edit").click(function () {
+			$("#editalerts").show();
+		})
 
 		$(document).on('click', '.purchasebutton', function () {
 			var stocksymbol = rowStock[0];
@@ -653,7 +763,6 @@
 			var userquantity = $('#userquantity').val();
 			// document.getElementById("#totalprice").value = userquantity * stockcurrentprice
 			// console.log(stocksymbol, stockname, stockvol, stockcurrentprice);
-			console.log(userquantity);
 			async function postData(serviceURL, requestBody) {
 				var requestParam = {
 					headers: {
@@ -670,20 +779,22 @@
 					const response = await fetch(serviceURL, requestParam);
 					data = await response.json();
 					console.log(data)
-					Swal.fire({
-						title: 'Success!',
-						text: "You can see your purchased stocks in your holdings!",
-						icon: 'success',
-						confirmButtonColor: '#4caf50',
-						confirmButtonText: 'Okay'
-					}).then(function () {
-						location.reload();
-					})
+					if (date) {
+						Swal.fire({
+							title: 'Success!',
+							text: "You can see your purchased stocks in your holdings!",
+							icon: 'success',
+							confirmButtonColor: '#4caf50',
+							confirmButtonText: 'Okay'
+						}).then(function () {
+							location.reload();
+						})
+					}
 				} catch (error) {
 					Swal.fire({
 						title: 'Unsuccessful!',
 						text: "Please check if you have enough credits to purchase!",
-						icon: 'fail',
+						icon: 'error',
 						confirmButtonColor: '#4caf50',
 						confirmButtonText: 'Okay'
 					})
@@ -692,15 +803,27 @@
 			//     var username = "earnest"; // e.g., 9781449474453
 			var serviceURL = "http://127.0.0.1:5020/purchase";
 			// var serviceURL = "http://127.0.0.1:8000/trading/purchase";
-			var userquantity = parseInt(document.getElementById('userquantity').value);
-			var stockcurrentprice = parseFloat(document.getElementById('selectedprice').textContent);
-			var totalprice = parseFloat(document.getElementById('totalprice').value);
-			totalprice.toFixed(2);
-			var requestBody = {
-				username: username, symbol: stocksymbol, price: stockcurrentprice, qty: userquantity, transactiontype: "Buy"
-			};
-			//   console.log(requestBody);
-			postData(serviceURL, requestBody);
+			try {
+				var userquantity = parseInt(document.getElementById('userquantity').value);
+				if (userquantity == 0 || isNaN(userquantity)) {
+					throw "Not a valid quantity";
+				}
+				var stockcurrentprice = parseFloat(document.getElementById('selectedprice').textContent);
+				var totalprice = parseFloat(document.getElementById('totalprice').value);
+				totalprice.toFixed(2);
+				var requestBody = {
+					username: username, symbol: stocksymbol, price: stockcurrentprice, qty: userquantity, transactiontype: "Buy"
+				};
+				postData(serviceURL, requestBody);
+			} catch (error) {
+				Swal.fire({
+					title: 'Unsuccessful!',
+					text: "Invalid Quantity. Please try again.",
+					icon: 'error',
+					confirmButtonColor: '#4caf50',
+					confirmButtonText: 'Okay'
+				})
+			}
 		});
 
 		function loadPurchase() {
@@ -834,6 +957,113 @@
 			})
 		}
 
+		$(document).on('click', '#editalertbtn', function () {
+           var currentRow = $(this).closest("tr");
+           var stocksymbol = currentRow.find("td:eq(1)").html();
+           if (currentRow.find("td:eq(2)").html() == "&gt;") {
+			   var alerttype = ">";
+		   }
+		   else {
+			   var alerttype = "<";
+		   }
+           var price = currentRow.find("td:eq(3)").html();
+
+           document.getElementById('editsymbol').value = stocksymbol;
+           document.getElementById('editalerttype').value = alerttype;
+           document.getElementById('editprice').value = price;
+
+       })
+
+        $("#editalertForm").submit(async function (event) {
+           event.preventDefault();
+
+           var user = username;
+           var symbol = $("#editsymbol").val();
+           var price = $("#editprice").val();
+           var alerttype = $("#editalerttype").val();
+
+           var post = JSON.stringify({ username: user, symbol: symbol, price: price, alerttype: alerttype });
+           console.log(post);
+
+           let requestParam = {
+               headers: { "Content-Type": "application/json;", "Accept": "application/json" },
+               body: JSON.stringify({ username: user, symbol: symbol, price: price, alerttype: alerttype }),
+               mode: 'cors', // allow cross-origin resource sharing
+               method: 'POST',
+           }
+            // Change serviceURL to your own
+           var serviceURL = "http://127.0.0.1:5030/alert/update";
+
+           try {
+              const response = await fetch(serviceURL, requestParam);
+               const data = await response.json();
+               Swal.fire({
+                   title: 'Success!',
+                   text: "You have successfully updated an alert for your stock",
+                   icon: 'success',
+                   confirmButtonColor: '#4caf50',
+                   confirmButtonText: 'Okay'
+               }).then(
+                   function () {
+                       location.reload();
+                   })
+           } catch (error) {
+                // Errors when calling the service; such as network error,
+                // service offline, etc
+               showError
+                   ('There is an error updating alerts, please try again later.\n' + error);
+
+           } // error
+        })
+
+        $(document).on('click', '#deletealertbtn', async function () {
+            event.preventDefault();
+
+            var user = username;
+            var currentRow = $(this).closest("tr");
+            var symbol = currentRow.find("td:eq(1)").html();
+            if (currentRow.find("td:eq(2)").html() == "&lt;") {
+                var alerttype = "<";
+            }
+            else {
+                var alerttype = ">";
+            }
+            var price = currentRow.find("td:eq(3)").html();
+
+            var post = JSON.stringify({ username: user, symbol: symbol, price: price, alerttype: alerttype });
+
+            let requestParam = {
+                headers: { "Content-Type": "application/json;", "Accept": "application/json" },
+                body: JSON.stringify({ username: user, symbol: symbol, price: price, alerttype: alerttype }),
+                mode: 'cors', // allow cross-origin resource sharing
+                method: 'POST',
+            }
+            // Change serviceURL to your own
+            var serviceURL = "http://127.0.0.1:5030/alert/delete";
+			// console.log(requestParam);
+            try {
+                const response = await fetch(serviceURL, requestParam);
+				console.log(response);
+                const data = await response.json();
+                // console.log(data);
+                Swal.fire({
+                    title: 'Success!',
+                    text: "You have successfully deleted an alert for your stock",
+                    icon: 'success',
+                    confirmButtonColor: '#4caf50',
+                    confirmButtonText: 'Okay'
+                }).then(
+                    function () {
+                        location.reload();
+                    })
+            } catch (error) {
+                // Errors when calling the service; such as network error,
+                // service offline, etc
+                showError
+                    ('There is an error deleting this alert, please try again later.\n' + error);
+
+            } // error
+        })
 
 		$(document).on('click', '.submitbtn', function () {
 			$("#trading").modal({
@@ -925,7 +1155,6 @@
 			var userquantity = $('#selluserquantity').val();
 			//   console.log(userquantity);
 			async function postData(serviceURL, requestBody) {
-				console.log(JSON.stringify(requestBody));
 				var requestParam = {
 					headers: { "Accept": "application/json;", "Content-Type": "application/json;" },
 					mode: 'cors', // other options: no-cors, etc.
@@ -950,22 +1179,36 @@
 				} catch (error) {
 					Swal.fire({
 						title: 'Unsuccessful!',
-						text: "Please check if you have entered the correct quantity!",
-						icon: 'fail',
+						text: "Invalid Quantity. Please try again.",
+						icon: 'error',
 						confirmButtonColor: '#4caf50',
 						confirmButtonText: 'Okay'
 					})
 				}
 			}
-			var serviceURL = "http://127.0.0.1:5020/sell";
-			// var serviceURL = "http://127.0.0.1:8000/trading/sell";
-			var userquantity = parseInt(document.getElementById('selluserquantity').value);
-			var stockcurrentprice = parseFloat(document.getElementById('sellselectedprice').textContent);
-			var requestBody = {
-				username: username, symbol: stocksymbol, price: stockcurrentprice,
-				qty: userquantity, transactiontype: "Sell", purchasedtime: stocktime
-			};
-			postData(serviceURL, requestBody);
+			try {
+				var serviceURL = "http://127.0.0.1:5020/sell";
+				// var serviceURL = "http://127.0.0.1:8000/trading/sell";
+				var userquantity = parseInt(document.getElementById('selluserquantity').value);
+				if (isNaN(userquantity) || userquantity == 0) {
+					throw "Not a valid quantity";
+				}
+				var stockcurrentprice = parseFloat(document.getElementById('sellselectedprice').textContent);
+				var requestBody = {
+					username: username, symbol: stocksymbol, price: stockcurrentprice,
+					qty: userquantity, transactiontype: "Sell", purchasedtime: stocktime
+				};
+				postData(serviceURL, requestBody);
+			} catch (error) {
+				Swal.fire({
+						title: 'Unsuccessful!',
+						text: "Please check if you have entered the correct quantity!",
+						icon: 'error',
+						confirmButtonColor: '#4caf50',
+						confirmButtonText: 'Okay'
+					})
+			}
+
 		});
 
 		function isEmail(email) {

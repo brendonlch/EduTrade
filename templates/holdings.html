@@ -104,7 +104,7 @@
 									await fetch(serviceURL, requestParam);
 								const data = await response.json();
 								var holdings = data.holdings; //the arr is in data.holdings of the JSON data
-								
+
 								// array or array.length are false
 								if (!holdings || !holdings.length) {
 									$('#allHoldings').append("<tr><td colspan=8 style='background:gray'>You have no holdings!</td></tr>");
@@ -152,9 +152,6 @@
 			</div>
 			<a href="#alerts" id="newAlert">Set an alert so you know when you buy / sell!<br><i
 					class="fas fa-angle-double-down fa-2x"></i></a>
-			<!--
-					Alerts requires user to add symbol, price and alert type (< / >)
-				 -->
 			<div>
 			</div>
 		</section>
