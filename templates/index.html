@@ -358,18 +358,6 @@
 			<div id = "pastpricecontainer" style='width:100%; height:100%; align-content:center;'>
 				<h2 style ="font-size: 5vmin; font-family: 'Rouge Script', cursive">Price Chart</h2>
 			<script>
-				var preload_data = "";
-				var options = {'title' : 'Past Prices',
-								hAxis: {
-									title: 'Time'
-								},
-								vAxis: {
-									title: 'Prices ($)'
-								},
-								width: '100%', 
-								height: '100%',
-								pointSize: 10
-							};
 				async function getpastpricesbysymbol(symbol){
 				var pastlist = [];
 				// Change serviceURL to your own
@@ -420,16 +408,40 @@
 				var data = new google.visualization.DataTable();
 				data.addColumn('string', 'DateTime');
 				data.addColumn('number', symbol);
+				var checkpricelist = [];
+				var minprice =0;
+				var maxprice =0;
 				for (i =0; i < result.length; i++) {
 					var price = '';
+					
 					var price = parseFloat(result[i][0]);
+					checkpricelist.push(price);
 					// console.log(typeof price);
 					var time = String(result[i][1]);
 					// console.log(typeof time);
 					data.addRows([[time, price]]);
 				}
+				// console.log("This is checkpricelist " + checkpricelist );
+				minprice = Math.min(...checkpricelist) * 0.9;
+				maxprice = Math.max(...checkpricelist) * 1.1;
+
+				console.log("Minprice: " + minprice);
+				console.log("Maxprice: " + maxprice);
+				var options = {'title' : 'Past Prices',
+								hAxis: {
+									title: 'Date-Time'
+								},
+								vAxis: {
+									title: 'Prices ($)',
+									viewWindow: {
+										min: minprice,
+										max: maxprice
+									}
+								},
+								width: '100%', 
+								height: '100%'
+							};
 				//   Set chart options
-				preload_data = data;
 				var chart = new google.visualization.LineChart(document.getElementById('pastpricecontainer'));
 				chart.draw(data, options);
 			}
