@@ -109,7 +109,7 @@
 	<script>
 		var rowStock = new Array();
 		var username = sessionStorage.getItem("user");
-		console.log(username);
+		// console.log(username);
 		$("#usernametop").textContent = username;
 	</script>
 	
@@ -151,9 +151,9 @@
 		<!-- Portfolio -->
 		<section id="holdings" style="height:100vh; overflow:auto'" class="two">
 			<div class="container">
-				<h2 style ="font-size: 5vmin; font-family: 'Rouge Script', cursive">Holdings</h2><br>
+				<h2>Holdings</h2><br>
 				<table id="allHoldings">
-					<tr style="text-align:center; font-size: 2.5vmin; font-family:'Rouge Script', cursive">
+					<tr>
 						<th>Symbol</th>
 						<th>Name</th>
 						<th>Qty</th>
@@ -363,7 +363,8 @@
 									title: 'Prices ($)'
 								},
 								width: '100%', 
-								height: '100%'
+								height: '100%',
+								pointSize: 10
 							};
 				async function getpastpricesbysymbol(symbol){
 				var pastlist = [];
@@ -382,11 +383,20 @@
 						
 						var date = new Date(stock.time);
 						
-						datetext = date.toTimeString();
+						timetext = date.toTimeString();
+
+						datetext = date.toDateString();
+						// console.log("This is how datetext looks like <br>" + datetext);
 						
-						datetext = datetext.split(' ')[0];
+						timetext = timetext.split(' ')[0];
+
+						datetext = datetext.slice(4, datetext.length);
+						// console.log("This is datetext after split " + datetext);
+
+						var formattedDateTime = datetext + " " + timetext;
+						// console.log("This is how formatted date time look like: " + formattedDateTime)
 						
-						pastlist.push([stock.price, datetext]);
+						pastlist.push([stock.price, formattedDateTime]);
 						
 					}
 						// console.log(pastlist);
@@ -403,7 +413,7 @@
 				// Define the chart to be drawn.
 				// Instantiate and draw the chart.
 				var data = new google.visualization.DataTable();
-				data.addColumn('string', 'Time');
+				data.addColumn('string', 'DateTime');
 				data.addColumn('number', symbol);
 				for (i =0; i < result.length; i++) {
 					var price = '';
@@ -697,10 +707,12 @@
 			
 			//check the global var pastsymbol whether it is the same as the current row symbol
 			if (pastsymbol != stocksymbol) {
-				getpastpricesbysymbol(stocksymbol).then(function(result) {
-				// console.log(stocksymbol + "  firstpart");
-				drawChart(stocksymbol, result);
+				setInterval(function() {
+				getpastpricesbysymbol(pastsymbol).then(function(result) {
+					// console.log("I am here in part 1");
+					drawChart(pastsymbol, result);
 				});
+				}, 500);
 				pastsymbol = stocksymbol;
 			} else {
 				// console.log(pastsymbol + "      PAST SYMBOL iNTERVAL");
@@ -708,9 +720,8 @@
 				getpastpricesbysymbol(pastsymbol).then(function(result) {
 					drawChart(pastsymbol, result);
 				});
-				}, 1000);
+				}, 500);
 			}
-
 		});
 		
 		$(document).on("click", "#holdingsell", function() {
