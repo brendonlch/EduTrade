@@ -73,19 +73,23 @@
 			event.preventDefault();
 			var username = $('#username').val();
 			var password = $('#password').val();
-			var serviceURL = "http://127.0.0.1:5010/userauthenticate";
+			// var serviceURL = "http://127.0.0.1:5010/userauthenticate";
+			var serviceURL = "http://127.0.0.1:8000/user/userauthenticate";
 			try {
 				const response =
 				await fetch(
 					serviceURL, { method: 'POST',
-					headers: { "Content-Type": "application/json" },
+					headers: { "Accept": "application/json;", 
+				  			"Content-Type": "application/json;",
+							"Access-Control-Allow-Origin":"*",
+							"Access-Control-Allow-Credentials":"True" },
+					mode: 'cors', // other options: no-cors, etc.
 					body: JSON.stringify ({
 						username: username,	
-						password: password})}
-				);
+						password: password})});
 				const data = await response.json();
 				if (data['status'] == 'success'){
-					window.location.replace("./dashboard.html");
+					window.location.replace("./index.html");
 					sessionStorage.setItem("user", username);
 				}
 				else if (data['status'] == 'fail') {

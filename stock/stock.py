@@ -143,10 +143,30 @@ def get_all_stock():
 def get_all_data(symbol):
     return jsonify({"stock": [stocksData.json() for stocksData in Stockdata.query.filter_by(symbol=symbol)]})
 
+@app.route("/stock/getpastprices/<string:symbol>")
+def get_all_past_prices(symbol):
+    current_stock = Stock.query.filter_by(symbol=symbol).first()
+    stock_symbol = current_stock.symbol
+    eprint(stock_symbol)
+    stock_name = current_stock.stockname
+    api_key = current_stock.apikey
+    url = (f"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={symbol}&interval=5min&apikey={api_key}")
+    eprint(url)
+    data = requests.get(url).json()
+    # return data
+    all_stocks = data.get("Time Series (5min)")
+    for time in all_stocks:
+        stock_price = float(all_stocks[time]['4. close'])
+        volume = int(all_stocks[time]['5. volume'])
+        stock = Stockdata(stock_symbol, stock_name, stock_price, volume, time)
+        db.session.add(stock)
+    db.session.commit()
+    return True
+
 
 @app.route("/stock/<string:symbol>") # StockData
 def get_stock_data(symbol):
-    latest_stock = Stockdata.query.filter_by(symbol=symbol).first()
+    latest_stock = Stockdata.query.filter_by(symbol=symbol).order_by(Stockdata.time.desc()).first()
     #stock_price = latest_stock.price
     return jsonify(latest_stock.json())
 
