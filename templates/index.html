@@ -70,8 +70,8 @@
 		// - using await requires the function that calls it to be async
 		$(async () => {
 			// Change serviceURL to your own
-			var serviceURL = "http://127.0.0.1:6010/stock/allstockdata";
-			// var serviceURL = "http://127.0.0.1:8000/stock/stock/allstockdata";
+			// var serviceURL = "http://127.0.0.1:6010/stock/allstockdata";
+			var serviceURL = "http://127.0.0.1:8000/stock/stock/allstockdata";
 
 			try {
 				const response =
@@ -199,8 +199,8 @@
 								method: 'GET',
 							}
 							// Change serviceURL to your own
-							var serviceURL = "http://127.0.0.1:5010/holdings/" + username;
-							// var serviceURL = "http://127.0.0.1:8000/user/holdings/"+ username;
+							// var serviceURL = "http://127.0.0.1:5010/holdings/" + username;
+							var serviceURL = "http://127.0.0.1:8000/user/holdings/"+ username;
 
 							try {
 								const response =
@@ -299,11 +299,13 @@
 					</tr>
 
 				<script>
-					var serviceURL = "http://localhost:5030/alert/" + username;
+					// var serviceURL = "http://localhost:5030/alert/" + username;
+					var serviceURL = "http://localhost:8000/alerting/alert/" + username;
 					async function getAlerts(serviceURL) {
 						let requestParam = {
 							headers: {
-								"content-type": "charset=UTF-8"
+								"content-type": "charset=UTF-8",
+								"Access-Content-Allow-Origin":"*"
 							},
 							mode: "cors",
 							method: "GET",
@@ -365,7 +367,8 @@
 									method: 'POST',
 								}
 						// Change serviceURL to your own
-						var serviceURL = "http://127.0.0.1:5030/alert/add";
+						// var serviceURL = "http://127.0.0.1:5030/alert/add";
+						var serviceURL = "http://127.0.0.1:8000/alerting/alert/add";
 
 						try {
 							const response = await fetch(serviceURL, requestParam);
@@ -462,7 +465,7 @@
 						// Change serviceURL to your own
 						// var serviceURL = "http://127.0.0.1:6010/stock/past/" + symbol;
 						var serviceURL = "http://127.0.0.1:8000/stock/stock/past/" + symbol;
-						// console.log("I AM HERE");
+					
 						try {
 							const response =
 								await fetch(
@@ -787,8 +790,8 @@
 				}
 			}
 			//     var username = "earnest"; // e.g., 9781449474453
-			var serviceURL = "http://127.0.0.1:5020/purchase";
-			// var serviceURL = "http://127.0.0.1:8000/trading/purchase";
+			// var serviceURL = "http://127.0.0.1:5020/purchase";
+			var serviceURL = "http://127.0.0.1:8000/trading/purchase";
 			try {
 				var userquantity = parseInt(document.getElementById('userquantity').value);
 				if (userquantity == 0 || isNaN(userquantity)) {
@@ -801,7 +804,7 @@
 						username: username, symbol: stocksymbol, price: stockcurrentprice, qty: userquantity, transactiontype: "Buy"
 					};
 					postData(serviceURL, requestBody);
-				}	
+				}
 			} catch (error) {
 				Swal.fire({
 					title: 'Unsuccessful!',
@@ -863,8 +866,8 @@
 			$("#newstable").find("tr:gt(0)").remove(); // clear table
 			var newsrows = "";
 			// Change serviceURL to your own
-			var serviceURL = "http://127.0.0.1:6020/news/getnews/" + ticker;
-			// var serviceURL = "http://127.0.0.1:8000/news/news/getnews/" + ticker;
+			// var serviceURL = "http://127.0.0.1:6020/news/getnews/" + ticker;
+			var serviceURL = "http://127.0.0.1:8000/news/news/getnews/" + ticker;
 			try {
 				const response =
 					await fetch(
@@ -910,7 +913,6 @@
 			if (pastsymbol != stocksymbol) {
 				setInterval(function () {
 					getpastpricesbysymbol(pastsymbol).then(function (result) {
-						// console.log("I am here in part 1");
 						drawChart(pastsymbol, result);
 					});
 				}, 500);
@@ -979,8 +981,8 @@
                method: 'POST',
            }
             // Change serviceURL to your own
-           var serviceURL = "http://127.0.0.1:5030/alert/update";
-
+        	//  var serviceURL = "http://127.0.0.1:5030/alert/update";
+			var serviceURL = "http://127.0.0.1:8000/alerting/alert/update";
            try {
               const response = await fetch(serviceURL, requestParam);
                const data = await response.json();
@@ -1026,7 +1028,8 @@
                 method: 'POST',
             }
             // Change serviceURL to your own
-            var serviceURL = "http://127.0.0.1:5030/alert/delete";
+			// var serviceURL = "http://127.0.0.1:5030/alert/delete";
+			var serviceURL = "http://127.0.0.1:8000/alerting/alert/delete";
 			// console.log(requestParam);
             try {
                 const response = await fetch(serviceURL, requestParam);
@@ -1111,8 +1114,8 @@
 				mode: 'cors', // allow cross-origin resource sharing
 				method: 'GET',
 			}
-			var serviceURL = "http://127.0.0.1:6010/stock/" + symbol;
-			// var serviceURL = "http://127.0.0.1:8000/stock/stock/" + symbol;
+			// var serviceURL = "http://127.0.0.1:6010/stock/" + symbol;
+			var serviceURL = "http://127.0.0.1:8000/stock/stock/" + symbol;
 			try {
 				const response =
 					await fetch(serviceURL, requestParam);
@@ -1174,8 +1177,8 @@
 				}
 			}
 			try {
-				var serviceURL = "http://127.0.0.1:5020/sell";
-				// var serviceURL = "http://127.0.0.1:8000/trading/sell";
+				// var serviceURL = "http://127.0.0.1:5020/sell";
+				var serviceURL = "http://127.0.0.1:8000/trading/sell";
 				var userquantity = parseInt(document.getElementById('selluserquantity').value);
 				if (isNaN(userquantity) || userquantity == 0) {
 					throw "Not a valid quantity";
@@ -1251,8 +1254,8 @@
 		}
 
 		$(function () {
-			var serviceURL = "http://localhost:5010/user/" + username;
-			// var serviceURL = "http://localhost:8000/user/user/" + username;
+			// var serviceURL = "http://localhost:5010/user/" + username;
+			var serviceURL = "http://localhost:8000/user/user/" + username;
 			user = getData(serviceURL);
 		});
 
@@ -1308,8 +1311,8 @@
 				return false;
 			}
 			var username = document.getElementById("username").value;
-			var serviceURL = "http://localhost:5010/user/update/" + username;
-			// var serviceURL = "http://localhost:8000/user/user/update/" + username;
+			// var serviceURL = "http://localhost:5010/user/update/" + username;
+			var serviceURL = "http://localhost:8000/user/user/update/" + username;
 			var requestBody = {
 				username: document.getElementById("username").value,
 				name: document.getElementById("name").value,
