@@ -174,9 +174,9 @@
 
 		<!-- Holdings -->
 		<section id="holdings" style="position: relative" class="two">
-			<div class="container">
+			<div class="container" style="overflow-x:auto;">
 				<h2 style="font-size: 5vmin; font-family: 'Rouge Script', cursive">Holdings</h2><br>
-				<table id="allHoldings" style="font-family: 'Rouge Script', cursive">
+				<table id="allHoldings" style="font-family: 'Rouge Script', cursive; position: relative" class="table table-striped">
 					<tr style="font-size: 3vmin; font-family:'Rouge Script', cursive">
 						<th>Symbol</th>
 						<th>Name</th>
@@ -300,6 +300,7 @@
 						<th>Alert Type</th>
 						<th style="width:110px"></th>
 					</tr>
+				</table>	
 
 				<script>
 					// var serviceURL = "http://localhost:5030/alert/" + username;
@@ -401,31 +402,31 @@
 
 			</script>
 
-	<div class="container" id="editalerts">
-		<h2>Edit Alert</h2>
-		<form class="form-horizontal" role="form" id="editalertForm" method="POST">
-			<table>
-				<tr style="text-align:center; font-size: 2.5vmin; font-family:'Rouge Script', cursive; white-space: nowrap;">
-					<td colspan="1">
-						<label class="col-lg-3 control-label">Symbol:</label><input type="text" id="editsymbol"
-							name="symbol" size="10" disabled style="background: #dddddd" />
-					</td>
-					<td colspan="2">
-						<label class="col-lg-3 control-label">Alert Type:</label>
-						<select id="editalerttype" name="alerttype" disabled style="background: #dddddd">
-							<option value="<"> < </option>
-							<option value=">"> > </option>
-						</select>
-					</td>
-					<td colspan="1">
-						<label class="col-lg-3 control-label">Price:</label><input type="text" id="editprice"
-							name="price" size="15" />
-					</td>
-				</tr>
-			</table>
-			<input type="submit" value="Save Changes">
-		</form>
-	</div>
+			<div class="container" id="editalerts">
+				<h2>Edit Alert</h2>
+				<form class="form-horizontal" role="form" id="editalertForm" method="POST">
+					<table>
+						<tr style="text-align:center; font-size: 2.5vmin; font-family:'Rouge Script', cursive; white-space: nowrap;">
+							<td colspan="1">
+								<label class="col-lg-3 control-label">Symbol:</label><input type="text" id="editsymbol"
+									name="symbol" size="10" disabled style="background: #dddddd"/>
+							</td>
+							<td colspan="2">
+								<label class="col-lg-3 control-label">Alert Type:</label>
+								<select id="editalerttype" name="alerttype" disabled style="background: #dddddd">
+									<option value="<"> < </option>
+									<option value=">"> > </option>
+								</select>
+							</td>
+							<td colspan="1">
+								<label class="col-lg-3 control-label">Price:</label><input type="text" id="editprice"
+									name="price" size="10" />
+							</td>
+						</tr>
+					</table>
+					<input type="submit" value="Save Changes">
+				</form>
+			</div>
 		</section>
 
 		<!-- Stock news of ind stock-->
@@ -732,7 +733,7 @@
 		<section id="transactions" style="position: relative" class="two">
 			<div class="container">
 				<h2 style="font-size: 5vmin; font-family: 'Rouge Script', cursive">Transaction History</h2><br>
-				<table id="transactionHistory" style="font-family: 'Rouge Script', cursive">
+				<table id="transactionHistory" style="font-family: 'Rouge Script', cursive" class="table table-striped">
 					<tr style="font-size: 3vmin; font-family:'Rouge Script', cursive">
 						<th>Symbol</th>
 						<th>Name</th>
@@ -807,18 +808,18 @@
 
 	<script>
 
-		$(function() {
-			$("#editalerts").hide();
-		})
+		// $(function() {
+		// 	$("#editalerts").hide();
+		// })
 
 		// If user selects "Create new alert", show the alert creation form
 		$("#newAlert").click(function () {
 			$("#alerts").show();
 		})
 
-		$(".far fa-edit").click(function () {
-			$("#editalerts").show();
-		})
+		// $(".far fa-edit").click(function () {
+		// 	$("#editalerts").show();
+		// })
 
 		$(document).on('click', '.purchasebutton', function () {
 			var stocksymbol = rowStock[0];
