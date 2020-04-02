@@ -154,6 +154,8 @@
 									class="icon solid fa-search-dollar">Trading</span></a></li> -->
 					<li><a href="#account" id="account-link"><span class="icon solid fa-user-circle">Account</span></a>
 					</li>
+					<li><a href="#transactions" id="transaction-link"><span class="icon solid fa-history">Transaction History</span></a>
+					</li>
 				</ul>
 			</nav>
 
@@ -403,10 +405,10 @@
 		<h2>Edit Alert</h2>
 		<form class="form-horizontal" role="form" id="editalertForm" method="POST">
 			<table>
-				<tr>
+				<tr style="text-align:center; font-size: 2.5vmin; font-family:'Rouge Script', cursive; white-space: nowrap;">
 					<td colspan="1">
 						<label class="col-lg-3 control-label">Symbol:</label><input type="text" id="editsymbol"
-							name="symbol" size="15" disabled style="background: #dddddd" />
+							name="symbol" size="10" disabled style="background: #dddddd" />
 					</td>
 					<td colspan="1">
 						<label class="col-lg-3 control-label" style="white-space: nowrap">Alert Type:</label>
@@ -659,7 +661,7 @@
 		</section>
 
 		<!-- Account Management -->
-		<section id="account" style="background-image: none; position: relative; overflow:scroll">
+		<section id="account" style="background-image: none; position: relative">
 			<div class="container">
 				<h2 style="font-size: 5vmin; font-family: 'Rouge Script', cursive">Edit Profile</h2><br>
 				<h1 id="error">
@@ -728,18 +730,16 @@
 		<section id="transactions" style="position: relative" class="two">
 			<div class="container">
 				<h2 style="font-size: 5vmin; font-family: 'Rouge Script', cursive">Transaction History</h2><br>
-				<table id="transactionhistory" style="font-family: 'Rouge Script', cursive">
+				<table id="transactionHistory" style="font-family: 'Rouge Script', cursive">
 					<tr style="font-size: 3vmin; font-family:'Rouge Script', cursive">
 						<th>Symbol</th>
+						<th>Name</th>
 						<th>Transaction Type</th>
 						<th>Qty</th>
-						<th>Date purchased</th>
-						<th>Price Bought ($)</th>
-						<th>Current Price ($)</th>
-						<th>Unrealised P/L</th>
-						<th></th>
+						<th>Transaction Price ($)</th>
+						<th>Transaction Time</th>
 					</tr>
-					<!-- <script>
+					<script>
 						// anonymous async function
 						// - using await requires the function that calls it to be async
 
@@ -753,55 +753,50 @@
 								method: 'GET',
 							}
 							// Change serviceURL to your own
-							// var serviceURL = "http://127.0.0.1:5010/holdings/" + username;
-							var serviceURL = "http://127.0.0.1:8000/user/holdings/"+ username;
+							// var serviceURL = "http://127.0.0.1:5020/transactionhistory";
+							var serviceURL = "http://127.0.0.1:8000/trading/transactionhistory/" + username;
 
 							try {
-								const response =
-									await fetch(serviceURL, requestParam);
+								const response = await fetch(serviceURL, requestParam);
+								console.log("error here");
+								console.log(response);
 								const data = await response.json();
-								var holdings = data.holdings; //the arr is in data.holdings of the JSON data
+								console.log("or here?");
+								var transactions = data.transaction; //the arr is in data.holdings of the JSON data
 
 								// array or array.length are false
-								if (!holdings || !holdings.length) {
-									$('#allHoldings').append("<tr><td colspan=8 style='background:gray'>You have no holdings!</td></tr>");
+								if (!transactions || !transactions.length) {
+									$('#transactionHistory').append("<tr><td colspan=6 style='background:gray'>You have no transactions!</td></tr>");
 								} else {
 									// for loop to setup all table rows with obtained holdings data
 									var rows = "";
-									for (const stock of holdings) {
-										let stockDetails = await getLatestStock(stock.symbol);
-										var unrealised = (stockDetails.price - stock.buyprice) * stock.qty;
-										var date = new Date(stock.datepurchased);
+									for (const trans of transactions) {
+										let stockDetails = await getLatestStock(trans.symbol);
+										var date = new Date(trans.transactiontime);
 										date.setHours(date.getHours() - 8);
-										var eachRow = "<td>" + stock.symbol + "</td>" +
+										var eachRow = "<td>" + trans.symbol + "</td>" +
 											"<td>" + stockDetails.stockname + "</td>" +
-											"<td>" + String(stock.qty) + "</td>" +
-											"<td>" + strftime("%Y-%m-%d %H:%M:%S", date) + "</td>" +
-											"<td>" + String(stock.buyprice) + "</td>" +
-											"<td>" + String(stockDetails.price) + "</td>";
-
-										if (unrealised < 0) {
-											eachRow = eachRow + "<td> <strong style='color:#e63e32'>" + unrealised.toFixed(2) + "</strong></td>";
-										} else {
-											eachRow = eachRow + "<td><strong style='color:#4caf50'>" + unrealised.toFixed(2) + "</strong></td>";
-										}
-										eachRow = eachRow + "<td><a href='#selling' id='holdingsell'><button type='submit' class='sellsubmitbtn' value='" + stock.symbol + "'>Sell </button></a></td>";
+											"<td>" + trans.transactiontype + "</td>" +
+											"<td>" + String(trans.qty) + "</td>" +
+											"<td>" + String(trans.price) + "</td>" +
+											"<td>" + strftime("%Y-%m-%d %H:%M:%S", date) + "</td>";
 										rows += "<tr style='font-size:2.5vmin'>" + eachRow + "</tr>";
 									}
 									// add all the rows to the table
-									$('#allHoldings').append(rows);
+									$('#transactionHistory').append(rows);
 								}
 							} catch (error) {
-								var rows = "<tr><td colspan='8'>Currently unable to display your holdings.</td></tr>";
-								$('#allHoldings').append(rows);
+								console.log(error);
+								var rows = "<tr><td colspan='8'>Currently unable to display your transaction history.</td></tr>";
+								$('#transactionHistory').append(rows);
 								// Errors when calling the service; such as network error,
 								// service offline, etc
 								showError
-									('There is a problem retrieving holdings data, please try again later.' + error);
+									('There is a problem retrieving your transaction history, please try again later.' + error);
 							} // error
 
 						});
-					</script> -->
+					</script>
 				</table>
 			</div>
 		</section>
