@@ -177,12 +177,11 @@ def sell():
             return jsonify({"message":"An error occured creating sell order"}), 500
     return jsonify({"message":"An error occured creating sell order"}), 500
 
-@app.route("/transactionhistory", methods=['GET'])
-def view():
-    username = request.arg.get("username")
+@app.route("/transactionhistory/<string:username>", methods=['GET'])
+def view(username):
     transaction = Transaction.query.filter_by(username=username).first() #Book.query.filter.by(isbn13=isbn13) = select * from book WHERE isbn13 = isbn13, .first() to limit by first item
     if transaction:
-        return jsonify(transaction.json()), 200
+        return jsonify({"transaction":[transactions.json() for transactions in Transaction.query.filter_by(username=username)]}), 201
     return jsonify({"message": "No transaction found"}), 404
 
 def send_order(data):
