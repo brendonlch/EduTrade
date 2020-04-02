@@ -212,6 +212,7 @@
 								if (!holdings || !holdings.length) {
 									$('#allHoldings').append("<tr><td colspan=8 style='background:gray'>You have no holdings!</td></tr>");
 								} else {
+									console.log("loop");
 									// for loop to setup all table rows with obtained holdings data
 									var rows = "";
 									for (const stock of holdings) {
@@ -423,7 +424,6 @@
 	</div>
 		</section>
 
-
 		<!-- Stock news of ind stock-->
 		<section id="news" style="overflow:scroll;" class='modal'>
 			<h2 style="font-size: 5vmin; font-family: 'Rouge Script', cursive; text-align: center;">Related News</h2>
@@ -553,8 +553,6 @@
 			</div>
 		</section>
 
-
-
 		<!-- Purchasing stocks-->
 		<section id="trading" class="modal" style="background-image: none; height:100vh; overflow:scroll">
 			<div class="container" style="text-align: center;">
@@ -605,7 +603,7 @@
 			</div>
 		</section>
 
-		<!--Selling Stock-->
+		<!-- Selling Stock-->
 		<section id="selling" style="background-image: none; overflow:scroll;" class="modal">
 			<div class="container" style="text-align:center">
 				<h2 style="font-size: 5vmin; font-family: 'Rouge Script', cursive; ">Sell Stocks</h2><br>
@@ -726,7 +724,87 @@
 			</div>
 		</section>
 
+		<!-- Transaction History -->
+		<section id="transactions" style="position: relative" class="two">
+			<div class="container">
+				<h2 style="font-size: 5vmin; font-family: 'Rouge Script', cursive">Transaction History</h2><br>
+				<table id="transactionhistory" style="font-family: 'Rouge Script', cursive">
+					<tr style="font-size: 3vmin; font-family:'Rouge Script', cursive">
+						<th>Symbol</th>
+						<th>Transaction Type</th>
+						<th>Qty</th>
+						<th>Date purchased</th>
+						<th>Price Bought ($)</th>
+						<th>Current Price ($)</th>
+						<th>Unrealised P/L</th>
+						<th></th>
+					</tr>
+					<!-- <script>
+						// anonymous async function
+						// - using await requires the function that calls it to be async
 
+						$(async () => {
+
+							let requestParam = {
+								headers: {
+									"Content-Type": "charset=UTF-8"
+								},
+								mode: 'cors', // allow cross-origin resource sharing
+								method: 'GET',
+							}
+							// Change serviceURL to your own
+							// var serviceURL = "http://127.0.0.1:5010/holdings/" + username;
+							var serviceURL = "http://127.0.0.1:8000/user/holdings/"+ username;
+
+							try {
+								const response =
+									await fetch(serviceURL, requestParam);
+								const data = await response.json();
+								var holdings = data.holdings; //the arr is in data.holdings of the JSON data
+
+								// array or array.length are false
+								if (!holdings || !holdings.length) {
+									$('#allHoldings').append("<tr><td colspan=8 style='background:gray'>You have no holdings!</td></tr>");
+								} else {
+									// for loop to setup all table rows with obtained holdings data
+									var rows = "";
+									for (const stock of holdings) {
+										let stockDetails = await getLatestStock(stock.symbol);
+										var unrealised = (stockDetails.price - stock.buyprice) * stock.qty;
+										var date = new Date(stock.datepurchased);
+										date.setHours(date.getHours() - 8);
+										var eachRow = "<td>" + stock.symbol + "</td>" +
+											"<td>" + stockDetails.stockname + "</td>" +
+											"<td>" + String(stock.qty) + "</td>" +
+											"<td>" + strftime("%Y-%m-%d %H:%M:%S", date) + "</td>" +
+											"<td>" + String(stock.buyprice) + "</td>" +
+											"<td>" + String(stockDetails.price) + "</td>";
+
+										if (unrealised < 0) {
+											eachRow = eachRow + "<td> <strong style='color:#e63e32'>" + unrealised.toFixed(2) + "</strong></td>";
+										} else {
+											eachRow = eachRow + "<td><strong style='color:#4caf50'>" + unrealised.toFixed(2) + "</strong></td>";
+										}
+										eachRow = eachRow + "<td><a href='#selling' id='holdingsell'><button type='submit' class='sellsubmitbtn' value='" + stock.symbol + "'>Sell </button></a></td>";
+										rows += "<tr style='font-size:2.5vmin'>" + eachRow + "</tr>";
+									}
+									// add all the rows to the table
+									$('#allHoldings').append(rows);
+								}
+							} catch (error) {
+								var rows = "<tr><td colspan='8'>Currently unable to display your holdings.</td></tr>";
+								$('#allHoldings').append(rows);
+								// Errors when calling the service; such as network error,
+								// service offline, etc
+								showError
+									('There is a problem retrieving holdings data, please try again later.' + error);
+							} // error
+
+						});
+					</script> -->
+				</table>
+			</div>
+		</section>
 	</div>
 	<!--main-->
 
@@ -766,7 +844,14 @@
 					body: JSON.stringify(requestBody)
 				}
 				try {
+					var totalprice= parseFloat(document.getElementById('totalprice').value);
+					if(totalprice>credits){
+						throw "Error";
+					}
 					const response = await fetch(serviceURL, requestParam);
+					if (!response.ok) {
+						throw "Error";
+					}
 					data = await response.json();
 					if (data) {
 						Swal.fire({
@@ -1140,6 +1225,7 @@
 			var user = username;
 			var stocksymbol = rowStock[0];
 			var stockname = rowStock[1];
+			var ownedqty = rowStock[2];
 			var stocktime = rowStock[3];
 			var stockcurrentprice = rowStock[5];
 			var userquantity = $('#selluserquantity').val();
@@ -1169,7 +1255,7 @@
 				} catch (error) {
 					Swal.fire({
 						title: 'Unsuccessful!',
-						text: "Invalid Quantity. Please try again.",
+						text: "An error occured while selling your stocks\n" + error,
 						icon: 'error',
 						confirmButtonColor: '#4caf50',
 						confirmButtonText: 'Okay'
@@ -1180,7 +1266,7 @@
 				// var serviceURL = "http://127.0.0.1:5020/sell";
 				var serviceURL = "http://127.0.0.1:8000/trading/sell";
 				var userquantity = parseInt(document.getElementById('selluserquantity').value);
-				if (isNaN(userquantity) || userquantity == 0) {
+				if (isNaN(userquantity) || userquantity == 0 || userquantity > ownedqty) {
 					throw "Not a valid quantity";
 				}
 				var stockcurrentprice = parseFloat(document.getElementById('sellselectedprice').textContent);
@@ -1192,7 +1278,7 @@
 			} catch (error) {
 				Swal.fire({
 						title: 'Unsuccessful!',
-						text: "Please check if you have entered the correct quantity!",
+						text: "Invalid Quantity. Please try again.",
 						icon: 'error',
 						confirmButtonColor: '#4caf50',
 						confirmButtonText: 'Okay'
