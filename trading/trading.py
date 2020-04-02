@@ -121,12 +121,16 @@ def purchase():
         print(i)
         i += 5
 
-    try:
-        db.session.add(order)
-        db.session.commit()
-    except:
-        return jsonify({"message":"An error occured creating purchase order"}), 500
-    return jsonify(order.json()), 200
+    if (status == "success"):
+        try:
+            db.session.add(order)
+            db.session.commit()
+            return jsonify(order.json()), 200
+        except:
+            return jsonify({"message":"An error occured creating purchase order"}), 500
+    return jsonify({"message":"An error occured creating purchase order"}), 500
+
+
 
 @app.route("/sell", methods=['POST'])
 def sell():

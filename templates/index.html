@@ -766,7 +766,14 @@
 					body: JSON.stringify(requestBody)
 				}
 				try {
+					var totalprice= parseFloat(document.getElementById('totalprice').value);
+					if(totalprice>credits){
+						throw "Error";
+					}
 					const response = await fetch(serviceURL, requestParam);
+					if (!response.ok) {
+						throw "Error";
+					}
 					data = await response.json();
 					if (data) {
 						Swal.fire({
