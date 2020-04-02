@@ -20,8 +20,8 @@ app.config.update(
 	MAIL_SERVER='smtp.gmail.com',
 	MAIL_PORT=465,
 	MAIL_USE_SSL=True,
-	MAIL_USERNAME = 'esmg5t1@gmail.com',
-	MAIL_PASSWORD = 'BrydonMeme'
+	MAIL_USERNAME = 'edutradeapp@gmail.com',
+	MAIL_PASSWORD = 'edutrade69'
 	)
 db = SQLAlchemy(app)
 mail = Mail(app)

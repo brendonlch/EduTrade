@@ -286,14 +286,14 @@
 							</td>
 						</tr>
 					</table>
-					<input type="submit">
+					<input type="submit"><br><br>
 				</form>
 			</div>
 
 			<div class="container">
-				<h2>Current Alerts</h2><br>
+				<h2 style="font-size: 5vmin; font-family: 'Rouge Script', cursive">Current Alerts</h2><br>
 				<table id="useralerts">
-					<tr>
+					<tr style="text-align:center; font-size: 2.5vmin; font-family:'Rouge Script', cursive; white-space: nowrap;">
 						<th>Alert ID</th>
 						<th>Symbol</th>
 						<th>Price</th>
@@ -328,7 +328,7 @@
 										"<td id='selectedalertprice'>" + alert.price + "</td>" +
 										"<td><a href= '#editalerts' id='editalertbtn'><i class='far fa-edit' style='padding: 0 3px'></i></a>" +
 										"<a href='' id='deletealertbtn'><i class='far fa-trash-alt' style='padding: 0 3px'></i></a></td>";
-									rows += "<tr>" + eachRow + "</tr>";
+									rows += "<tr style='font-size:3vmin; font-family:Rouge Script, cursive'>" + eachRow + "</tr>";
 								}
 							} else if (data.message) {
 								rows += "<tr><td colspan='5'>" + "You have no alerts set." + "</td></tr>";
@@ -410,10 +410,12 @@
 						<label class="col-lg-3 control-label">Symbol:</label><input type="text" id="editsymbol"
 							name="symbol" size="10" disabled style="background: #dddddd" />
 					</td>
-					<td colspan="1">
-						<label class="col-lg-3 control-label" style="white-space: nowrap">Alert Type:</label>
-						<input type="text" id="editalerttype" name="alerttype" disabled style="background: #dddddd">
-					</input>
+					<td colspan="2">
+						<label class="col-lg-3 control-label">Alert Type:</label>
+						<select id="editalerttype" name="alerttype" disabled style="background: #dddddd">
+							<option value="<"> < </option>
+							<option value=">"> > </option>
+						</select>
 					</td>
 					<td colspan="1">
 						<label class="col-lg-3 control-label">Price:</label><input type="text" id="editprice"
@@ -594,7 +596,7 @@
 								</tr>
 								<tr>
 									<td></td>
-									<td><button type="button" class="purchasebutton" id="purchasebuttonclick" colspan="2" onclick="loadPurchase()"
+									<td><button type="button" class="purchasebutton" id="purchasebuttonclick" colspan="2"
 											style=" width:80%; font-size: 3vh; font-weight: bold;">Purchase</button>
 									</td>
 								</tr>
@@ -651,7 +653,7 @@
 							</tr>
 							<tr>
 								<td></td>
-								<td><button type="button" class="sellbutton" colspan="2" id="sellbuttonclick" onclick="loadSale()"
+								<td><button type="button" class="sellbutton" colspan="2" id="sellbuttonclick"
 										style="width:80%; font-size: 3vh; font-weight: bold;">Sell</button></td>
 							</tr>
 						</table>
@@ -661,7 +663,7 @@
 		</section>
 
 		<!-- Account Management -->
-		<section id="account" style="background-image: none; position: relative">
+		<section id="account" style="background-image: none; position: relative;" class="three">
 			<div class="container">
 				<h2 style="font-size: 5vmin; font-family: 'Rouge Script', cursive">Edit Profile</h2><br>
 				<h1 id="error">
@@ -839,6 +841,7 @@
 					body: JSON.stringify(requestBody)
 				}
 				try {
+					loadPurchase();
 					var totalprice= parseFloat(document.getElementById('totalprice').value);
 					if(totalprice>credits){
 						throw "Error";
@@ -1233,6 +1236,7 @@
 					body: JSON.stringify(requestBody)
 				}
 				try {
+					loadSale()
 					const response = await fetch(serviceURL, requestParam);
 					data = await response.json();
 					if (data) {
