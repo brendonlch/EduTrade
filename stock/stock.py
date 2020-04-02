@@ -161,7 +161,7 @@ def get_all_past_prices(symbol):
         stock = Stockdata(stock_symbol, stock_name, stock_price, volume, time)
         db.session.add(stock)
     db.session.commit()
-    return True
+    return jsonify({"message":"Successfully Added"})
 
 
 @app.route("/stock/<string:symbol>") # StockData
