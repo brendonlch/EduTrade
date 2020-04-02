@@ -320,9 +320,9 @@
 								// for loop to setup all table rows with obtained alert data
 								for (const alert of alerts) {
 									var eachRow = "<td>" + alert.alertid + "</td>" +
-										"<td id='selectedsymbol'>" + alert.symbol + "</td>" +
+										"<td id='selectedalertsymbol'>" + alert.symbol + "</td>" +
 										"<td id='selectedalerttype'>" + alert.alerttype + "</td>" +
-										"<td id='selectedprice'>" + alert.price + "</td>" +
+										"<td id='selectedalertprice'>" + alert.price + "</td>" +
 										"<td><a href= '#editalerts' id='editalertbtn'><i class='far fa-edit' style='padding: 0 3px'></i></a>" +
 										"<a href='' id='deletealertbtn'><i class='far fa-trash-alt' style='padding: 0 3px'></i></a></td>";
 									rows += "<tr>" + eachRow + "</tr>";
@@ -1072,8 +1072,8 @@
 			document.getElementById('selectedvolume').innerHTML = stockvolume;
 			var userquantity = document.getElementById('userquantity').value;
 			var stockcurrentprice = document.getElementById('selectedprice').textContent;
-			document.getElementById("totalprice").value = userquantity * stockcurrentprice;
-			totalprice.toFixed(2);
+			document.getElementById("totalprice").value = (userquantity * stockcurrentprice).toFixed(2);
+			// totalprice.toFixed(2);
 
 		});
 		$(document).on('click', '.sellsubmitbtn', function () {
