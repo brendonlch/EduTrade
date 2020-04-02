@@ -52,6 +52,15 @@ services:
             - "dbURL=mysql+mysqlconnector://root@host.docker.internal:3306/user" # for windows
         ports:
             - "5010:5010"
+    user2:
+        #build: ./user/
+        image: earnestng/esd_stock:user
+        networks:
+            - kong-net
+        container_name: user2
+        environment:
+            # - "dbURL=mysql+mysqlconnector://root:root@host.docker.internal:3306/user" # for mac
+            - "dbURL=mysql+mysqlconnector://root@host.docker.internal:3306/user" # for windows
     trading:
         #build: ./trading/
         image: earnestng/esd_stock:trading

@@ -86,36 +86,46 @@ def processOrder(order):
     resultstatus = "fail" # simulate success/failure with a random True or False
     if (order['transactiontype']=="Buy"):
         print("Creating Purchase Order...")
-        try:
-            print("Minusing credits...") #Do try except
-            if(minus_credit(order)):
-                print("Successfully minus credits...")
+        print("Minusing credits...")
+        if(minus_credit(order) and add_holding(order)):
             print("Adding into personal holdings...")
-            if(add_holding(order)):
-                print("Successfully placed into holdings...")
-            resultstatus = "success"
-        except:
+            return {'status': "success", 'order': order}
+        else:
             return {'status': "fail", 'order': order}
-        result = {'status': resultstatus, 'order': order}
-        print("Purchase successful.")
-        return result
+        # try:
+        #      #Do try except
+        #     if(minus_credit(order) and add_holding(order)):
+                
+           
+        #     if(add_holding(order)):
+                
+        #     resultstatus = "success"
+        # except:
+        #     return {'status': "fail", 'order': order}
+        # result = {'status': resultstatus, 'order': order}
+        # print("Purchase successful.")
+        # return result
     elif(order['transactiontype']=="Sell"):
         print("Creating Selling Order...")
-        try:
-            print("Adding credits...")
-            if(add_credit(order)):
-                print("Successfully add credits...")
-
-            print("Removing from personal holdings...")
-            if(remove_holding(order)):
-                print("Successfully removed from holdings...")
-
-            resultstatus = "success"
-        except:
+        if(add_credit(order) and remove_holding(order)):
+            return {'status': "success", 'order': order}
+        else:
             return {'status': "fail", 'order': order}
-        result = {'status': resultstatus, 'order': order}
-        print("Sold successful.")
-        return result
+        # try:
+        #     print("Adding credits...")
+        #     if(add_credit(order)):
+        #         print("Successfully add credits...")
+
+        #     print("Removing from personal holdings...")
+        #     if(remove_holding(order)):
+        #         print("Successfully removed from holdings...")
+
+        #     resultstatus = "success"
+        # except:
+        #     return {'status': "fail", 'order': order}
+        # result = {'status': resultstatus, 'order': order}
+        # print("Sold successful.")
+        # return result
 
 
 
