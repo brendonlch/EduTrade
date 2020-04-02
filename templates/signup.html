@@ -135,7 +135,7 @@
 					})
 				return false;
 			}
-			var serviceURL = "http://localhost:5000/user" + "/" + username;
+			var serviceURL = "http://localhost:5010/user" + "/" + username;
 			try {
 					const response = await fetch(serviceURL, {  
 										method: 'POST',
@@ -154,7 +154,7 @@
 							icon: 'success',
 							confirmButtonColor: '#3085d6',
 							confirmButtonText: 'Okay',
-						}); window.location.replace("http://localhost/GitHub/EduTrade/templates/login.html");
+						}); window.location.replace("login.html");
 					}
 				} catch (error) {
 					// Errors when calling the service; such as network error, 

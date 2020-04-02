@@ -171,7 +171,7 @@
 	</section>
 
 		<!-- Holdings -->
-		<section id="holdings" style="position: relative;" class="two">
+		<section id="holdings" style="position: relative" class="two">
 			<div class="container">
 				<h2 style="font-size: 5vmin; font-family: 'Rouge Script', cursive">Holdings</h2><br>
 				<table id="allHoldings" style="font-family: 'Rouge Script', cursive">
@@ -273,8 +273,7 @@
 							<td colspan="2">
 								<label class="col-lg-3 control-label">Alert Type:</label>
 								<select id="alerttype" name="alerttype">
-									<option value="<">
-										< </option>
+									<option value="<"> < </option>
 									<option value=">"> > </option>
 								</select>
 							</td>
@@ -348,59 +347,47 @@
 				</script>
 			</div>
 			<script>
-				$("#alertForm").submit(async function () {
-					let requestParam = {
-						headers: {
-							"content-type": "charset=UTF-8"
-						},
-						mode: 'cors', // allow cross-origin resource sharing
-						method: 'POST',
-					}
-					// Change serviceURL to your own
-					var serviceURL = "http://127.0.0.1:5010/holdings/" + username;
-					// var serviceURL = "http://127.0.0.1:8000/user/holdings/" + username;
+				$("#alertForm").submit( async function (event) {
+						event.preventDefault();
 
-					try {
-						const response = await fetch(serviceURL, requestParam);
-						const data = await response.json();
-						var holdings = data.holdings; //the arr is in data.holdings of the JSON data
+						var user = username;
+						var symbol = $("#symbol").val();
+						var price = $("#price").val();
+						var alerttype = $("#alerttype").val();
 
-						// array or array.length are false
-						if (!holdings || !holdings.length) {
-							showError('You have no holdings!')
-						} else {
-							// for loop to setup all table rows with obtained holdings data
-							var rows = "";
-							for (const stock of holdings) {
-								let stockDetails = await getLatestStock(stock.symbol);
-								var unrealised = (stockDetails.price - stock.buyprice) * stock.qty;
+						var post = JSON.stringify({username: user, symbol: symbol, price: price, alerttype: alerttype});
+						console.log(post);
 
-								var eachRow = "<td>" + stock.symbol + "</td>" +
-									"<td>" + stockDetails.stockname + "</td>" +
-									"<td>" + String(stock.qty) + "</td>" +
-									"<td>" + String(stock.buyprice) + "</td>" +
-									"<td>" + String(stockDetails.price) + "</td>";
-
-								if (unrealised < 0) {
-									eachRow = eachRow + "<td style='color:#e63e32'>" + unrealised.toFixed(2) + "</td>";
-								} else {
-									eachRow = eachRow + "<td style='color:#4caf50'>" + unrealised.toFixed(2) + "</td>";
+						let requestParam = {
+									headers: {"Content-Type": "application/json;", "Accept": "application/json"},
+									body: JSON.stringify({username: user, symbol: symbol, price: price, alerttype: alerttype}),
+									mode: 'cors', // allow cross-origin resource sharing
+									method: 'POST',
 								}
-								rows += "<tr style='font-size:2vmin; font-family:Rouge Script, cursive'>" + eachRow + "</tr>";
-							}
-							// add all the rows to the table
-							$('#allHoldings').append(rows);
-						}
-					} catch (error) {
-						var rows = "<tr><td colspan='6'>Currently unable to display your holdings.</td></tr>";
-						$('#allHoldings').append(rows);
-						// Errors when calling the service; such as network error,
-						// service offline, etc
-						showError
-							('There is a problem retrieving holdings data, please try again later.<br />' + error);
+						// Change serviceURL to your own
+						var serviceURL = "http://127.0.0.1:5030/alert/add";
 
-					} // error
-				})
+						try {
+							const response = await fetch(serviceURL, requestParam);
+							const data = await response.json();
+							Swal.fire({
+								title: 'Success!',
+								text: "You have successfully created an alert for your stock",
+								icon: 'success',
+								confirmButtonColor: '#4caf50',
+								confirmButtonText: 'Okay'}).then(
+								function(){
+									window.location = window.location.href.split("#")[0];
+								}
+							)
+						} catch (error) {
+							// Errors when calling the service; such as network error,
+							// service offline, etc
+							showError
+								('There is an error creating alerts, please try again later.\n' + error);
+
+						} // error
+					})
 
 				$("#logout").click(function () {
 					sessionStorage.clear();
@@ -671,7 +658,7 @@
 		</section>
 
 		<!-- Account Management -->
-		<section id="account" style="background-image: none; height:100vh; position: relative; overflow:scroll">
+		<section id="account" style="background-image: none; position: relative; overflow:scroll">
 			<div class="container">
 				<h2 style="font-size: 5vmin; font-family: 'Rouge Script', cursive">Edit Profile</h2><br>
 				<h1 id="error">
@@ -778,8 +765,7 @@
 				try {
 					const response = await fetch(serviceURL, requestParam);
 					data = await response.json();
-					console.log(data)
-					if (date) {
+					if (data) {
 						Swal.fire({
 							title: 'Success!',
 							text: "You can see your purchased stocks in your holdings!",
@@ -807,14 +793,15 @@
 				var userquantity = parseInt(document.getElementById('userquantity').value);
 				if (userquantity == 0 || isNaN(userquantity)) {
 					throw "Not a valid quantity";
-				}
-				var stockcurrentprice = parseFloat(document.getElementById('selectedprice').textContent);
-				var totalprice = parseFloat(document.getElementById('totalprice').value);
-				totalprice.toFixed(2);
-				var requestBody = {
-					username: username, symbol: stocksymbol, price: stockcurrentprice, qty: userquantity, transactiontype: "Buy"
-				};
-				postData(serviceURL, requestBody);
+				} else {
+					var stockcurrentprice = parseFloat(document.getElementById('selectedprice').textContent);
+					var totalprice = parseFloat(document.getElementById('totalprice').value);
+					totalprice.toFixed(2);
+					var requestBody = {
+						username: username, symbol: stocksymbol, price: stockcurrentprice, qty: userquantity, transactiontype: "Buy"
+					};
+					postData(serviceURL, requestBody);
+				}	
 			} catch (error) {
 				Swal.fire({
 					title: 'Unsuccessful!',
