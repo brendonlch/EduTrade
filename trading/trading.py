@@ -179,11 +179,10 @@ def sell():
 
 @app.route("/transactionhistory/<string:username>", methods=['GET'])
 def view(username):
-    return jsonify({"transaction":[transactions.json() for transactions in Transaction.query.filter_by(username=username)]}), 201
-    # transaction = Transaction.query.filter_by(username=username).first() #Book.query.filter.by(isbn13=isbn13) = select * from book WHERE isbn13 = isbn13, .first() to limit by first item
-    # if transaction:
-    #     return jsonify(transaction.json()), 200
-    # return jsonify({"message": "No transaction found"}), 404
+    transaction = Transaction.query.filter_by(username=username).first() #Book.query.filter.by(isbn13=isbn13) = select * from book WHERE isbn13 = isbn13, .first() to limit by first item
+    if transaction:
+        return jsonify({"transaction":[transactions.json() for transactions in Transaction.query.filter_by(username=username)]}), 201
+    return jsonify({"message": "No transaction found"}), 404
 
 def send_order(data):
     # hostname = "localhost" # default broker hostname. Web management interface default at http://localhost:15672

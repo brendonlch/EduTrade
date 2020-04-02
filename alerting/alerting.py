@@ -152,9 +152,9 @@ def delete_alert(data):
             db.session.delete(alert)
             db.session.commit()
         except:
-            return jsonify({"message": "An error occurred deleting the alert."}), 500
+            return False
 
-    return jsonify({"message": "Alert successfully deleted"}), 201# deletes the alert from alert database
+    return True# deletes the alert from alert database
 
 def sendEmail(data):
     email = data['email']
