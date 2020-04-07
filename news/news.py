@@ -62,11 +62,6 @@ class News(db.Model):
         "url": self.url}
 
 
-# def get_all_symbol():
-#   data = requests.get("http://localhost:6004/stock/symbol")
-#   all_symbol = data.json()
-#   return all_symbol
-
 @app.route("/news/<string:symbol>", methods =['GET'])
 def get_news_by_tickers(symbol):
   url = (f'https://stocknewsapi.com/api/v1?tickers={symbol}&items=10&token=yiuzo44nggvo8trouq4lkmtsdq4bclz7omhvqkmq')
