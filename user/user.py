@@ -21,19 +21,30 @@ List of Functions for User
     - get_all_users()           -> return all the users in the 'user' database
     @app.route("/user/<string:username>")
     - get_user_by_id(username)  -> return info from 'user' database with username as input
+    @app.route("/userauthenticate")
+    - user_authenticate()       -> password validation
     @app.route("/user/<string:username>", methods=['POST'])
     - add_user(username)        -> insert user info into 'user' database using POST method
+    @app.route("/user/delete/<string:username>", methods=['POST'])
+    - delete_user(username)          -> delete user details
+    @app.route("/user/update/<string:username>", methods=['POST'])
+    - update_user(username)          -> update user details
 
 List of Functions for Holdings
     @app.route("/holdings/<string:username>")
-    - get_all_holdings(username)     -> return all holdings that the user has with username as input
-    @app.route("/holdings/<string:username>", methods=['POST'])
-    - add_stock_to_user(username)    -> insert a stock transaction to 'holdings' database using POST method
-    @app.route("/holdings/remove",  methods=['POST'])
-    - remove_stock_from_user():      -> remove stock from user with POST method
+    - get_all_holdings(username):    -> returns all holdings from user
 
 Other Functions
-    - send_stock_request(symbol)        -> retrieve stock information from Stock microservice with symbol as input
+    - minus_credit(order)                      -> to minus any credits made by purchase order
+    - add_credit(order)                        -> to add any credits made by sell order
+    - add_holding(order)                       -> to add successful purchase order into holdings
+    - remove_holding(order)                    -> to remove any sell order from holdings
+    - get_all_correlation()                    -> to commit any correlation id getting added
+    - update_correlation_status(corrid,status) -> to update status for the message in correlation table
+    - get_user_by_id(username)                 -> return user object if there are any in database 
+
+Port Number
+    - 5010
 """
 
 """

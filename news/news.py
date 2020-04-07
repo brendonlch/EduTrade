@@ -16,7 +16,20 @@ app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 CORS(app)
+###  This microservices contains News class 
+"""
+List of Functions for News
+    @app.route("/news/<string:usename>")
+    - get_news_by_tickers(symbol) -> calls the API to retrieve latest news
+    @app.route("/news/getnews/<string:ticker>")
+    - get_news_db_ticker(ticker)  -> retrieve news based on stock symbol/ ticker
 
+Other Functions
+    -
+
+Port Number
+    - 6020
+"""
 #FOR DEBUGGING - eprint()
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)

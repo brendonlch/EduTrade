@@ -26,8 +26,29 @@ app.config.update(
 db = SQLAlchemy(app)
 mail = Mail(app)
 CORS(app)
-###  This microservices contains Alterting class 
+###  This microservices contains Alert and Correlation class 
+"""
+List of Functions for Alerting
+    @app.route("/alert/<string:usename>")
+    - get_alert_by_id(username) -> return all the alerts for the user
+    @app.route("/alert/add", methods=["POST"])
+    - add_alert()               -> add an alert
+    @app.route("/alert/update", methods=["POST"])
+    - update_alert()            -> update alert
+    @app.route("/alert/delete", methods=['POST'])
+    - delete_alert()            -> delete alert
 
+Other Functions
+    - get_all_correlation()                    -> to commit any correlation id getting added
+    - update_correlation_status(corrid,status) -> to update status for the message in correlation table
+    - get_all_alerts(symbol)                   -> to get all alerts based on that symbol
+    - delete_alert(data)                       -> to delete the alert if the alert had been hit
+    - sendEmail(data)                          -> to send email through SMTP 
+    - getEmailRequest(data)                    -> to send a request reply to user management to get email address of user
+
+Port Number
+    - 5030
+"""
 #FOR DEBUGGING - eprint()
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)

@@ -18,7 +18,7 @@ db = SQLAlchemy(app)
 cors = CORS(app, support_credentials=True, resources={r'/*': {"origins": "*"}})
 ###  This microservice contain Transaction class 
 """ 
-List of Functions for User
+List of Functions for Trading
     @app.route("/purchase", methods=['POST'])
     - purchase()            -> communicate with user management to purchase stock 
     @app.route("/sell", methods=['POST'])
@@ -37,7 +37,9 @@ Other Functions
 
     update_correlation_status(corrid,status)  
         --> update the status in TransactionCorrelation table (used in trading_reply)
-    
+
+Port number
+    - 5020
 """
 #FOR DEBUGGING - eprint()
 def eprint(*args, **kwargs):

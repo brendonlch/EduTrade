@@ -17,7 +17,32 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 CORS(app)
+###  This microservices contains Stock and Stockdata class 
+"""
+List of Functions for Stock
+    @app.route("/stock/loadstock")
+    - get_all_stock()             -> calls the AlphaVantage API to load latest stock into database
+    @app.route("/stock/past/<string:symbol>")
+    - get_all_data(symbol)        -> retrieve all stockdata in database for the symbol
+    @app.route("/stock/getpastprices/<string:username>)
+    - get_all_past_prices(symbol) -> calls the AlphaVantage API to load past prices of symbol into database
+    @app.route("/stock/<string:symbol>")
+    - get_stock_data(symbol)      -> retrieve current latest stockdata in database
+    @app.route("/stock/all")
+    - get_all_stock_price()       -> to get all stock latest prices 
+    @app.route("/stock/allstockdata")
+    - get_all_stock_data()        -> to get all stock latest data
+    @app.route("/stock/symbol")
+    - get_all_symbol()            -> to get all symbols in database
 
+Other Functions
+    - get_all_symbol()           -> returns all symbol in database
+    - get_stock(symbol)          -> returns the object of that symbol in stockdata 
+    - send_message(update_stock) -> sends the latest stock object through amqp fire and forget to alerting 
+
+Port Number
+    - 6010
+"""
 #FOR DEBUGGING - eprint()
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
