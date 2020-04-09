@@ -113,8 +113,6 @@ def get_all_stock():
     key_list = list(list_of_stock.keys())
 
     while 1:
-        #! To add a US market status checker !
-
         us_time = datetime.now() - timedelta(hours = 4)
         eprint(f'Current US Timezone (GMT-4): {us_time}')
 
