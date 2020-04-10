@@ -158,7 +158,9 @@
 							icon: 'success',
 							confirmButtonColor: '#3085d6',
 							confirmButtonText: 'Okay',
-						}); window.location.replace("login.html");
+						}).then(function () {
+					window.location.replace("login.html");
+				})
 					}
 				} catch (error) {
 					// Errors when calling the service; such as network error, 
