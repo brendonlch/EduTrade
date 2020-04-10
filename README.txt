@@ -12,6 +12,7 @@ Run docker.compose.yml
 * To get all the latest images and run all images to their respective containers
 Run localhost:1337 in browser to access Kong through Konga
 * Create an admin account (username: admin, password: adminadmin)
+* Input (name: default, Kong Admin URL: http://kong:8001)
 * Under the ‘Snapshots’ section, import the snapshot_config_final.json file
 * Click ‘restore’, tick all the boxes and confirm. 
 * If you face any errors, click ‘restore’ again. The configurations should have no errors now.
