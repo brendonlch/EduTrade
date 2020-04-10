@@ -954,6 +954,11 @@
 		async function getnewsbysymbol(ticker) {
 			$("#newstable").find("tr:gt(0)").remove(); // clear table
 			var newsrows = "";
+			var serviceURL = "http://127.0.0.1:8000/news/news/" + ticker;
+			const response =
+					await fetch(
+						serviceURL, { method: 'GET', mode: 'cors' }
+					);
 			// Change serviceURL to your own
 			// var serviceURL = "http://127.0.0.1:6020/news/getnews/" + ticker;
 			var serviceURL = "http://127.0.0.1:8000/news/news/getnews/" + ticker;

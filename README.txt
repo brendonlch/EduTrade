@@ -23,9 +23,7 @@ Run localhost:8000/stock/stock/loadstock in browser
 * To get all the latest stock into the database
 * Keep this browser running to load the latest stock into the database 
 * NOTE : Market opens at 9:30pm Singapore Time (UTC+8)
-Run localhost:8000/news/news/<string:symbol> in browser
-* To get all the latest news of <symbol> into the database
-* Repeat for all symbols [FB, MSFT, TSLA, TWTR, GOOG]
+
 
 Testing of application
 * Run localhost:8000/EduTrade/templates/login.html
@@ -46,5 +44,5 @@ G8T5
 * Brydon Seah 
 
 Acknowledgements
-* StockNewsAPI - https://stocknewsapi.com/
-* AlphaVantage API - https://www.alphavantage.co/
+* StockNewsAPI - https://stocknewsapi.com/ - Maximum of 500 API calls until 10th May 2020
+* AlphaVantage API - https://www.alphavantage.co/ - Maximum of 500 API calls per day - 5 calls per 5 minutes

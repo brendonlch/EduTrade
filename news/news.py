@@ -64,7 +64,7 @@ class News(db.Model):
 
 @app.route("/news/<string:symbol>", methods =['GET'])
 def get_news_by_tickers(symbol):
-  url = (f'https://stocknewsapi.com/api/v1?tickers={symbol}&items=10&token=yiuzo44nggvo8trouq4lkmtsdq4bclz7omhvqkmq')
+  url = (f'https://stocknewsapi.com/api/v1?tickers={symbol}&items=10&token=dortwbpvkiw59ac46asooifukzsg6zaiz69xinht')
   response = requests.get(url)
   metadata = response.json()
   for news in metadata["data"]:
