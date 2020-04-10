@@ -85,7 +85,7 @@
 					);
 				const data = await response.json();
 				var stocks = data.stocksdata //the arr is in data.books of the JSON data
-				// console.log(stocks)
+
 
 				// array or array.length are falsy
 				if (data.length == 0) {
@@ -94,7 +94,6 @@
 					// for loop to setup all table rows with obtained book data
 					var rows = "";
 					for (const stock of stocks) {
-						// console.log(stock)
 						eachRow =
 							"<td>" + stock.symbol + "</td>" +
 							"<td>" + stock.stockname + "</td>" +
@@ -124,7 +123,6 @@
 	<script>
 		var rowStock = new Array();
 		var username = sessionStorage.getItem("user");
-		// console.log(username);
 		if (!username) {
 			window.location.replace("login.html")
 		}
@@ -219,7 +217,6 @@
 								if (!holdings || !holdings.length) {
 									$('#allHoldings').append("<tr><td colspan=8 style='background:gray'>You have no holdings!</td></tr>");
 								} else {
-									// console.log("loop");
 									// for loop to setup all table rows with obtained holdings data
 									var rows = "";
 									for (const stock of holdings) {
@@ -483,7 +480,6 @@
 								);
 							const data = await response.json();
 							var pastdata = data.stock //the arr is in data.books of the JSON data
-							// console.log(pastdata);
 							for (const stock of pastdata) {
 
 								var date = new Date(stock.time);
@@ -491,20 +487,16 @@
 								timetext = date.toTimeString();
 
 								datetext = date.toDateString();
-								// console.log("This is how datetext looks like <br>" + datetext);
 
 								timetext = timetext.split(' ')[0];
 
 								datetext = datetext.slice(4, datetext.length);
-								// console.log("This is datetext after split " + datetext);
 
 								var formattedDateTime = datetext + " " + timetext;
-								// console.log("This is how formatted date time look like: " + formattedDateTime)
 
 								pastlist.push([stock.price, formattedDateTime]);
 
 							}
-							// console.log(pastlist);
 							return pastlist;
 							// $('#newstable').append(newsrows);
 						} catch (error) {
@@ -528,17 +520,12 @@
 
 							var price = parseFloat(result[i][0]);
 							checkpricelist.push(price);
-							// console.log(typeof price);
 							var time = String(result[i][1]);
-							// console.log(typeof time);
 							data.addRows([[time, price]]);
 						}
-						// console.log("This is checkpricelist " + checkpricelist );
 						minprice = Math.min(...checkpricelist) * 0.9;
 						maxprice = Math.max(...checkpricelist) * 1.1;
 
-						// console.log("Minprice: " + minprice);
-						// console.log("Maxprice: " + maxprice);
 						var options = {
 							'title': 'Past Prices',
 							hAxis: {
@@ -766,10 +753,8 @@
 
 							try {
 								const response = await fetch(serviceURL, requestParam);
-								// console.log("error here");
-								// console.log(response);
 								const data = await response.json();
-								// console.log("or here?");
+
 								var transactions = data.transaction; //the arr is in data.holdings of the JSON data
 
 								// array or array.length are false
@@ -832,8 +817,6 @@
 			var stockvol = rowStock[2];
 			var stockcurrentprice = rowStock[3];
 			var userquantity = $('#userquantity').val();
-			// document.getElementById("#totalprice").value = userquantity * stockcurrentprice
-			// console.log(stocksymbol, stockname, stockvol, stockcurrentprice);
 			async function postData(serviceURL, requestBody) {
 				var requestParam = {
 					headers: {
@@ -947,8 +930,6 @@
 			var userquantity = document.getElementById('userquantity').value;
 			var stockcurrentprice = document.getElementById('selectedprice').textContent;
 			document.getElementById("totalprice").value = (userquantity * stockcurrentprice).toFixed(2);
-			//   console.log(userquantity);
-			//   console.log(stockcurrentprice);
 		});
 
 		async function getnewsbysymbol(ticker) {
@@ -969,15 +950,12 @@
 					);
 				const data = await response.json();
 				var stocksnews = data.news //the arr is in data.books of the JSON data
-				console.log(stocksnews);
 				for (const news of stocksnews) {
-					// console.log(stock)
 					eachrownews =
 						"<td>" + news.author + "</td>" +
 						"<td><a href='" + news.url + "' target='_blank'>" + news.title + "</a></td>" +
 						"<td>" + news.publish_date + "</td>";
 					newsrows += "<tr style='font-size:2vmin; font-family:Rouge Script, cursive'>" + eachrownews + "</tr>";
-					console.log(eachrownews);
 				}
 				$('#newstable').append(newsrows);
 			} catch (error) {
@@ -1012,7 +990,6 @@
 				}, 500);
 				pastsymbol = stocksymbol;
 			} else {
-				// console.log(pastsymbol + "      PAST SYMBOL iNTERVAL");
 				setInterval(function () {
 					getpastpricesbysymbol(pastsymbol).then(function (result) {
 						drawChart(pastsymbol, result);
@@ -1124,12 +1101,10 @@
             // Change serviceURL to your own
 			// var serviceURL = "http://127.0.0.1:5030/alert/delete";
 			var serviceURL = "http://127.0.0.1:8000/alerting/alert/delete";
-			// console.log(requestParam);
             try {
                 const response = await fetch(serviceURL, requestParam);
 				console.log(response);
                 const data = await response.json();
-                // console.log(data);
                 Swal.fire({
                     title: 'Success!',
                     text: "You have successfully deleted an alert for your stock",
@@ -1195,8 +1170,6 @@
 			var stockcurrentprice = document.getElementById('sellselectedprice').textContent;
 			var holdingbuyprice = document.getElementById('sellselectedbuy').textContent;
 			document.getElementById("profitloss").value = (userquantity * stockcurrentprice - userquantity * holdingbuyprice).toFixed(2);
-			//   console.log(userquantity);
-			//   console.log(stockcurrentprice);
 		});
 
 		// Helper function that accesses stocks to retrieve name of stocks and the current price of the symbol.
@@ -1230,7 +1203,6 @@
 		}
 		// Upon clicking the sell button in the holdings table, 
 		$(document).on('click', '.sellbutton', function () {
-			//   console.log(rowStock);
 			var user = username;
 			var stocksymbol = rowStock[0];
 			var stockname = rowStock[1];
@@ -1238,7 +1210,6 @@
 			var stocktime = rowStock[3];
 			var stockcurrentprice = rowStock[5];
 			var userquantity = $('#selluserquantity').val();
-			//   console.log(userquantity);
 			async function postData(serviceURL, requestBody) {
 				var requestParam = {
 					headers: { "Accept": "application/json;", "Content-Type": "application/json;" },
@@ -1314,7 +1285,6 @@
 			try {
 				const response = await fetch(serviceURL, requestParam);
 				data = await response.json();
-				// console.log(data);
 			} catch (error) {
 				console.error(error);
 				"Currently unable to display user details";
