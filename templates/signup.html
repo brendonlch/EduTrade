@@ -135,7 +135,8 @@
 					})
 				return false;
 			}
-			var serviceURL = "http://localhost:5010/user" + "/" + username;
+			// var serviceURL = "http://localhost:5010/user" + "/" + username;
+			var serviceURL = "http://localhost:8000/user/user" + "/" + username;
 			try {
 					const response = await fetch(serviceURL, {  
 										method: 'POST',
