@@ -219,7 +219,7 @@
 								if (!holdings || !holdings.length) {
 									$('#allHoldings').append("<tr><td colspan=8 style='background:gray'>You have no holdings!</td></tr>");
 								} else {
-									console.log("loop");
+									// console.log("loop");
 									// for loop to setup all table rows with obtained holdings data
 									var rows = "";
 									for (const stock of holdings) {
@@ -766,10 +766,10 @@
 
 							try {
 								const response = await fetch(serviceURL, requestParam);
-								console.log("error here");
-								console.log(response);
+								// console.log("error here");
+								// console.log(response);
 								const data = await response.json();
-								console.log("or here?");
+								// console.log("or here?");
 								var transactions = data.transaction; //the arr is in data.holdings of the JSON data
 
 								// array or array.length are false
