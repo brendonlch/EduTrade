@@ -140,7 +140,10 @@
 			try {
 					const response = await fetch(serviceURL, {  
 										method: 'POST',
-										headers: { "Content-Type": "application/json" },
+										headers: { "Accept": "application/json;",
+													"Content-Type": "application/json;",
+													"Access-Control-Allow-Origin": "*",
+													"Access-Control-Allow-Credentials": "True" },
 										body: JSON.stringify  ({name: name, 
 																email: email, 
 																institution: institution,
