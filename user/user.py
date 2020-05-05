@@ -73,7 +73,7 @@ class User(db.Model):
     institution = db.Column(db.String(64), nullable=False)
     credit = db.Column(db.Float(precision=2), nullable=False)
 
-    def __init__(self, username, password, name, age, email, institution, credit = 100): #Initialise the objects
+    def __init__(self, username, password, name, age, email, institution, credit = 10000): #Initialise the objects
         self.username = username
         self.password = password
         self.name = name

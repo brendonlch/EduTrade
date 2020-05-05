@@ -135,11 +135,15 @@
 					})
 				return false;
 			}
-			var serviceURL = "http://localhost:5010/user" + "/" + username;
+			// var serviceURL = "http://localhost:5010/user" + "/" + username;
+			var serviceURL = "http://localhost:8000/user/user" + "/" + username;
 			try {
 					const response = await fetch(serviceURL, {  
 										method: 'POST',
-										headers: { "Content-Type": "application/json" },
+										headers: { "Accept": "application/json;",
+													"Content-Type": "application/json;",
+													"Access-Control-Allow-Origin": "*",
+													"Access-Control-Allow-Credentials": "True" },
 										body: JSON.stringify  ({name: name, 
 																email: email, 
 																institution: institution,
@@ -154,7 +158,9 @@
 							icon: 'success',
 							confirmButtonColor: '#3085d6',
 							confirmButtonText: 'Okay',
-						}); window.location.replace("login.html");
+						}).then(function () {
+					window.location.replace("login.html");
+				})
 					}
 				} catch (error) {
 					// Errors when calling the service; such as network error, 
