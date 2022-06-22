@@ -13,7 +13,7 @@ joblib==0.14.0
 kiwisolver==1.1.0
 MarkupSafe==1.1.1
 mysql-connector-python==8.0.19
-numpy==1.17.3
+numpy==1.22.0
 pandas==0.25.3
 pika==1.1.0
 protobuf==3.6.1
